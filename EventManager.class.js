@@ -7,6 +7,8 @@ class EventManager {
 		var stackActivated = false;
 		var launchInit;
 		var finishInit;
+		let launchReadEvent;
+		let stopReadEvent;
 		var gameInit = null;
 
 		var savingDiv = $("<div>").text("Saving...").addClass("saving").hide();
@@ -63,6 +65,14 @@ class EventManager {
 			if (event.action === "reset") {
 				if (doIt) {
 					launchInit();
+				}
+				return true;
+			}
+			if ((event.action === "back") || (event.action === "forward") || (event.action === "seek") || (event.action === "clear")) {
+				if (doIt) {
+					stopReadEvent();
+					launchInit();
+					launchReadEvent();
 				}
 				return true;
 			}
@@ -244,7 +254,7 @@ class EventManager {
 		toRunFinished = true; // Deactivate to replay in slow motion when reload
 		*/
 
-		var server = new FilteringServer(new Server(Server.location().id));
+		var server = new FilteringServer(new Server("/" + Server.location().id));
 		var hasEvents = false;
 
 		launchInit = function() {
@@ -270,35 +280,67 @@ class EventManager {
 			Layout.fit();
 		};
 
-		this._launch = function(init) {
-			game.loading(true);
-
-			gameInit = init;
-
+		let currentStopHeap = null;
+		stopReadEvent = function() {
+			if (currentStopHeap !== null) {
+				currentStopHeap.set(true);
+				currentStopHeap = null;
+			}
+		};
+		launchReadEvent = function() {
+			stopReadEvent();
+			let stopHeap = new Heap(false);
+			currentStopHeap = stopHeap;
 			var eventHeap = new Heap();
-			return while_(true_())
+			while_(false_(stopHeap))
 				.do_(try_(
 					sequence_(
 						Server.fullHistory(server, eventHeap),
 						// sleep_(0.1),
 						block_(function() {
 							var event = eventHeap.get();
-							// debugger;
-							if (event.action === "") {
-								if (!hasEvents) {
+							if (event.old !== undefined) {
+								if (event.old.length === 0) {
 									that._reset();
+								} else {
+									hasEvents = true;
+									for (let e of event.old) {
+										parseEvent(e, true, true);
+									}
 								}
-								return;
+								Layout.fit();
+							} else {
+								// if (event.action === "clear") {
+								// 	if (!hasEvents) {
+								// 		that._reset();
+								// 	}
+								// 	return;
+								// }
+								//TODO Do it better with FilteringServer and Server.fullHistory
+								if ((event.action === "back") || (event.action === "forward") || (event.action === "seek") || (event.action === "clear")) {
+									stopReadEvent();
+									launchInit();
+									launchReadEvent();
+									return;
+								}
+				
+								hasEvents = true;
+								parseEvent(event, true, true);
+								Layout.fit();
 							}
-			
-							hasEvents = true;
-							parseEvent(event, true, true);
-							Layout.fit();
 						})))
 					.catch_(function(err) {
 						showSaving();
 						hideSaving(err);
 					})).run();
+		};
+
+		this._launch = function(init) {
+			game.loading(true);
+
+			gameInit = init;
+
+			launchReadEvent();
 
 			/*%%
 			server.history().res(function(event) {

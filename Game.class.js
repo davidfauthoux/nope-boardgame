@@ -43,12 +43,14 @@ class Game {
 
 		game.logManager = new LogManager(rootLayout);
 
+		//TODO Change this code with Async
 		var _download = function(server, prefix, files, i, defaults, contents, callback) {
 			if (i === files.length) {
 				callback(contents);
 				return;
 			}
 			var file = files[i];
+			console.log("DOWNLOADING " + file + " FROM " + server.base);
 			if (file.endsWith(".xml") || file.endsWith(".css") || file.endsWith(".js") || file.endsWith(".json")) {
 				console.log("Downloading " + file);
 				var contentHeap = new Heap();
@@ -93,8 +95,7 @@ class Game {
 			}).run();
 		};
 		var download = function(files, defaults, callback) {
-			console.log(Server.location());
-			var server = new Server(Server.location().id);
+			var server = new Server("/" + Server.location().id);
 			_download(server, null, files, 0, defaults, {}, function(contents) {
 				listAndDownload(server, "../../res", contents, function(contents) {
 					listAndDownload(server, "../res", contents, callback);
@@ -104,9 +105,11 @@ class Game {
 
 		this._launch = function() {
 			download(
-				[ "game.declare.xml", "game.layout.xml", "game.css", "game.prepare.js", "game.reset.js" ],
+				[ "../game.declare.xml", "../game.layout.xml", "../game.css", "../game.prepare.js", "../game.reset.js" ], //TODO Better to have an array of objects { path, default }
 				[ "<declare></declare>", "<layout></layout>", "", ";", ";" ],
 				function(contents) {
+					console.log("ASSETS DOWNLOADED");
+
 					game.loading(false);
 
 					game.administration = new Administration(rootLayout, rootLayout.layout().north(), game);
@@ -158,11 +161,11 @@ class Game {
 					addRes("../res");
 
 					new ScriptExecution(rootLayout.layout().inside(), game, {
-						declare: contents["game.declare.xml"],
-						layout: contents["game.layout.xml"],
-						css: contents["game.css"],
-						prepare: contents["game.prepare.js"],
-						reset: contents["game.reset.js"],
+						declare: contents["../game.declare.xml"],
+						layout: contents["../game.layout.xml"],
+						css: contents["../game.css"],
+						prepare: contents["../game.prepare.js"],
+						reset: contents["../game.reset.js"],
 						res: res
 					});
 				});
