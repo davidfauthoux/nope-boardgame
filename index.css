@@ -1,0 +1,953 @@
+@import url("https://fonts.googleapis.com/css2?family=BioRhyme");
+
+html {
+	background: #111;
+	color: black;
+	font-size: 20px;
+}
+
+html, body, input, textarea {
+	font-family: "BioRhyme", "Arial", sans-serif;
+}
+
+* {
+	padding: 0;
+	margin: 0;
+	box-sizing: border-box;
+
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+a {
+	text-decoration: none;
+	color: white;
+}
+
+svg, span, input, textarea {
+	display: block;
+}
+
+textarea, input {
+	font-size: 20px;
+
+	outline: none;
+	border: solid 2px #ccc;
+	background: #f3f3f3;
+	font-family: "BioRhyme", "Arial", sans-serif;
+	font-size: 14px;
+	padding: 0 2px;
+	margin: 0 1px 0 0;
+	border-radius: 3px;
+
+	width: 100px;
+
+	-moz-user-select: auto;
+	-khtml-user-select: auto;
+	-webkit-user-select: auto;
+	-ms-user-select: auto;
+	user-select: auto;
+}
+
+.isLoading {
+	background: rgba(255, 255, 255, 0.8);
+	pointer-events: auto;
+}
+.loading {
+	font-size: 20px;
+	background: #444;
+	border: solid 2px #111;
+	color: #eee;
+	border-radius: 3px;
+	padding: 2px 10px;
+	margin: 10px;
+}
+.saving, .error {
+	font-size: 14px;
+	padding: 3px 7px;
+	background: black;
+	color: white;
+	margin: 10px;
+	border-radius: 5px;
+	white-space: nowrap;
+	box-shadow: 2px 2px 10px #888;
+}
+.error {
+	background: darkred;
+}
+
+.warning {
+	background: #ee2222;
+	padding: 20px;
+	opacity: 0.95;
+}
+.warningText {
+	color: white;
+	font-size: 16px;
+	text-align: center;
+}
+.warningClose {
+	width: 15px;
+	height: 15px;
+	background: white;
+	border-radius: 3px;
+	margin-left: 15px;
+	pointer-events: auto;
+	cursor: pointer;
+}
+.warningText > div:first-child {
+	font-size: 28px;
+}
+
+.logContainer {
+	position: absolute;
+}
+.log {
+	background: #eee;
+	color: black;
+	border: solid 2px black;
+	margin-top: 5px;
+	margin-left: 15px;
+	border-radius: 5px;
+	font-size: 14px;
+	padding: 2px 8px;
+	box-shadow: 2px 2px 10px #888;
+
+	max-width: 200px;
+	pointer-events: auto;
+	cursor: pointer;
+}
+
+
+.administration {
+	background: #222;
+	padding: 5px;
+}
+.administration > .layout-middle > .layout-west > .layout-cell > .face {
+	width: 25px;
+	height: 25px;
+	margin: 0 3px;
+	box-shadow: none;
+}
+.iconButton {
+	background-color: transparent;
+	background-repeat: no-repeat;
+	background-position: center;
+	height: 24px;
+	border-radius: 4px;
+	pointer-events: auto;
+	cursor: pointer;
+}
+.iconButton:hover {
+	background-color: #333;
+}
+.fitButton {
+	background-image: url("../../res/fit.svg");
+	background-size: 16px auto;
+	width: 24px;
+}
+.newButton {
+	background-image: url("../../res/plus.svg");
+	background-size: 16px auto;
+	width: 24px;
+}
+.logButton {
+	background-image: url("../../res/settings.svg");
+	background-size: 12px auto;
+	width: 24px;
+}
+.fromCameraButton {
+	background-image: url("../../res/fromcamera.svg");
+	background-size: 12px auto;
+	width: 18px;
+}
+.fromFolderButton {
+	background-image: url("../../res/fromfolder.svg");
+	background-size: 12px auto;
+	width: 18px;
+}
+
+.editable {
+	min-width: 20px;
+	min-height: 15px;
+	padding: 2px;
+	cursor: pointer;
+	pointer-events: auto;
+}
+
+.face {
+	background: white;
+	border: solid 2px #fefefe;
+	border-radius: 100%;
+	box-shadow: 1px 1px 5px #888;
+	overflow: hidden;
+	width: 50px;
+	height: 50px;
+	position: relative;
+	margin: auto;
+}
+.face > img {
+	display: block;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	top: 50%;
+	transform: translateY(-50%);
+}
+.face > video {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+.face.audioFace,
+.face.videoFace {
+	border-radius: 5px;
+	width: 30px;
+	height: 30px;
+	background-color: #eee;
+	background-position: center;
+	background-repeat: no-repeat;
+	position: relative;
+}
+.face.videoFace {
+	background-image: url("../../res/video.svg");
+	background-size: 60% auto;
+}
+.face.audioFace {
+	background-image: url("../../res/audio.svg");
+	background-size: auto 70%;
+}
+.face.videoFace.active,
+.face.audioFace.active {
+	pointer-events: auto;
+}
+.face.videoFace.active {
+	background: black;
+	width: 100px;
+	height: 100px;
+	border-radius: 8px;
+	padding: 0;
+}
+.face.audioFace.active {
+	background-color: #eb103b;
+}
+.face.videoFace.muted::after,
+.face.audioFace.muted::after {
+	content: "";
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	background: white url("../../res/mute.svg") no-repeat center center;
+	background-size: 60% auto;
+	pointer-events: none;
+}
+.face.videoFace.muted::after {
+	width: 20px;
+	height: 20px;
+}
+.face.audioFace.muted::after {
+	width: 12px;
+	height: 12px;
+}
+.face.videoFace.dead,
+.face.audioFace.dead {
+	border: solid 2px #aa0000;
+	background-color: #c9a7a7;
+}
+
+.faceButton {
+	background: white;
+	opacity: 0;
+	border-radius: 100%;
+	pointer-events: auto;
+}
+.faceButton.hover,
+.faceButton:hover {
+	opacity: 0.95;
+}
+.faceButton.hoverLock {
+	opacity: 1;
+}
+.faceButton > div > div > .innerButton {
+	cursor: pointer;
+	font-size: 7px;
+	font-weight: bold;
+	color: #555;
+	padding: 2px 4px;
+	border-radius: 3px;
+	text-align: center;
+}
+.faceButton > div > div > .innerButton:hover,
+.faceButton > div > div > .innerButton.hover {
+	background: #333;
+	color: white;
+}
+
+.faceButton.disabled {
+	pointer-events: none;
+	background: #222 url("../../res/nobody.svg") no-repeat center center;
+	background-size: 60% auto;
+	opacity: 1;
+	border: solid 2px #444;
+}
+.faceButton > div > div > video {
+	display: block;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	object-fit: cover;
+	border: solid 2px white;
+	border-radius: 100%;
+	overflow: hidden;
+}
+.faceButton > div > div > .acceptButton {
+	position: absolute;
+	right: 100%;
+	top: 10px;
+	color: white;
+	text-align: center;
+	font-size: 8px;
+	padding: 5px;
+	background: #333;
+	width: 45px;
+	border-radius: 4px;
+	pointer-events: none;
+}
+.faceButton > div > div > .acceptButton:after {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 100%;
+	margin-top: -5px;
+	border-width: 5px;
+	border-style: solid;
+	border-color: transparent transparent transparent #333;
+}
+
+/*
+.friendNumber {
+	position: absolute;
+	font-size: 12px;
+	color: #333;
+	background: #fefefe;
+	width: 18px;
+	line-height: 14px;
+	text-align: center;
+	border-radius: 100%;
+	padding-bottom: 1px;
+	top: -14px;
+	left: -12px;
+	text-align: center;
+	border: solid 2px #333;
+}
+.grid > div > .spot > .friendNumber {
+	top: 0;
+	left: 0;
+}
+*/
+.friendMouse > .dragContainer, .drag {
+	width: 20px;
+	height: 20px;
+	margin-left: -10px;
+	margin-top: -10px;
+}
+.friendMouse.hovered {
+	opacity: 0.2;
+}
+.friendMouse > .faceContainer > .face {
+	width: 38px;
+	height: 38px;
+	margin: 1px 11px;
+}
+.friendMouse {
+	position: absolute;
+	width: 55px; /* Hover zone to make it translucent */
+	height: 45px;
+}
+.friendMouse > .dragContainer > div > .item > .content,
+.drag > .item > .content {
+	transform: scale(1.25);
+	opacity: 0.8;
+}
+
+
+.item.item-live {
+	padding: 3px;
+}
+.spot, .item {
+	pointer-events: none;
+}
+
+.spot.hoverable {
+	pointer-events: auto;
+	cursor: pointer;
+}
+.item.hoverable > div > div > .content {
+	pointer-events: auto;
+	cursor: pointer;
+}
+.item.hoverable > div > div > .face {
+	pointer-events: auto;
+	cursor: pointer;
+}
+
+/*%%
+.hoverable.hover,
+.hoverable:hover {
+	cursor: pointer;
+}
+
+.hoverable {
+	background: repeating-linear-gradient(-70deg, #f8f8f8, #f8f8f8 10px, transparent 10px, transparent 20px);
+}
+*/
+.grid-type-6 > div > .spot > div > .stack {
+	border-radius: 100%;
+}
+
+.item.property-undefined,
+.item.property-hidden:not(.infinite),
+.spot.random > .item:not(.property-random):not(.infinite),
+.spot.random > div > .stack > div > .item:not(.property-random):not(.infinite),
+.spot > div > .stack > div > .item.property-invisible {
+	display: none;
+}
+.drag > .item.property-undefined,
+.drag > .item.property-hidden:not(.infinite) {
+	display: block;
+}
+
+.item > div > .count {
+	font-size: 10px;
+	color: #ddd;
+	padding-right: 2px;
+	background: #444;
+	border-radius: 4px;
+	padding: 0px 3px;
+	line-height: 14px;
+	text-align: center;
+	transform: rotate(-10deg);
+	position: absolute;
+	left: 4px;
+	top: -9px;
+}
+.item > div > .count:after {
+	content: "";
+	width: 2px;
+	height: 8px;
+	background: #444;
+	position: absolute;
+	left: 5px;
+	top: 12px;
+	border-radius: 2px;
+}
+
+.undefined {
+	font-size: 12px;
+	color: red;
+}
+
+
+/* Default svg size if not set in declarations */
+svg.content {
+	width: 24px;
+	margin: 3px;
+}
+.spot > .overlay > .item > .content {
+	margin: 0;
+}
+.friendMouse, .drag {
+	/* z-index: 1; */
+}
+
+.overlay > .item > .content,
+.overlay > .item > div > div > .content { /*TODO Check if this second line is useless */
+	width: 100%;
+	height: auto;
+	margin: 0;
+}
+
+.grid {
+	padding: 18px 0;
+}
+
+.grid > div > .spot {
+	width: 70px;
+	height: 70px;
+	margin: 6px;
+}
+.grid.grid-type-6 > div > .spot {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+.layout-body {
+	/* z-index: -2; */
+}
+
+.grid > div > .spot > .overlay, .grid > div > .spot > .underlay {
+	/* z-index: -1; */
+}
+
+.grid > div > .spot > .overlay { /* We can take .overlay out of this to make it fit the cell */
+	width: 90px;
+	margin-top: 25px;
+	margin-left: 25px;
+	top: -50%;
+	left: -50%;
+}
+.grid > div > .spot > .underlay {
+	width: 110px;
+	margin-top: 15px;
+	margin-left: 15px;
+	top: -50%;
+	left: -50%;
+}
+.grid-type-6 > div > .spot > .underlay {
+	width: 90px;
+	margin-top: 25px;
+	margin-left: 25px;
+}
+
+.gridCellContent {
+	fill: transparent;
+	fill-opacity: 0.25;
+	stroke: #aaa;
+	stroke-width: 20; /* 2 * 10 */
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	stroke-miterlimit: 10;
+}
+
+.track > div > div > .spot,
+.track > div > div > div > .spot {
+	min-width: 20px;
+	min-height: 20px;
+	padding: 2px;
+	margin: 0 4px 4px 4px;
+}
+
+.track-horizontal > div > div > .title,
+.track-horizontal > div > div > div > .title {
+	margin-left: 6px;
+	margin-right: 6px;
+	font-size: 10px;
+	color: #666;
+}
+
+.track-vertical > div > div > div > .title,
+.track-vertical > div > div > div > div > .title {
+	font-size: 10px;
+	color: #666;
+	margin: 0 4px;
+	min-width: 25px;
+	text-align: right;
+}
+.track-vertical > div > div > div > .title.mainTitle,
+.track-vertical > div > div > div > div > .title.mainTitle {
+	background: #333;
+	color: #eee;
+	border-radius: 2px;
+	padding: 0 4px;
+	text-align: center;
+	margin-left: 0;
+}
+
+span.content {
+	font-size: 12px;
+	background: #222;
+	border-radius: 5px;
+	padding: 2px 6px;
+	color: #eee;
+	margin: 3px;
+	text-align: center;
+}
+
+.layout-body {
+	background: white;
+}
+
+.layout-body > div > .layout-layout > .layout-middle > .layout-inside {
+	padding: 10px;
+}
+
+.content.generatedText {
+	background: transparent;
+	padding: 0;
+	margin: 0;
+	text-align: left;
+	color: #666;
+	border-radius: 0;
+	font-size: 10px;
+	padding: 2px;
+	text-align: center;
+}
+.track > div > div > .spot > .overlay {
+	overflow: hidden;
+}
+.content.generatedColor {
+	width: 100%;
+	height: 100%;
+}
+.grid > div > .spot > .overlay > .item > .content.generatedText {
+	padding: 16px;
+}
+
+.gameOverlay {
+	overflow: hidden; /* Cut the friend mouse when it's outside of the window */
+}
+
+.layout-theme-border {
+	border-color: #333;
+}
+.layout-theme-background {
+	background: #eee;
+}
+.layout-theme-background:hover {
+	background: #ddd;
+}
+.layout-theme-background.layout-theme-dragging {
+	background: #aaa;
+}
+
+.pool > div > .spot {
+	min-width: 40px;
+	min-height: 40px;
+}
+
+.pool-horizontal > div > .spot.property-stacking > .item.stacking  > div > div {
+	max-width: 10px;
+}
+.pool-vertical > div > .spot.property-stacking > .item.stacking  > div > div {
+	max-height: 10px;
+}
+
+.overlayed > div > div > svg {
+	opacity: 0;
+}
+
+/*%%
+.pool-vertical {
+	overflow: hidden;
+}
+*/
+
+.face > .defaultFace,
+.face > .nullFace {
+	fill: black;
+	width: 100%;
+	padding: 5px;
+	background: #bbb;
+}
+.face > .nullFace {
+	fill: #aaa;
+	background: #ddd;
+}
+.item.lost > div > div > .face > .defaultFace {
+	fill: #ddd;
+}
+
+.news {
+	width: 200px;
+}
+.news, .newsHeader {
+	background: #333;
+	border-left: solid 2px #111;
+}
+.newsHeader {
+	padding: 5px 0;
+}
+.historyButton {
+	pointer-events: auto;
+	cursor: pointer;
+	color: #aaa;
+	border-radius: 4px;
+	background-color: #222;
+	font-size: 12px;
+	padding: 1px 7px 3px 7px;
+	margin: 0 3px;
+	background-size: 20px auto;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+.historyButton:hover {
+	color: #eee;
+	background-color: #444;
+}
+.historyButton.inactive {
+	pointer-events: none;
+	cursor: default;
+	background-color: #444;
+	color: #888;
+}
+.historyButton.markButton,
+.historyButton.backButton,
+.historyButton.forwardButton {
+	width: 30px;
+	height: 24px;
+}
+.historyButton.markButton {
+	background-image: url("../../res/mark.svg");
+}
+.historyButton.backButton {
+	background-image: url("../../res/back.svg");
+}
+.historyButton.backButton.longBack {
+	background-image: url("../../res/backward.svg");
+}
+.historyButton.forwardButton {
+	background-image: url("../../res/forward.svg");
+}
+
+.news > .layout-overlay {
+	overflow: hidden;
+	padding: 5px;
+	pointer-events: auto;
+}
+.newsText {
+	font-size: 10px;
+	color: #777;
+	border: solid 2px transparent;
+	padding: 1px 3px;
+	margin: 0 4px;
+	overflow: hidden;
+	align-self: flex-start;
+}
+.newsText.newsTextWithLocations {
+	cursor: pointer;
+	color: #eee;
+}
+.newsLine > div > div > .face {
+	width: 25px;
+	height: 25px;
+	margin: 2px 0;
+	box-shadow: none;
+}
+.newsLine > div > div > .face > .defaultFace {
+	padding: 0;
+}
+.newsLine.reversed {
+	background: #111;
+	border-radius: 5px;
+	padding: 2px 0 2px 6px;
+	margin: 3px 0 3px 18px;
+}
+.newsDelete {
+	cursor: pointer;
+	margin-top: 2px;
+}
+.newsDelete > svg {
+	fill: white;
+	width: 12px;
+}
+.newsLine.newsLine.reversed > div > .newsDelete {
+	margin-right: 4px;
+}
+.newsConfirm {
+	background: #333;
+	padding: 4px;
+	pointer-events: auto;
+}
+.newsLine.reversed > .newsConfirm {
+	background: #111;
+	border-radius: 5px;
+}
+.newsLine.reversed::before {
+	content: "";
+	background: transparent url("../../res/bin.svg") no-repeat center center;
+	background-size: 15px auto;
+	width: 15px;
+	height: 25px;
+	position: absolute;
+	left: -18px;
+}
+.newsLine.reversed > div > .newsDelete > svg {
+	transform: rotate(45deg);
+	fill: #333;
+}
+.newsConfirmButton {
+	background: #ff6347;
+	color: white;
+	font-size: 12px;
+	padding: 5px 10px;
+	border-radius: 4px;
+	cursor: pointer;
+	pointer-events: auto;
+}
+.newsText.highlight {
+	border: solid 2px #ff6347;
+}
+
+/*%%%%%
+.item > .tip {
+	position: absolute;
+	font-size: 12px;
+	background: #fdf6a4;
+	color: #333;
+	border-radius: 5px;
+	padding: 3px 8px;
+	bottom: 110%;
+	width: max-content;
+	text-align: center;
+	z-index: 1; / * TODO Remove this z-index - Maybe a bad idea because it'll be over the floating panel... * /
+	box-shadow: 2px 2px 10px #888;
+	pointer-events: auto;
+}
+.item > .tip:after {
+	content: "";
+	position: absolute;
+	top: 100%;
+	left: 50%;
+	margin-left: -5px;
+	border-width: 5px;
+	border-style: solid;
+	border-color: #fdf6a4 transparent transparent transparent;
+}
+*/
+
+.item.item-color-generated {
+	border: none;
+}
+
+.localVideo,
+.remoteVideo {
+	background: #333;
+	padding: 5px;
+	border-radius: 5px;
+	min-width: 50px;
+	min-height: 50px;
+}
+.remoteVideo > video {
+	width: 0;
+	height: 0;
+	position: absolute;
+}
+.localVideo > video,
+.remoteVideo.hasVideo > video {
+	position: relative;
+	display: block;
+	width: 160px;
+	height: 120px;
+/*	object-fit: cover; */
+	border-radius: 3px;
+}
+.remoteVideo > .audioIcon,
+.localVideo > .audioIcon {
+	width: 20px;
+	height: 20px;
+	border-radius: 3px;
+	background: red;
+	margin: auto;
+}
+.localVideo > .localVideoButton,
+.remoteVideo > .remoteVideoButton {
+	background: white;
+	color: black;
+	border-radius: 3px;
+	cursor: pointer;
+	pointer-events: auto;
+	margin: 3px;
+	white-space: nowrap;
+}
+.localVideo > .localVideoButton {
+	font-size: 12px;
+	padding: 2px 6px;
+}
+.remoteVideo > .remoteVideoButton {
+	font-size: 9px;
+	padding: 1px 3px;
+}
+.remoteVideo.hasVideo > .remoteVideoButton {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+}
+.localVideo.disabled > .localVideoButton {
+	background: #aaa;
+	cursor: default;
+	pointer-events: none;
+}
+.localVideo.stopVideo {
+	cursor: pointer;
+	pointer-events: auto;
+}
+.errorVideo {
+	font-size: 12px;
+	color: white;
+	text-align: center;
+	width: 100px;
+	cursor: pointer;
+	pointer-events: auto;
+}
+
+
+/* BORDER MANAGEMENT */
+
+.item {
+	border: solid 2px transparent;
+}
+.item.hoverable.hover {
+/*%% .item.hoverable:hover { */
+	border: dashed 2px black;
+}
+.item.friendHover {
+	border: dashed 2px #bbb;
+}
+.item.selected {
+	border: dotted 2px black;
+}
+.item.friendSelected {
+	border: dotted 2px #bbb;
+}
+
+.overlay > .item {
+	border: none;
+}
+
+.pool > div > .spot,
+.track > div > div > .spot,
+.track > div > div > div > .spot,
+.item .spot {
+	border: solid 2px transparent;
+}
+.track > div > div > .spot,
+.track > div > div > div > .spot {
+	border-color: #ddd;
+}
+
+.pool > div > .spot.hoverable.hover,
+.track > div > div > .spot.hoverable.hover,
+.track > div > div > div > .spot.hoverable.hover,
+.grid > div > .spot.hoverable.hover > div > .stack,
+.item .spot.hoverable.hover {
+/*%%
+.pool > div > .spot.hoverable:hover,
+.track > div > div > .spot.hoverable:hover,
+.track > div > div > div > .spot.hoverable:hover,
+.grid > div > .spot.hoverable:hover > div > .stack,
+.item .spot.hoverable:hover {
+*/
+	border: dashed 2px black;
+}
+
+.pool > div > .spot.friendHover,
+.track > div > div > .spot.friendHover,
+.track > div > div > div > .spot.friendHover,
+.grid > div > .spot.friendHover > div > .stack,
+.item .spot.friendHover {
+	border: dashed 2px #bbb;
+}
+
+.pool > div > .spot.highlight,
+.track > div > div > .spot.highlight,
+.track > div > div > div > .spot.highlight,
+.grid > div > .spot.highlight > div > .stack,
+.item .spot.highlight {
+	border: solid 2px #ff6347;
+}
