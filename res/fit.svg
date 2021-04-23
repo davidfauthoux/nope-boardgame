@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" style="fill: transparent; stroke: #fff;" viewBox="0 0 512 512">
+	<path stroke-width="40" stroke-miterlimit="10" d="M426.1,485.5H85.9c-32.7,0-59.4-26.7-59.4-59.4
+		V85.9c0-32.7,26.7-59.4,59.4-59.4h340.2c32.7,0,59.4,26.7,59.4,59.4v340.2C485.5,458.8,458.8,485.5,426.1,485.5z"/>
+	<line stroke-width="40" stroke-linecap="round" stroke-miterlimit="10" x1="95" y1="95" x2="197" y2="197"/>
+	<line stroke-width="40" stroke-linecap="round" stroke-miterlimit="10" x1="95" y1="174.2" x2="95" y2="95"/>
+	<line stroke-width="40" stroke-linecap="round" stroke-miterlimit="10" x1="174.2" y1="95" x2="95" y2="95"/>
+	<line stroke-width="40" stroke-linecap="round" stroke-miterlimit="10" x1="417" y1="95" x2="315" y2="197"/>
+	<line stroke-width="40" stroke-linecap="round" stroke-miterlimit="10" x1="337.8" y1="95" x2="417" y2="95"/>
+	<line stroke-width="40" stroke-linecap="round" stroke-miterlimit="10" x1="417" y1="174.2" x2="417" y2="95"/>
+	<line stroke-width="40" stroke-linecap="round" stroke-miterlimit="10" x1="417" y1="417" x2="315" y2="315"/>
+	<line stroke-width="40" stroke-linecap="round" stroke-miterlimit="10" x1="417" y1="337.8" x2="417" y2="417"/>
+	<line stroke-width="40" stroke-linecap="round" stroke-miterlimit="10" x1="337.8" y1="417" x2="417" y2="417"/>
+	<line stroke-width="40" stroke-linecap="round" stroke-miterlimit="10" x1="95" y1="417" x2="197" y2="315"/>
+	<line stroke-width="40" stroke-linecap="round" stroke-miterlimit="10" x1="174.2" y1="417" x2="95" y2="417"/>
+	<line stroke-width="40" stroke-linecap="round" stroke-miterlimit="10" x1="95" y1="337.8" x2="95" y2="417"/>
+</svg>
