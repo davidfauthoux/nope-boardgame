@@ -1,8 +1,7 @@
-
-"use strict"
+"use strict";
 
 class FaceChangeButton {
-/*%%%%%%%%%%%%%%
+  /*%%%%%%%%%%%%%%
 class FaceChangeButton {
 	constructor(layout, game, callback) {
 		var that = this;
@@ -214,37 +213,58 @@ FaceChangeButton._delay = 500;
 
 FaceChangeButton._size = 150;
 
-FaceChangeButton.webcam = function(callback) {
-	var acquire = VideoIcon._acquire("video");
-	acquire.acquire(function(acquireId, stream) {
-		if ((stream === null) || stream._dead) {
-			callback(null);
-			return;
-		}
+FaceChangeButton.webcam = function (callback) {
+  var acquire = VideoIcon._acquire("video");
+  acquire.acquire(function (acquireId, stream) {
+    if (stream === null || stream._dead) {
+      callback(null);
+      return;
+    }
 
-		var video = $("<video muted autoplay playsinline>");
-		video.css({ position: "absolute", top: "0", left: "0", opacity: "0" });
-		// $("body").append(video);
-		video[0].srcObject = stream;
-		var size = stream._size;
+    var video = $("<video muted autoplay playsinline>");
+    video.css({ position: "absolute", top: "0", left: "0", opacity: "0" });
+    // $("body").append(video);
+    video[0].srcObject = stream;
+    var size = stream._size;
 
-		setTimeout(function() {
-			var canvas = $("<canvas>")[0];
-			var ctx = canvas.getContext("2d");
-			canvas.width = FaceChangeButton._size;
-			canvas.height = canvas.width * size.height / size.width;
-			ctx.drawImage(video[0], 0, 0, size.width, size.height, 0, 0, canvas.width, canvas.height);
+    setTimeout(function () {
+      var canvas = $("<canvas>")[0];
+      var ctx = canvas.getContext("2d");
+      canvas.width = FaceChangeButton._size;
+      canvas.height = (canvas.width * size.height) / size.width;
+      ctx.drawImage(
+        video[0],
+        0,
+        0,
+        size.width,
+        size.height,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+      );
 
-			var resizedFace = canvas.toDataURL("image/jpeg");
+      var resizedFace = canvas.toDataURL("image/jpeg");
 
-			acquire.stop(acquireId);
+      acquire.stop(acquireId);
 
-			// video.remove();
-			callback(resizedFace);
-		}, 1000);
-	});
+      // video.remove();
+      callback(resizedFace);
+    }, 1000);
+  });
 };
 
-FaceChangeButton.folder = function(callback) {
-	ImageUtils.toUrl(ImageUtils.toCanvas(ImageUtils.fromBlob(UploadUtils.fromComputer("image/*")), ImageUtils.limit(ImageUtils.identity(), FaceChangeButton._size, FaceChangeButton._size))).res(callback).run();
+FaceChangeButton.folder = function (callback) {
+  ImageUtils.toUrl(
+    ImageUtils.toCanvas(
+      ImageUtils.fromBlob(UploadUtils.fromComputer("image/*")),
+      ImageUtils.limit(
+        ImageUtils.identity(),
+        FaceChangeButton._size,
+        FaceChangeButton._size
+      )
+    )
+  )
+    .res(callback)
+    .run();
 };

@@ -1,29 +1,34 @@
-"use strict"
+"use strict";
 
 class Pool {
-	constructor(layout, game, name, properties) {
-		this._game = game;
-		this.name = name;
-		this.properties = properties;
-	
-		layout.$.addClass("pool").addClass("pool-" + name);
+  constructor(layout, game, name, properties) {
+    this._game = game;
+    this.name = name;
+    this.properties = properties;
 
-		var i = name.indexOf('-');
-		if (i >= 0) {
-			layout.$.addClass("pool-" + name.substring(0, i) + "-_");
-		}
+    layout.$.addClass("pool").addClass("pool-" + name);
 
-		layout.$.addClass("pool-" + properties.layout);
+    var i = name.indexOf("-");
+    if (i >= 0) {
+      layout.$.addClass("pool-" + name.substring(0, i) + "-_");
+    }
 
-		this.$ = layout.$;
+    layout.$.addClass("pool-" + properties.layout);
 
-		this.spot = {
-			spot: new Spot(layout.layout().inside(), game, "pool-" + name, properties)
-		};
-		game.spotManager.registerSpot(this.spot.spot);
-	}
+    this.$ = layout.$;
 
-	destroy() {
-		this._game.spotManager.unregisterSpot(this.spot.spot);
-	}
+    this.spot = {
+      spot: new Spot(
+        layout.layout().inside(),
+        game,
+        "pool-" + name,
+        properties
+      ),
+    };
+    game.spotManager.registerSpot(this.spot.spot);
+  }
+
+  destroy() {
+    this._game.spotManager.unregisterSpot(this.spot.spot);
+  }
 }

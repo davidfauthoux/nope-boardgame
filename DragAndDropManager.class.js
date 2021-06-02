@@ -1,175 +1,218 @@
-"use strict"
+"use strict";
 
 class DragAndDropManager {
-	constructor(game) {
-		this._game = game;
+  constructor(game) {
+    this._game = game;
 
-		var selectedItemInstance = null;
-		var draggingItemInstance = null;
-		var draggingDiv = null;
+    var selectedItemInstance = null;
+    var draggingItemInstance = null;
+    var draggingDiv = null;
 
-		var setAllSpotsHoverable = function() {
-			game.spotManager.each(function(spot) {
-				spot.$.addClass("hoverable");
-				spot.eachItemInstances(function(item) {
-					item.$.removeClass("hoverable");
-				});
-			});
-		};
-		var setAllItemsHoverable = function() {
-			game.spotManager.each(function(spot) {
-				spot.$.removeClass("hoverable");
-				spot.eachItemInstances(function(item) {
-					if (item.item.properties.steady === undefined) {
-						item.$.addClass("hoverable");
-					}
-				});
-			});
-		};
+    var setAllSpotsHoverable = function () {
+      game.spotManager.each(function (spot) {
+        spot.$.addClass("hoverable");
+        spot.eachItemInstances(function (item) {
+          item.$.removeClass("hoverable");
+        });
+      });
+    };
+    var setAllItemsHoverable = function () {
+      game.spotManager.each(function (spot) {
+        spot.$.removeClass("hoverable");
+        spot.eachItemInstances(function (item) {
+          if (item.item.properties.steady === undefined) {
+            item.$.addClass("hoverable");
+          }
+        });
+      });
+    };
 
-		var unselect = function() {
-			if (selectedItemInstance !== null) {
-				selectedItemInstance.$.removeClass("selected");
-				selectedItemInstance = null;
-				game.chatManager.sendChat({
-					type: "select"
-				});
-			}
-			setAllItemsHoverable();
-		};
+    var unselect = function () {
+      if (selectedItemInstance !== null) {
+        selectedItemInstance.$.removeClass("selected");
+        selectedItemInstance = null;
+        game.chatManager.sendChat({
+          type: "select",
+        });
+      }
+      setAllItemsHoverable();
+    };
 
-		var selectItem = function(itemInstance) {
-			console.log("Item selected: " + itemInstance.item.kind + " in: " + itemInstance.spot.location);
-			unselect();
-			selectedItemInstance = itemInstance.spot.getItemInstance(itemInstance.item.kind);
-			if (selectedItemInstance !== null) {
-				selectedItemInstance.$.addClass("selected");
-				setAllSpotsHoverable();
+    var selectItem = function (itemInstance) {
+      console.log(
+        "Item selected: " +
+          itemInstance.item.kind +
+          " in: " +
+          itemInstance.spot.location
+      );
+      unselect();
+      selectedItemInstance = itemInstance.spot.getItemInstance(
+        itemInstance.item.kind
+      );
+      if (selectedItemInstance !== null) {
+        selectedItemInstance.$.addClass("selected");
+        setAllSpotsHoverable();
 
-				game.chatManager.sendChat({
-					type: "select",
-					kind: selectedItemInstance.item.kind,
-					spot: selectedItemInstance.spot.location
-				});
-			}
-		};
+        game.chatManager.sendChat({
+          type: "select",
+          kind: selectedItemInstance.item.kind,
+          spot: selectedItemInstance.spot.location,
+        });
+      }
+    };
 
-		var selectSpot = function(spot) {
-			console.log("Spot selected: " + spot.location);
-			if ((selectedItemInstance === null) && (draggingItemInstance !== null)) {
-				selectItem(draggingItemInstance);
-			}
-			if (selectedItemInstance !== null) {
-				var itemInstance = selectedItemInstance.spot.getItemInstance(selectedItemInstance.item.kind);
+    var selectSpot = function (spot) {
+      console.log("Spot selected: " + spot.location);
+      if (selectedItemInstance === null && draggingItemInstance !== null) {
+        selectItem(draggingItemInstance);
+      }
+      if (selectedItemInstance !== null) {
+        var itemInstance = selectedItemInstance.spot.getItemInstance(
+          selectedItemInstance.item.kind
+        );
 
-				var checkIfContains = function(instanceToCheck, ifContainsSpot) {
-					var contains = false;
-					Utils.each(instanceToCheck._extraSpots, function(iiExtraSpot) {
-						if (contains) {
-							return true;
-						}
-						if (iiExtraSpot.location === ifContainsSpot.location) {
-							contains = true;
-						}
-						if (contains) {
-							return;
-						}
-						iiExtraSpot.eachItemInstances(function(containedInstance) {
-							if (contains) {
-								return;
-							}
-							if (checkIfContains(containedInstance, ifContainsSpot)) {
-								contains = true;
-							}
-						});
-					});
-					return contains;
-				};
-				if (checkIfContains(itemInstance, spot)) {
-					itemInstance = null;
-				}
+        var checkIfContains = function (instanceToCheck, ifContainsSpot) {
+          var contains = false;
+          Utils.each(instanceToCheck._extraSpots, function (iiExtraSpot) {
+            if (contains) {
+              return true;
+            }
+            if (iiExtraSpot.location === ifContainsSpot.location) {
+              contains = true;
+            }
+            if (contains) {
+              return;
+            }
+            iiExtraSpot.eachItemInstances(function (containedInstance) {
+              if (contains) {
+                return;
+              }
+              if (checkIfContains(containedInstance, ifContainsSpot)) {
+                contains = true;
+              }
+            });
+          });
+          return contains;
+        };
+        if (checkIfContains(itemInstance, spot)) {
+          itemInstance = null;
+        }
 
-				if (itemInstance !== null) {
-					if (itemInstance.infinite) {
-						console.log("Item dropped: " + selectedItemInstance.item.kind + " to: " + spot.location);
-						ExecutionContext.stackAndTrigger(game, {
-							action: "drop",
-							kind: selectedItemInstance.item.kind,
-							location: spot.location,
-							count: 1
-						}, null, spot, selectedItemInstance.item);
-					} else { // if (selectedItemInstance.spot.location !== spot.location) {
-						console.log("Item moved: " + selectedItemInstance.item.kind + " from: " + selectedItemInstance.spot.location + " to: " + spot.location);
-						ExecutionContext.stackAndTrigger(game, {
-							action: "move",
-							kind: selectedItemInstance.item.kind,
-							location: selectedItemInstance.spot.location,
-							to: spot.location,
-							count: 1
-						}, selectedItemInstance.spot, spot, selectedItemInstance.item);
-					}
-				}
-			}
+        if (itemInstance !== null) {
+          if (itemInstance.infinite) {
+            console.log(
+              "Item dropped: " +
+                selectedItemInstance.item.kind +
+                " to: " +
+                spot.location
+            );
+            ExecutionContext.stackAndTrigger(
+              game,
+              {
+                action: "drop",
+                kind: selectedItemInstance.item.kind,
+                location: spot.location,
+                count: 1,
+              },
+              null,
+              spot,
+              selectedItemInstance.item
+            );
+          } else {
+            // if (selectedItemInstance.spot.location !== spot.location) {
+            console.log(
+              "Item moved: " +
+                selectedItemInstance.item.kind +
+                " from: " +
+                selectedItemInstance.spot.location +
+                " to: " +
+                spot.location
+            );
+            ExecutionContext.stackAndTrigger(
+              game,
+              {
+                action: "move",
+                kind: selectedItemInstance.item.kind,
+                location: selectedItemInstance.spot.location,
+                to: spot.location,
+                count: 1,
+              },
+              selectedItemInstance.spot,
+              spot,
+              selectedItemInstance.item
+            );
+          }
+        }
+      }
 
-			unselect();
-		};
+      unselect();
+    };
 
-		var createDragging = function(position, itemInstance) {
-			unselect();
+    var createDragging = function (position, itemInstance) {
+      unselect();
 
-			if (itemInstance.item.properties.random !== undefined) {
-				var items = [];
-				itemInstance.spot.eachItemInstances(function(itemInSpot) {
-					if ((itemInSpot.item.properties.random !== undefined) || (itemInSpot.item.properties.script !== undefined) || itemInSpot.item.infinite || (itemInSpot.item.properties.hidden !== undefined)) {
-						return;
-					}
-					Utils.loop(0, itemInSpot.count, 1, function() {
-						items.push(itemInSpot);
-					});
-				});
-				if (items.length === 0) {
-					// If spot empty, we can drag the "random" item
-				} else {
-					itemInstance = items[Utils.random(items.length)];
-				}
-			}
+      if (itemInstance.item.properties.random !== undefined) {
+        var items = [];
+        itemInstance.spot.eachItemInstances(function (itemInSpot) {
+          if (
+            itemInSpot.item.properties.random !== undefined ||
+            itemInSpot.item.properties.script !== undefined ||
+            itemInSpot.item.infinite ||
+            itemInSpot.item.properties.hidden !== undefined
+          ) {
+            return;
+          }
+          Utils.loop(0, itemInSpot.count, 1, function () {
+            items.push(itemInSpot);
+          });
+        });
+        if (items.length === 0) {
+          // If spot empty, we can drag the "random" item
+        } else {
+          itemInstance = items[Utils.random(items.length)];
+        }
+      }
 
-			var overlayLayout = game.overlay.overlay();
-			draggingItemInstance = itemInstance.item.createInstance(overlayLayout.packed(), false, null);
-			draggingItemInstance.spot = itemInstance.spot;
-			draggingDiv = overlayLayout.$.addClass("drag");
+      var overlayLayout = game.overlay.overlay();
+      draggingItemInstance = itemInstance.item.createInstance(
+        overlayLayout.packed(),
+        false,
+        null
+      );
+      draggingItemInstance.spot = itemInstance.spot;
+      draggingDiv = overlayLayout.$.addClass("drag");
 
-			selectItem(draggingItemInstance);
+      selectItem(draggingItemInstance);
 
-			game.chatManager.sendChat({
-				type: "drag",
-				kind: draggingItemInstance.item.kind
-			});
-		};
+      game.chatManager.sendChat({
+        type: "drag",
+        kind: draggingItemInstance.item.kind,
+      });
+    };
 
-		var updateDragging = function(position, itemInstance) {
-			if (draggingDiv !== null) {
-				var mousePoint = game.overlay.mouse(position);
-				// console.log("Dragging " + mousePoint.x + ", " + mousePoint.y);
-				draggingDiv.css({
-					top: mousePoint.y,
-					left: mousePoint.x
-				});
-			}
-		};
+    var updateDragging = function (position, itemInstance) {
+      if (draggingDiv !== null) {
+        var mousePoint = game.overlay.mouse(position);
+        // console.log("Dragging " + mousePoint.x + ", " + mousePoint.y);
+        draggingDiv.css({
+          top: mousePoint.y,
+          left: mousePoint.x,
+        });
+      }
+    };
 
-		var destroyDragging = function() {
-			if (draggingItemInstance !== null) {
-				draggingDiv.remove();
-				game.chatManager.sendChat({
-					type: "drag"
-				});
-			}
-			draggingDiv = null;
-			draggingItemInstance = null;
-		};
-		
-/*%%%%%%%%
+    var destroyDragging = function () {
+      if (draggingItemInstance !== null) {
+        draggingDiv.remove();
+        game.chatManager.sendChat({
+          type: "drag",
+        });
+      }
+      draggingDiv = null;
+      draggingItemInstance = null;
+    };
+
+    /*%%%%%%%%
 		var body = $("body");
 
 		var sendChatThrottle = new Throttle();
@@ -382,89 +425,89 @@ class DragAndDropManager {
 		body[0].addEventListener("touchstart", delayCancelDragging);
 		this._reconfigureBodyMouseup();
 %%%%%%%%%%%%%*/
-		//
+    //
 
-		var sendChatThrottle = new Throttle();
-		var sendMousePositionToChat = function(position, d) {
-			sendChatThrottle.execute(function() {
-				var mousePoint = game.overlay.mouse(position);
-				var offset = game.overlay.offset(d);
-				var id = d.attr("data-id");
-				game.chatManager.sendChat({
-					type: "move",
-					x: Math.round(mousePoint.x - offset.x),
-					y: Math.round(mousePoint.y - offset.y),
-					ref: id
-				});
-			});
-		};
+    var sendChatThrottle = new Throttle();
+    var sendMousePositionToChat = function (position, d) {
+      sendChatThrottle.execute(function () {
+        var mousePoint = game.overlay.mouse(position);
+        var offset = game.overlay.offset(d);
+        var id = d.attr("data-id");
+        game.chatManager.sendChat({
+          type: "move",
+          x: Math.round(mousePoint.x - offset.x),
+          y: Math.round(mousePoint.y - offset.y),
+          ref: id,
+        });
+      });
+    };
 
-		var sendHoverToChat = function(d) {
-			if ((d === undefined) || !d.hasClass("hoverable")) {
-				game.chatManager.sendChat({
-					type: "over"
-				});
-				return;
-			}
+    var sendHoverToChat = function (d) {
+      if (d === undefined || !d.hasClass("hoverable")) {
+        game.chatManager.sendChat({
+          type: "over",
+        });
+        return;
+      }
 
-			var id = d.attr("data-id");
-			game.chatManager.sendChat({
-				type: "over",
-				ref: id
-			});
-		};
+      var id = d.attr("data-id");
+      game.chatManager.sendChat({
+        type: "over",
+        ref: id,
+      });
+    };
 
-		var cancelDragging = function() {
-			destroyDragging();
-			unselect();
-		};
+    var cancelDragging = function () {
+      destroyDragging();
+      unselect();
+    };
 
-		this._spotReleased = function(spot) {
-			selectSpot(spot);
-			destroyDragging();
-		};
-		this._spotHoverOn = function(position, spot) {
-			sendHoverToChat(spot.$);
-			game.triggerManager.hoverOnSpot(spot);
-		};
-		this._spotHoverOff = function(spot) {
-			sendHoverToChat();
-			game.triggerManager.hoverOff();
-		};
-		this._spotHoverMove = function(position, spot) {
-			sendMousePositionToChat(position, spot.$);
-		};
-		this._itemPressed = function(position, itemInstance) {
-			cancelDragging();
-			createDragging(position, itemInstance);
-			updateDragging(position, itemInstance);
-		};
-		this._itemMoved = function(position, itemInstance) {
-			updateDragging(position, itemInstance);
-		};
-		this._itemReleased = function(itemInstance) {
-			cancelDragging();
-		};
-		this._itemClicked = function(itemInstance) {
-			selectItem(itemInstance);
-			selectSpot(itemInstance.spot);
-		};
-		this._itemHoverOn = function(position, itemInstance) {
-			sendHoverToChat(itemInstance.$);
-			game.triggerManager.hoverOnItem(itemInstance);
-		};
-		this._itemHoverOff = function(itemInstance) {
-			sendHoverToChat();
-			game.triggerManager.hoverOff();
-		};
-		this._itemHoverMove = function(position, itemInstance) {
-			sendMousePositionToChat(position, itemInstance.$);
-		};
-	}
-	
-	configureSpot(spot) {
-		var that = this;
-		/*%%%%%%%%%%%%%%%%%%%%%%%%%
+    this._spotReleased = function (spot) {
+      selectSpot(spot);
+      destroyDragging();
+    };
+    this._spotHoverOn = function (position, spot) {
+      sendHoverToChat(spot.$);
+      game.triggerManager.hoverOnSpot(spot);
+    };
+    this._spotHoverOff = function (spot) {
+      sendHoverToChat();
+      game.triggerManager.hoverOff();
+    };
+    this._spotHoverMove = function (position, spot) {
+      sendMousePositionToChat(position, spot.$);
+    };
+    this._itemPressed = function (position, itemInstance) {
+      cancelDragging();
+      createDragging(position, itemInstance);
+      updateDragging(position, itemInstance);
+    };
+    this._itemMoved = function (position, itemInstance) {
+      updateDragging(position, itemInstance);
+    };
+    this._itemReleased = function (itemInstance) {
+      cancelDragging();
+    };
+    this._itemClicked = function (itemInstance) {
+      selectItem(itemInstance);
+      selectSpot(itemInstance.spot);
+    };
+    this._itemHoverOn = function (position, itemInstance) {
+      sendHoverToChat(itemInstance.$);
+      game.triggerManager.hoverOnItem(itemInstance);
+    };
+    this._itemHoverOff = function (itemInstance) {
+      sendHoverToChat();
+      game.triggerManager.hoverOff();
+    };
+    this._itemHoverMove = function (position, itemInstance) {
+      sendMousePositionToChat(position, itemInstance.$);
+    };
+  }
+
+  configureSpot(spot) {
+    var that = this;
+    /*%%%%%%%%%%%%%%%%%%%%%%%%%
 		var div = spot.$;
 		// div.off();
 
@@ -485,28 +528,33 @@ class DragAndDropManager {
 		;
 		*/
 
-		UserInteraction.get().release(spot.$, function() {
-			console.log("Spot released: " + spot.location);
-			that._spotReleased(spot);
-		});
+    UserInteraction.get().release(spot.$, function () {
+      console.log("Spot released: " + spot.location);
+      that._spotReleased(spot);
+    });
 
-		UserInteraction.get().hover(spot.$, function(e) {
-			that._spotHoverOn(e, spot);
-		}, function() {
-			that._spotHoverOff(spot);
-		}, function(e) {
-			that._spotHoverMove(e, spot);
-		});
-	}
-	unconfigureSpot(spot) {
-		UserInteraction.get().off(spot.$);
-	}
+    UserInteraction.get().hover(
+      spot.$,
+      function (e) {
+        that._spotHoverOn(e, spot);
+      },
+      function () {
+        that._spotHoverOff(spot);
+      },
+      function (e) {
+        that._spotHoverMove(e, spot);
+      }
+    );
+  }
+  unconfigureSpot(spot) {
+    UserInteraction.get().off(spot.$);
+  }
 
-	configureItemInstance(itemInstance) {
-		var that = this;
-		itemInstance.$.addClass("hoverable");
+  configureItemInstance(itemInstance) {
+    var that = this;
+    itemInstance.$.addClass("hoverable");
 
-		/*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 		var div = itemInstance.$;
 		//%% if (itemInstance.item.properties.steady === undefined) {
 
@@ -589,28 +637,38 @@ class DragAndDropManager {
 		;
 		*/
 
-		UserInteraction.get().drag(itemInstance.$, function(e) {
-			that._itemPressed(e, itemInstance);
-		}, function(e) {
-			that._itemMoved(e, itemInstance);
-		}, function() {
-			that._itemReleased(itemInstance);
-		});
+    UserInteraction.get().drag(
+      itemInstance.$,
+      function (e) {
+        that._itemPressed(e, itemInstance);
+      },
+      function (e) {
+        that._itemMoved(e, itemInstance);
+      },
+      function () {
+        that._itemReleased(itemInstance);
+      }
+    );
 
-		UserInteraction.get().click(itemInstance.$, function() {
-			console.log("Item clicked: " + itemInstance.item.kind);
-			that._itemClicked(itemInstance);
-		});
+    UserInteraction.get().click(itemInstance.$, function () {
+      console.log("Item clicked: " + itemInstance.item.kind);
+      that._itemClicked(itemInstance);
+    });
 
-		UserInteraction.get().hover(itemInstance.$, function(e) {
-			that._itemHoverOn(e, itemInstance);
-		}, function() {
-			that._itemHoverOff(itemInstance);
-		}, function(e) {
-			that._itemHoverMove(e, itemInstance);
-		});
-	}
-	unconfigureItemInstance(itemInstance) {
-		UserInteraction.get().off(itemInstance.$);
-	}
+    UserInteraction.get().hover(
+      itemInstance.$,
+      function (e) {
+        that._itemHoverOn(e, itemInstance);
+      },
+      function () {
+        that._itemHoverOff(itemInstance);
+      },
+      function (e) {
+        that._itemHoverMove(e, itemInstance);
+      }
+    );
+  }
+  unconfigureItemInstance(itemInstance) {
+    UserInteraction.get().off(itemInstance.$);
+  }
 }

@@ -1,107 +1,120 @@
-"use strict"
+"use strict";
 
 class Grid {
-	constructor(layout, game, name, type, auto, width, height) {
-		this._game = game;
-		this.name = name;
-		this.type = type;
-		this.auto = auto;
-		this.width = width;
-		this.height = height;
+  constructor(layout, game, name, type, auto, width, height) {
+    this._game = game;
+    this.name = name;
+    this.type = type;
+    this.auto = auto;
+    this.width = width;
+    this.height = height;
 
-		this.left = 0;
-		this.top = 0;
-		this.minWidth = width;
-		this.minHeight = height;
+    this.left = 0;
+    this.top = 0;
+    this.minWidth = width;
+    this.minHeight = height;
 
-		this._cellContent = $(SvgUtils.polygon(type, 0.01)).addClass("gridCellContent");
-		this._willUngrowTimeoutId = null;
+    this._cellContent = $(SvgUtils.polygon(type, 0.01)).addClass(
+      "gridCellContent"
+    );
+    this._willUngrowTimeoutId = null;
 
-		layout.$.addClass("grid").addClass("grid-type-" + type).addClass("grid-" + name);
+    layout.$.addClass("grid")
+      .addClass("grid-type-" + type)
+      .addClass("grid-" + name);
 
-		this.$ = layout.$;
-		this._layout = layout;
-		this.spots = [];
+    this.$ = layout.$;
+    this._layout = layout;
+    this.spots = [];
 
-		if (this.auto) {
-			var that = this;
-			this._game.spotManager.registerGenerate("grid-" + this.name + "-", function(suffix) {
-				var ij = that.parseSpotLocation(suffix);
-				//that.grow(ij.i, ij.j);
-				that.grow(ij.i - 1, ij.j - 1);
-				that.grow(ij.i + 1, ij.j + 1);
-			});
-		}
+    if (this.auto) {
+      var that = this;
+      this._game.spotManager.registerGenerate(
+        "grid-" + this.name + "-",
+        function (suffix) {
+          var ij = that.parseSpotLocation(suffix);
+          //that.grow(ij.i, ij.j);
+          that.grow(ij.i - 1, ij.j - 1);
+          that.grow(ij.i + 1, ij.j + 1);
+        }
+      );
+    }
 
-		this.reset();
-	}
+    this.reset();
+  }
 
-	parseSpotLocation(l) {
-		var s = l.split(/\-/g);
-		var ii = s[0];
-		var i;
-		if ((ii.length > 1) && ii.startsWith('0')) {
-			i = -parseInt(ii.substring(1));
-		} else {
-			i = parseInt(ii);
-		}
-		var jj = s[1];
-		var j;
-		if ((jj.length > 1) && jj.startsWith('0')) {
-			j = -parseInt(jj.substring(1));
-		} else {
-			j = parseInt(jj);
-		}
-		return {
-			i: i,
-			j: j
-		};
-	}
+  parseSpotLocation(l) {
+    var s = l.split(/\-/g);
+    var ii = s[0];
+    var i;
+    if (ii.length > 1 && ii.startsWith("0")) {
+      i = -parseInt(ii.substring(1));
+    } else {
+      i = parseInt(ii);
+    }
+    var jj = s[1];
+    var j;
+    if (jj.length > 1 && jj.startsWith("0")) {
+      j = -parseInt(jj.substring(1));
+    } else {
+      j = parseInt(jj);
+    }
+    return {
+      i: i,
+      j: j,
+    };
+  }
 
-	_spotLocation(i, j) {
-		return ((i < 0) ? ("0" + (-i)) : i) + "-" + ((j < 0) ? ("0" + (-j)) : j);
-	}
+  _spotLocation(i, j) {
+    return (i < 0 ? "0" + -i : i) + "-" + (j < 0 ? "0" + -j : j);
+  }
 
-	rowWidth(j) {
-		return this.width - ((this.type === 6) ? (1 - (Math.abs(j) % 2)) : 0);
-	}
+  rowWidth(j) {
+    return this.width - (this.type === 6 ? 1 - (Math.abs(j) % 2) : 0);
+  }
 
-	reset() {
-		var that = this;
+  reset() {
+    var that = this;
 
-		Utils.each(this.spots, function(row) {
-			row.layout.$.remove();
-			Utils.each(row.row, function(spot) {
-				that._game.spotManager.unregisterSpot(spot.spot);
-			});
-		});
+    Utils.each(this.spots, function (row) {
+      row.layout.$.remove();
+      Utils.each(row.row, function (spot) {
+        that._game.spotManager.unregisterSpot(spot.spot);
+      });
+    });
 
-		this.spots = [];
+    this.spots = [];
 
-		this.left = 0;
-		this.top = 0;
-		this.width = this.minWidth;
-		this.height = this.minHeight;
+    this.left = 0;
+    this.top = 0;
+    this.width = this.minWidth;
+    this.height = this.minHeight;
 
-		Utils.loop(0, this.height, 1, function(j) {
-			var rowLayout = that._layout.vertical().add();
-			var row = [];
-			that.spots.push({
-				layout: rowLayout,
-				row: row
-			});
-			var w = that.rowWidth(j);
-			Utils.loop(0, w, 1, function(i) {
-				var spot = new Spot(rowLayout.horizontal().add(), that._game, "grid-" + that.name + "-" + that._spotLocation(i, j), { overlayable: true, layout: "stack" }, that._cellContent.clone());
-				that._game.spotManager.registerSpot(spot);
-				row.push({
-					spot: spot
-				});
-			});
-		});
-	}
+    Utils.loop(0, this.height, 1, function (j) {
+      var rowLayout = that._layout.vertical().add();
+      var row = [];
+      that.spots.push({
+        layout: rowLayout,
+        row: row,
+      });
+      var w = that.rowWidth(j);
+      Utils.loop(0, w, 1, function (i) {
+        var spot = new Spot(
+          rowLayout.horizontal().add(),
+          that._game,
+          "grid-" + that.name + "-" + that._spotLocation(i, j),
+          { overlayable: true, layout: "stack" },
+          that._cellContent.clone()
+        );
+        that._game.spotManager.registerSpot(spot);
+        row.push({
+          spot: spot,
+        });
+      });
+    });
+  }
 
-/*%
+  /*%
 	_ungrow() {
 		var that = this;
 		var previousEmpty = true;
@@ -227,111 +240,135 @@ class Grid {
 	}
 */
 
-	growDown() {
-		this.height++;
+  growDown() {
+    this.height++;
 
-		var that = this;
-		var rowLayout = this._layout.vertical().add();
-		var row = [];
-		this.spots.push({
-			layout: rowLayout,
-			row: row
-		});
-		var j = this.height - 1 + this.top;
-		var w = this.rowWidth(j);
-		Utils.loop(this.left, w + this.left, 1, function(i) {
-			var spot = new Spot(rowLayout.horizontal().add(), that._game, "grid-" + that.name + "-" + that._spotLocation(i, j), { overlayable: true, layout: "stack" }, that._cellContent.clone());
-			that._game.spotManager.registerSpot(spot);
-			row.push({
-				spot: spot
-			});
-		});
-	}
-	growUp() {
-		this.top--;
-		this.height++;
+    var that = this;
+    var rowLayout = this._layout.vertical().add();
+    var row = [];
+    this.spots.push({
+      layout: rowLayout,
+      row: row,
+    });
+    var j = this.height - 1 + this.top;
+    var w = this.rowWidth(j);
+    Utils.loop(this.left, w + this.left, 1, function (i) {
+      var spot = new Spot(
+        rowLayout.horizontal().add(),
+        that._game,
+        "grid-" + that.name + "-" + that._spotLocation(i, j),
+        { overlayable: true, layout: "stack" },
+        that._cellContent.clone()
+      );
+      that._game.spotManager.registerSpot(spot);
+      row.push({
+        spot: spot,
+      });
+    });
+  }
+  growUp() {
+    this.top--;
+    this.height++;
 
-		var that = this;
-		var rowLayout = this._layout.vertical().predd();
-		var row = [];
-		this.spots.splice(0, 0, {
-			layout: rowLayout,
-			row: row
-		});
-		var j = this.top;
-		var w = this.rowWidth(j);
-		Utils.loop(this.left, w + this.left, 1, function(i) {
-			var spot = new Spot(rowLayout.horizontal().add(), that._game, "grid-" + that.name + "-" + that._spotLocation(i, j), { overlayable: true, layout: "stack" }, that._cellContent.clone());
-			that._game.spotManager.registerSpot(spot);
-			row.push({
-				spot: spot
-			});
-		});
-	}
+    var that = this;
+    var rowLayout = this._layout.vertical().predd();
+    var row = [];
+    this.spots.splice(0, 0, {
+      layout: rowLayout,
+      row: row,
+    });
+    var j = this.top;
+    var w = this.rowWidth(j);
+    Utils.loop(this.left, w + this.left, 1, function (i) {
+      var spot = new Spot(
+        rowLayout.horizontal().add(),
+        that._game,
+        "grid-" + that.name + "-" + that._spotLocation(i, j),
+        { overlayable: true, layout: "stack" },
+        that._cellContent.clone()
+      );
+      that._game.spotManager.registerSpot(spot);
+      row.push({
+        spot: spot,
+      });
+    });
+  }
 
-	growRight() {
-		this.width++;
+  growRight() {
+    this.width++;
 
-		var that = this;
-		Utils.loop(this.top, this.height + this.top, 1, function(j) {
-			var r = that.spots[j - that.top];
-			var rowLayout = r.layout;
-			var row = r.row;
-			var w = that.rowWidth(j);
-			var i = w - 1 + that.left;
-			var spot = new Spot(rowLayout.horizontal().add(), that._game, "grid-" + that.name + "-" + that._spotLocation(i, j), { overlayable: true, layout: "stack" }, that._cellContent.clone());
-			that._game.spotManager.registerSpot(spot);
-			row.push({
-				spot: spot
-			});
-		});
-	}
-	growLeft() {
-		this.left--;
-		this.width++;
+    var that = this;
+    Utils.loop(this.top, this.height + this.top, 1, function (j) {
+      var r = that.spots[j - that.top];
+      var rowLayout = r.layout;
+      var row = r.row;
+      var w = that.rowWidth(j);
+      var i = w - 1 + that.left;
+      var spot = new Spot(
+        rowLayout.horizontal().add(),
+        that._game,
+        "grid-" + that.name + "-" + that._spotLocation(i, j),
+        { overlayable: true, layout: "stack" },
+        that._cellContent.clone()
+      );
+      that._game.spotManager.registerSpot(spot);
+      row.push({
+        spot: spot,
+      });
+    });
+  }
+  growLeft() {
+    this.left--;
+    this.width++;
 
-		var that = this;
-		Utils.loop(this.top, this.height + this.top, 1, function(j) {
-			var r = that.spots[j - that.top];
-			var rowLayout = r.layout;
-			var row = r.row;
-			var i = that.left;
-			var spot = new Spot(rowLayout.horizontal().predd(), that._game, "grid-" + that.name + "-" + that._spotLocation(i, j), { overlayable: true, layout: "stack" }, that._cellContent.clone());
-			that._game.spotManager.registerSpot(spot);
-			row.splice(0, 0, {
-				spot: spot
-			});
-		});
-	}
+    var that = this;
+    Utils.loop(this.top, this.height + this.top, 1, function (j) {
+      var r = that.spots[j - that.top];
+      var rowLayout = r.layout;
+      var row = r.row;
+      var i = that.left;
+      var spot = new Spot(
+        rowLayout.horizontal().predd(),
+        that._game,
+        "grid-" + that.name + "-" + that._spotLocation(i, j),
+        { overlayable: true, layout: "stack" },
+        that._cellContent.clone()
+      );
+      that._game.spotManager.registerSpot(spot);
+      row.splice(0, 0, {
+        spot: spot,
+      });
+    });
+  }
 
-	grow(i, j) {
-		while (j >= (this.height + this.top)) {
-			this.growDown();
-		}
-		while (j < this.top) {
-			this.growUp();
-		}
-		while (i >= (this.rowWidth(j) + this.left)) {
-			this.growRight();
-		}
-		while (i < this.left) {
-			this.growLeft();
-		}
-	}
+  grow(i, j) {
+    while (j >= this.height + this.top) {
+      this.growDown();
+    }
+    while (j < this.top) {
+      this.growUp();
+    }
+    while (i >= this.rowWidth(j) + this.left) {
+      this.growRight();
+    }
+    while (i < this.left) {
+      this.growLeft();
+    }
+  }
 
-	spot(i, j) {
-		if (this.auto) {
-			this.grow(i, j);
-		}
+  spot(i, j) {
+    if (this.auto) {
+      this.grow(i, j);
+    }
 
-		if ((j >= this.top) && (j < (this.height - (-this.top)))) {
-			if ((i >= this.left) && (i < (this.rowWidth(j) - (-this.left)))) {
-				return this.spots[j + (-this.top)].row[i + (-this.left)].spot;
-			} else {
-				return null;
-			}
-		} else {
-			return null;
-		}
-	}
+    if (j >= this.top && j < this.height - -this.top) {
+      if (i >= this.left && i < this.rowWidth(j) - -this.left) {
+        return this.spots[j + -this.top].row[i + -this.left].spot;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
 }
