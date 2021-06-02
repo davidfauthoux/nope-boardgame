@@ -68,9 +68,6 @@ class GameTrack {
         to: new GameSpot(this._stack, this._game, null),
       };
     }
-    if (count === undefined) {
-      count = 1;
-    }
     var lastFound = null;
     var first = null;
     Utils.each(this._track.spots, function (s) {
