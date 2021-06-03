@@ -26,6 +26,7 @@ jobs:
       with:
         # Blob of files to lint
         files: .
+        
     - name: Prettier Action
       # You may pin to the exact commit or the version.
       # uses: creyD/prettier_action@cb975d8aad896ac567efb5dffc07653fb42abdb7
