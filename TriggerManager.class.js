@@ -199,7 +199,7 @@ class TriggerManager {
       if (itemInstance === null) {
         return true;
       }
-      context = Utils.clone(context);
+      context = Utils.clone(context); // TODO how to remove clone ?
       context.action = action;
       var ok = true;
       var checkAndExec = function (k) {

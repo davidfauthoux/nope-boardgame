@@ -4,7 +4,7 @@
   "description": "cd nope\r git clone git@github.com:davidfauthoux/nope-boardgame.git boardgame",
   "main": "Administration.class.js",
   "scripts": {
-    "lint": "eslint --max-warnings=0 ."
+    "lint": "eslint ."
   },
   "repository": {
     "type": "git",
