@@ -6,13 +6,13 @@ class Administration {
     layout.$.addClass("administration");
 
     /*%%
-		button("_debug_force_fit", function() {
-			Layout.fit();
-		});
-		button("_debug_relink", function() {
-			game.chatManager.requestRecreateVideoLinks();
-		});
-		*/
+                button("_debug_force_fit", function() {
+                    Layout.fit();
+                });
+                button("_debug_relink", function() {
+                    game.chatManager.requestRecreateVideoLinks();
+                });
+                */
 
     var layoutStoreKey = Administration.storeKey("layout");
     UserInteraction.get().click(
@@ -45,7 +45,7 @@ class Administration {
     UserInteraction.get().click(
       this._adminLayout.add().$.addClass("iconButton").addClass("logButton"),
       function () {
-        game.newsManager.activate(!game.newsManager.isActive());
+           game.newsManager.activate(!game.newsManager.isActive());
       }
     );
 
