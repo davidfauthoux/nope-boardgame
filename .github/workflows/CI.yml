@@ -15,6 +15,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Clone
-      - run: git clone https://github.com/davidfauthoux/nop.git nop
+      - run: yarn
  
 
