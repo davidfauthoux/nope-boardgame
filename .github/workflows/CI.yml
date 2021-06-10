@@ -15,7 +15,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Clone
-      - run:  git clone https://github.com/davidfauthoux/nop.git nop && 
+      - run:  > 
+              git clone https://github.com/davidfauthoux/nop.git nop && 
               cd nope && 
               git clone git@github.com:davidfauthoux/nope-book.git book &&
               git clone git@github.com:davidfauthoux/nope-tilt.git tilt &&
