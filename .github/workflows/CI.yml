@@ -10,29 +10,39 @@ on:
     branches: [ main ]
 
 jobs:
+  clone:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Clone
+      - run:  git clone https://github.com/davidfauthoux/nop.git nop && 
+              cd nope && 
+              git clone git@github.com:davidfauthoux/nope-book.git book &&
+              git clone git@github.com:davidfauthoux/nope-tilt.git tilt &&
+              git clone git@github.com:davidfauthoux/nope-welcome.git welcome &&
+              git clone git@github.com:davidfauthoux/nope-boardgame.git boardgame &&
+              cd boardgame
+  deps:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+      - run: yarn
+    
   build:
 
     runs-on: ubuntu-latest
-
+    
     
     steps:
     - uses: actions/checkout@v2
-      with :
-        ref: ${{ github.head_ref }}
-        fetch_depth: 0
 
     - name: Run ESLint
       uses: stefanoeb/eslint-action@1.0.2
       with:
         # Blob of files to lint
         files: .
-    - name: Prettier Action
-      # You may pin to the exact commit or the version.
-      # uses: creyD/prettier_action@cb975d8aad896ac567efb5dffc07653fb42abdb7
-      uses: creyD/prettier_action@v3.3
-      with:
-        # Commit message, will be ignored if used with same_commit
-        only_changed: True
+    
  
  
 
