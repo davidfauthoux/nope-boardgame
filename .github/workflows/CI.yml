@@ -34,7 +34,7 @@ jobs:
         # Repository name
           repository: nop
         # PAT with repository scope (https://github.com/settings/tokens)
-          access-token:  ${{ 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 }}
+          access-token:  ${{ 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 }}
   deps:
     runs-on: ubuntu-latest
     steps:
