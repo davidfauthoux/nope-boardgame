@@ -27,7 +27,6 @@ jobs:
       - name: Clone
 
       # You may pin to the exact commit or the version.
-      # uses: GuillaumeFalourd/clone-github-repo-action@d667f8c39e6ac1dd5309ad51b0020657c7a1a296
         uses: GuillaumeFalourd/clone-github-repo-action@v1
         with:
         # Repository Owner
