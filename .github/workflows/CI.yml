@@ -18,7 +18,7 @@ jobs:
         uses: GuillaumeFalourd/clone-github-repo-action@v1
         with:
         # Repository Owner
-          owner:  davidfauthoux 
+          owner: davidfauthoux
         # Repository name
           repository: nop
         # PAT with repository scope (https://github.com/settings/tokens)
