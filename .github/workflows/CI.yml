@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - env: 
+          MY_REPO: ${{ environment.repo }}
       - name: Clone 2
 
       # You may pin to the exact commit or the version.
@@ -22,7 +24,7 @@ jobs:
         # Repository name
           repository: nop
         # PAT with repository scope (https://github.com/settings/tokens)
-          access-token:  ${{ secrets.repo }}
+          access-token: ${{ secrets.MY_REPO }}
       - run : cd nop/nope && pwd
       - name: Clone
 
