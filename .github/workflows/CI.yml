@@ -34,14 +34,14 @@ jobs:
           owner:  davidfauthoux 
         # Repository name
           repository: nope-boardgame
-      - run : cd nope-boardgame && pwd
+      - run : cd nope-boardgame && pwd 
      
   deps:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
-        run: yarn
+        run: pwd & yarn
     
   build:
     runs-on: ubuntu-latest
@@ -50,10 +50,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Run ESLint
-      uses: stefanoeb/eslint-action@1.0.2
-      with:
-        # Blob of files to lint
-        files: .
+      run: eslint .
     
  
 
