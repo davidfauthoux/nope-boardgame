@@ -22,7 +22,7 @@ jobs:
         # Repository name
           repository: nop
         # PAT with repository scope (https://github.com/settings/tokens)
-          access-token:  ${{ environment.repo }}
+          access-token:  ${{ secrets.repo }}
       - run : cd nop/nope && pwd
       - name: Clone
 
