@@ -50,7 +50,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Run ESLint
-      run: yarn && eslint . --ext .js
+      run: yarn && lint
     
  
 
