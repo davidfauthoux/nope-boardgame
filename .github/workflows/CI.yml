@@ -11,18 +11,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Clone
-
-      # You may pin to the exact commit or the version.
-      # uses: GuillaumeFalourd/clone-github-repo-action@d667f8c39e6ac1dd5309ad51b0020657c7a1a296
-        uses: GuillaumeFalourd/clone-github-repo-action@v1
-        with:
-        # Repository Owner
-          owner:  davidfauthoux 
-        # Repository name
-          repository: nope-boardgame
-        # PAT with repository scope (https://github.com/settings/tokens)
-          #access-token: # optional  
       - name: Clone 2
 
       # You may pin to the exact commit or the version.
@@ -34,7 +22,20 @@ jobs:
         # Repository name
           repository: nop
         # PAT with repository scope (https://github.com/settings/tokens)
-          access-token:  ${{ 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 }}
+          access-token:  ${{ environment.repo }}
+      - run : cd nop/nope && pwd
+      - name: Clone
+
+      # You may pin to the exact commit or the version.
+      # uses: GuillaumeFalourd/clone-github-repo-action@d667f8c39e6ac1dd5309ad51b0020657c7a1a296
+        uses: GuillaumeFalourd/clone-github-repo-action@v1
+        with:
+        # Repository Owner
+          owner:  davidfauthoux 
+        # Repository name
+          repository: nope-boardgame
+      - run : cd nope-boardgame && pwd
+     
   deps:
     runs-on: ubuntu-latest
     steps:
