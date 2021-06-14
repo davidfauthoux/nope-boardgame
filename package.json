@@ -15,29 +15,14 @@
   "devDependencies": {
     "eslint": "^7.27.0",
     "eslint-config-prettier": "^8.3.0",
-    "husky": "^6.0.0",
     "lint-staged": "^11.0.0",
     "prettier": "2.3.0"
   },
   "scripts": {
     "lint": "eslint .",
     "prettier": "prettier --check .",
-    "format": "prettier --write ."
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.js": [
-      "prettier --write",
-      "eslint --fix",
-      "git add"
-    ],
-    "*.{html,css}": [
-      "prettier --write",
-      "git add"
-    ]
+    "format": "prettier --write .",
+    "test": "jest"
   }
+
 }
