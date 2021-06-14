@@ -22,12 +22,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
-        run: pwd && yarn
+        run: cd nop/nope/boardgame && pwd && yarn
   test:
      runs-on: ubuntu-latest
      steps:
       - name: Run Tests
-        run: yarn test
+        run: cd nop/nope/boardgame && yarn test
   build:
     runs-on: ubuntu-latest
     
