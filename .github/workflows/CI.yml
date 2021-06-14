@@ -18,10 +18,10 @@ jobs:
         run: cd nop/nope && git clone https://github.com/davidfauthoux/nope-boardgame.git boardgame && cd boardgame && pwd
    
       - name: Install dependencies
-        run:  cd nop/nope/boardgame && cat package.json && yarn install
+        run:  cd nop/nope && cat package.json && yarn install
  
       - name: Run Tests
-        run: cd nop/nope/boardgame && yarn test
+        run: cd nop/nope && yarn test
  
       - name: Run ESLint
         # You may pin to the exact commit or the version.
