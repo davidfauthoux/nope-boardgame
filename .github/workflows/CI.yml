@@ -12,11 +12,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-     
-      - name: Clone
-        run: git clone https://github.com/davidfauthoux/nope-boardgame.git && pwd
       - name: Clone 2
-        run: cd nope-boardgame && git clone https://${{ secrets.REPO }}@github.com/davidfauthoux/nop.git && pwd && cd nop && pwd
+        run:  git clone https://${{ secrets.REPO }}@github.com/davidfauthoux/nop.git nop && pwd && cd nop && pwd
+      - name: Clone
+        run: cd nop/nope && git clone https://github.com/davidfauthoux/nope-boardgame.git boardgame && pwd
+   
   deps:
     runs-on: ubuntu-latest
     steps:
