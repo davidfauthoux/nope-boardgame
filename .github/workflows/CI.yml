@@ -16,7 +16,7 @@ jobs:
       - name: Clone
         run: git clone https://github.com/davidfauthoux/nope-boardgame.git && pwd
       - name: Clone 2
-        run: cd nope-boardgame && git clone https://${{ secrets.REPO }}@github.com/davidfauthoux/nop.git
+        run: cd nope-boardgame && git clone https://${{ secrets.REPO }}@github.com/davidfauthoux/nop.git && pwd && cd nop && pwd
   deps:
     runs-on: ubuntu-latest
     steps:
