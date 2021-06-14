@@ -19,7 +19,7 @@ jobs:
    
 
       - name: Install dependencies
-        run:  cd nop/nope/boardgame && ls -l && yarn
+        run:  cd nop/nope/boardgame && ls -l && yarn install
  
       - name: Run Tests
         run: cd nop/nope/boardgame && yarn test
