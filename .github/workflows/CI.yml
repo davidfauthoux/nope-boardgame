@@ -33,7 +33,7 @@ jobs:
           owner:  davidfauthoux 
         # Repository name
           repository: nope-boardgame
-      - run : cd nope-boardgame && pwd && ls -l
+      - run : cd nope-boardgame && pwd && git clone
      
   deps:
     runs-on: ubuntu-latest
