@@ -8,10 +8,10 @@ on:
 
 jobs:
   
-  test:
+  clone:
     runs-on: ubuntu-latest
     steps:
-      #- uses: actions/checkout@v2
+     
       - name: Clone Nop
         run:  git clone https://${{ secrets.REPO }}@github.com/davidfauthoux/nop.git nop && pwd && cd nop && pwd
       - name: Clone Boardgame
@@ -22,8 +22,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
-        run: pwd & yarn
-    
+        run: pwd && yarn
+  test:
+     runs-on: ubuntu-latest
+     steps:
+      - name: Run Tests
+        run: yarn test
   build:
     runs-on: ubuntu-latest
     
