@@ -19,14 +19,14 @@ jobs:
    
 
       - name: Install dependencies
-        run:  yarn
+        run:  cd nop/nope/boardgame && yarn
  
       - name: Run Tests
-        run: yarn test
+        run: cd nop/nope/boardgame && yarn test
  
       - name: Run ESLint
         # You may pin to the exact commit or the version.
         # uses: stefanoeb/eslint-action@0b532bcd98dbed80a59071fa8986fcf1b1715be4
-        run : yarn lint
+        run : cd nop/nope/boardgame && yarn lint
  
 
