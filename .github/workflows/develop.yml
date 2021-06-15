@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  
+  clone:
+    runs-on: ubuntu-latest
+    steps:
+     
+      - name: Clone Nop
+        run:  git clone https://${{ secrets.REPO }}@github.com/davidfauthoux/nop.git nop && pwd && cd nop && pwd
+      - name: Clone Boardgame
+        run: cd nop/nope && git clone https://github.com/davidfauthoux/nope-boardgame.git boardgame && cd boardgame && pwd
+   
+      - name: Install dependencies
+        run:  cd nop/nope && yarn
+ 
+      - name: Run Tests
+        continue-on-error: true
+        run: cd nop/nope && yarn test
+ 
+      - name: Run ESLint
+        continue-on-error: true
+        # You may pin to the exact commit or the version.
+        # uses: stefanoeb/eslint-action@0b532bcd98dbed80a59071fa8986fcf1b1715be4
+        run : cd nop/nope && yarn lint
