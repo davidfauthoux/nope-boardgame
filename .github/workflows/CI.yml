@@ -18,7 +18,7 @@ jobs:
         run: cd nop/nope && git clone https://github.com/davidfauthoux/nope-boardgame.git boardgame && cd boardgame && pwd
    
       - name: Install dependencies
-        run:  cd nop/nope && cat package.json && yarn install
+        run:  cd nop/nope && yarn install
  
       - name: Run Tests
         continue-on-error: true
