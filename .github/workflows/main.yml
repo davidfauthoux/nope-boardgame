@@ -21,7 +21,6 @@ jobs:
         run:  cd nop/nope && yarn
  
       - name: Run Tests
-        continue-on-error: true
         run: cd nop/nope && yarn test
  
       - name: Run ESLint
