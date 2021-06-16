@@ -1,6 +1,6 @@
 "use strict";
 
-class GameItem {
+export class GameItem {
   constructor(stack, game, itemInstance) {
     this._stack = stack;
     this._game = game;
@@ -36,7 +36,7 @@ class GameItem {
     if (this._itemInstance === null) {
       return;
     }
-    var that = this;
+    let that = this;
     this._stack({
       action: "paint",
       key: stateKey,
@@ -57,7 +57,7 @@ class GameItem {
     if (this._itemInstance === null) {
       return;
     }
-    var that = this;
+    let that = this;
     this._stack({
       action: "destroy",
       kind: that._itemInstance.item.kind,
