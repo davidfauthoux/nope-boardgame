@@ -1,4 +1,4 @@
-name: CI
+name: CI main
 
 on:
   push:
@@ -18,7 +18,7 @@ jobs:
         run: cd nop/nope && git clone https://github.com/davidfauthoux/nope-boardgame.git boardgame && cd boardgame && pwd
    
       - name: Install dependencies
-        run:  cd nop/nope && yarn
+        run:  ls -a && cd nop/nope && yarn
  
       - name: Run Tests
         continue-on-error: true
