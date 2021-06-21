@@ -1,6 +1,7 @@
 "use strict";
+import { Utils } from "../Utils.class.js";
 
-class ChatManager {
+export class ChatManager {
   constructor(game) {
     var that = this;
     this._game = game;

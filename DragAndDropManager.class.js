@@ -1,6 +1,7 @@
-"use strict";
+import { UserInteraction } from "../UserInteraction.class.js";
 
-class DragAndDropManager {
+
+export class DragAndDropManager {
   constructor(game) {
     this._game = game;
 

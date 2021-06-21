@@ -1,6 +1,7 @@
-"use strict";
+import { SvgUtils } from "./SvgUtils.class.js";
+import { Utils } from "../Utils.class.js";
 
-class Grid {
+export class Grid {
   constructor(layout, game, name, type, auto, width, height) {
     this._game = game;
     this.name = name;

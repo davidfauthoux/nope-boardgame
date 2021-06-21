@@ -1,6 +1,6 @@
-"use strict";
+import { Utils } from "../Utils.class.js";
 
-class Spot {
+export class Spot {
   constructor(layout, game, location, properties, underlay) {
     var that = this;
 

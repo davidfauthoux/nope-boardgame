@@ -1,6 +1,7 @@
-"use script";
+import { Multimap } from "../Multimap.class.js";
+import { Utils } from "../Utils.class.js";
 
-class ScriptExecution {
+export class ScriptExecution {
   constructor(layout, game, contents) {
     var runScript;
 
@@ -935,7 +936,7 @@ class ScriptExecution {
       };
 
       (function (context) {
-        var rebuiltScript = '"use strict";' + "\n";
+        var rebuiltScript = "<script type=\"module\"> import { Utils } from \"../Utils.class.js\";\n" + "\n";
         rebuiltScript += "return function(context) {" + "\n";
 
         Utils.each(context, function (_, k) {
@@ -959,9 +960,9 @@ class ScriptExecution {
 				});
 				rebuiltScript += ";" + '\n';
 				*/
-        rebuiltScript += "};" + "\n";
+        rebuiltScript += "};" + "<script>" +"\n";
 
-        console.log(rebuiltScript);
+        //console.log(rebuiltScript);
 
         return Function(rebuiltScript)()(context);
       })(initialContext);
