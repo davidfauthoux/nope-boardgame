@@ -4,7 +4,7 @@ export class Grid {
    * @param {Layout} layout
    * @param game
    * @param {string} name
-   * @param {string} type
+   * @param {number} type
    * @param {boolean} auto (grid auto sized)
    * @param {number} width
    * @param {number} height
@@ -54,7 +54,7 @@ export class Grid {
   /**
    * Parse spot location from string parameters
    * @param {string} l (parameters of the grid)
-   * @returns {string} { i: X, j: X }
+   * @returns {{i: number, j: number}}
    */
   parseSpotLocation(l) {
     let s = l.split(/\-/g);
@@ -103,12 +103,12 @@ export class Grid {
   reset() {
     const that = this;
 
-    Utils.each(this.spots, function (row) {
+    for (const row of this.spots) {
       row.layout.$.remove();
-      Utils.each(row.row, function (spot) {
+      for (const spot of row.row) {
         that._game.spotManager.unregisterSpot(spot.spot);
-      });
-    });
+      }
+    }
 
     this.spots = [];
 
@@ -117,7 +117,7 @@ export class Grid {
     this.width = this.minWidth;
     this.height = this.minHeight;
 
-    Utils.loop(0, this.height, 1, function (j) {
+    for (let j = 0; j < this.height; j++) {
       let rowLayout = that._layout.vertical().add();
       let row = [];
       that.spots.push({
@@ -128,7 +128,7 @@ export class Grid {
       for (let i = 0; i < w; i++) {
         that.createSpot(i, j, row, rowLayout, that);
       }
-    });
+    }
   }
 
   /**
@@ -169,9 +169,9 @@ export class Grid {
     });
     let j = this.height - 1 + this.top;
     let w = this.rowWidth(j);
-    Utils.loop(this.left, w + this.left, 1, function (i) {
+    for (let i = this.left; i < w + this.left; i++) {
       that.createSpot(i, j, row, rowLayout, that);
-    });
+    }
   }
 
   /**
@@ -190,9 +190,9 @@ export class Grid {
     });
     let j = this.top;
     let w = this.rowWidth(j);
-    Utils.loop(this.left, w + this.left, 1, function (i) {
+    for (let i = this.left; i < w + this.left; i++) {
       that.createSpot(i, j, row, rowLayout, that);
-    });
+    }
   }
 
   /**
@@ -202,14 +202,14 @@ export class Grid {
     this.width++;
 
     const that = this;
-    Utils.loop(this.top, this.height + this.top, 1, function (j) {
+    for (let j = this.top; j < this.height + this.top; j++) {
       let r = that.spots[j - that.top];
       let rowLayout = r.layout;
       let row = r.row;
       let w = that.rowWidth(j);
       let i = w - 1 + that.left;
       that.createSpot(i, j, row, rowLayout, that);
-    });
+    }
   }
 
   /**
@@ -220,7 +220,7 @@ export class Grid {
     this.width++;
 
     const that = this;
-    Utils.loop(this.top, this.height + this.top, 1, function (j) {
+    for (let j = this.top; j < this.height + this.top; j++) {
       let r = that.spots[j - that.top];
       let rowLayout = r.layout;
       let row = r.row;
@@ -236,7 +236,7 @@ export class Grid {
       row.splice(0, 0, {
         spot: spot,
       });
-    });
+    }
   }
 
   /**
