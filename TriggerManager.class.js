@@ -1,6 +1,9 @@
-"use strict";
+import { Utils } from "../Utils.class.js";
+import { Multimap } from "../Multimap.class.js";
+import { GeneralReference } from "./GeneralReference.class.js";
+import { ExecutionContext } from "./ExecutionContext.class.js";
 
-class TriggerManager {
+export class TriggerManager {
   constructor(game) {
     var that = this;
 

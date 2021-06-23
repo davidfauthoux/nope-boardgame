@@ -1,3 +1,6 @@
+import { SvgUtils } from "./SvgUtils.class.js";
+import { Spot } from "./Spot.class.js";
+
 export class Grid {
   /**
    * Constructs a new Grid in the layout of a game, with it's name, type and size.

@@ -1,6 +1,8 @@
-"use strict";
+import { VideoIcon } from "./VideoIcon.class.js";
+import { UploadUtils } from "../UploadUtils.class.js";
+import { ImageUtils } from "../ImageUtils.class.js";
 
-class FaceChangeButton {
+export class FaceChangeButton {
   /*%%%%%%%%%%%%%%
 class FaceChangeButton {
 	constructor(layout, game, callback) {

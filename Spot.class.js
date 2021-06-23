@@ -1,6 +1,9 @@
-"use strict";
+import { Utils } from "../Utils.class.js";
+import { GeneralReference } from "./GeneralReference.class.js";
+import { Multimap } from "../Multimap.class.js";
+import { DomUtils } from "../DomUtils.class.js";
 
-class Spot {
+export class Spot {
   constructor(layout, game, location, properties, underlay) {
     var that = this;
 

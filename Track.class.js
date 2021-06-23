@@ -1,6 +1,8 @@
-"use strict";
+import { Utils } from "../Utils.class.js";
+import { Spot } from "./Spot.class.js";
 
-class Track {
+
+export class Track {
   constructor(
     layout,
     game,

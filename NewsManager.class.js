@@ -1,6 +1,11 @@
-"use strict";
+import { UserInteraction } from "../UserInteraction.class.js";
+import { Administration } from "./Administration.class.js";
+import { Layout } from "../Layout.class.js";
+import { FaceIcon } from "./FaceIcon.class.js";
+import { Utils } from "../Utils.class.js";
+import { Server } from "../Server.class.js";
 
-class NewsManager {
+export class NewsManager {
   constructor(layout, game) {
     var that = this;
 

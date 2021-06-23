@@ -1,6 +1,8 @@
-"use strict";
+import { Administration } from "./Administration.class.js";
+import { FaceIcon } from "./FaceIcon.class.js";
+import { Utils } from "../Utils.class.js";
 
-class FriendFaces {
+export class FriendFaces {
   constructor(game) {
     this._liveIcons = [];
     this._faces = {};

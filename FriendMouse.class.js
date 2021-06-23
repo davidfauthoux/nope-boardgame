@@ -1,6 +1,8 @@
-"use strict";
+import { Utils } from "../Utils.class.js";
+import { Layout } from "../Layout.class.js";
+import { FaceIcon } from "./FaceIcon.class.js";
 
-class FriendMouse {
+export class FriendMouse {
   constructor(game) {
     //, number) {
     var that = this;
