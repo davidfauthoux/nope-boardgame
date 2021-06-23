@@ -101,12 +101,11 @@ export class Grid {
    * Resets the position of the grid in top left
    */
   reset() {
-    const that = this;
 
     for (const row of this.spots) {
       row.layout.$.remove();
       for (const spot of row.row) {
-        that._game.spotManager.unregisterSpot(spot.spot);
+        this._game.spotManager.unregisterSpot(spot.spot);
       }
     }
 
@@ -118,15 +117,15 @@ export class Grid {
     this.height = this.minHeight;
 
     for (let j = 0; j < this.height; j++) {
-      let rowLayout = that._layout.vertical().add();
+      let rowLayout = this._layout.vertical().add();
       let row = [];
-      that.spots.push({
+      this.spots.push({
         layout: rowLayout,
         row: row,
       });
-      let w = that.rowWidth(j);
+      let w = this.rowWidth(j);
       for (let i = 0; i < w; i++) {
-        that.createSpot(i, j, row, rowLayout, that);
+        this.createSpot(i, j, row, rowLayout);
       }
     }
   }
@@ -137,18 +136,17 @@ export class Grid {
    * @param {number} j (distance of grid from top)
    * @param row
    * @param rowLayout (layout of the row added - vertical/horizontal)
-   * @param {Grid} that (the grid)
    */
 
-  createSpot(i, j, row, rowLayout, that) {
+  createSpot(i, j, row, rowLayout) {
     let spot = new Spot(
       rowLayout.horizontal().add(),
-      that._game,
-      "grid-" + that.name + "-" + that._spotLocation(i, j),
+      this._game,
+      "grid-" + this.name + "-" + this._spotLocation(i, j),
       { overlayable: true, layout: "stack" },
-      that._cellContent.clone()
+      this._cellContent.clone()
     );
-    that._game.spotManager.registerSpot(spot);
+    this._game.spotManager.registerSpot(spot);
     row.push({
       spot: spot,
     });
@@ -160,7 +158,6 @@ export class Grid {
   growDown() {
     this.height++;
 
-    const that = this;
     let rowLayout = this._layout.vertical().add();
     let row = [];
     this.spots.push({
@@ -170,7 +167,7 @@ export class Grid {
     let j = this.height - 1 + this.top;
     let w = this.rowWidth(j);
     for (let i = this.left; i < w + this.left; i++) {
-      that.createSpot(i, j, row, rowLayout, that);
+      this.createSpot(i, j, row, rowLayout);
     }
   }
 
@@ -181,7 +178,6 @@ export class Grid {
     this.top--;
     this.height++;
 
-    const that = this;
     let rowLayout = this._layout.vertical().predd();
     let row = [];
     this.spots.splice(0, 0, {
@@ -191,7 +187,7 @@ export class Grid {
     let j = this.top;
     let w = this.rowWidth(j);
     for (let i = this.left; i < w + this.left; i++) {
-      that.createSpot(i, j, row, rowLayout, that);
+      this.createSpot(i, j, row, rowLayout);
     }
   }
 
@@ -201,14 +197,13 @@ export class Grid {
   growRight() {
     this.width++;
 
-    const that = this;
     for (let j = this.top; j < this.height + this.top; j++) {
-      let r = that.spots[j - that.top];
+      let r = this.spots[j - this.top];
       let rowLayout = r.layout;
       let row = r.row;
-      let w = that.rowWidth(j);
-      let i = w - 1 + that.left;
-      that.createSpot(i, j, row, rowLayout, that);
+      let w = this.rowWidth(j);
+      let i = w - 1 + this.left;
+      this.createSpot(i, j, row, rowLayout);
     }
   }
 
@@ -219,20 +214,19 @@ export class Grid {
     this.left--;
     this.width++;
 
-    const that = this;
     for (let j = this.top; j < this.height + this.top; j++) {
-      let r = that.spots[j - that.top];
+      let r = this.spots[j - this.top];
       let rowLayout = r.layout;
       let row = r.row;
-      let i = that.left;
+      let i = this.left;
       let spot = new Spot(
         rowLayout.horizontal().predd(),
-        that._game,
-        "grid-" + that.name + "-" + that._spotLocation(i, j),
+        this._game,
+        "grid-" + this.name + "-" + this._spotLocation(i, j),
         { overlayable: true, layout: "stack" },
-        that._cellContent.clone()
+        this._cellContent.clone()
       );
-      that._game.spotManager.registerSpot(spot);
+      this._game.spotManager.registerSpot(spot);
       row.splice(0, 0, {
         spot: spot,
       });
