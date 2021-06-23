@@ -1,6 +1,6 @@
-"use strict";
+import { Item } from "./Item.class.js";
 
-class ItemManager {
+export class ItemManager {
   constructor(game) {
     this._game = game;
     this._items = {};

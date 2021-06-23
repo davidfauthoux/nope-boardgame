@@ -1,7 +1,28 @@
-import {GameManager} from "./GameManager.class.js";
+import { Layout } from "../Layout.class.js";
+import { Utils } from "../Utils.class.js";
+import { DomUtils } from "../DomUtils.class.js";
+import { Heap } from "../Async.class.js";
+import { Server } from "../Server.class.js";
+import { EventManager } from "./EventManager.class.js";
+import { GeneralReference } from "./GeneralReference.class.js";
+import { TriggerManager } from "./TriggerManager.class.js";
+import { ScriptExecution } from "./ScriptExecution.class.js";
+import { ChatManager } from "./ChatManager.class.js";
+import { SpotManager } from "./SpotManager.class.js";
+import { GameManager } from "./GameManager.class.js";
+import { UserInteraction } from "../UserInteraction.class.js";
+import { Administration } from "./Administration.class.js";
+import { FriendFaces } from "./FriendFaces.class.js";
+import { NewsManager } from "./NewsManager.class.js";
+import { DragAndDropManager } from "./DragAndDropManager.class.js";
+import { VideoIcon } from "./VideoIcon.class.js";
+import { Sound } from "./Sound.class.js";
+import { ItemManager } from "./ItemManager.class.js";
+import { Store } from "../Store.class.js";
+import { LogManager } from "./LogManager.class.js";
 
 
-export class Game {
+class Game {
   constructor() {
     UserInteraction.get().register(function () {
       // After a user interaction, all of this can be unmuted

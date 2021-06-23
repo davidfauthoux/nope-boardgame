@@ -1,6 +1,7 @@
-"use strict";
+import { Sound } from "./Sound.class.js";
+import { Utils } from "../Utils.class.js";
 
-class GeneralReference {
+export class GeneralReference {
   constructor() {
     var that = this;
 

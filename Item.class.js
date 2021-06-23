@@ -1,6 +1,13 @@
-"use strict";
+import { GeneralReference } from "./GeneralReference.class.js";
+import { Utils } from "../Utils.class.js";
+import { FaceIcon } from "./FaceIcon.class.js";
+import { VideoIcon } from "./VideoIcon.class.js";
+import { Layout } from "../Layout.class.js";
+import { UserInteraction } from "../UserInteraction.class.js";
+import { ExecutionContext } from "./ExecutionContext.class.js";
+import { Spot } from "./Spot.class.js";
 
-class Item {
+export class Item {
   constructor(game, kind) {
     var that = this;
 

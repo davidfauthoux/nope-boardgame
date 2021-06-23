@@ -1,5 +1,3 @@
-"use strict";
-
 export class GameItem {
   constructor(stack, game, itemInstance) {
     this._stack = stack;

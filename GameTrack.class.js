@@ -1,6 +1,7 @@
-"use strict";
+import { GameSpot } from "./GameSpot.class.js";
+import { Utils } from "../Utils.class.js";
 
-class GameTrack {
+export class GameTrack {
   constructor(stack, game, track) {
     this._stack = stack;
     this._game = game;

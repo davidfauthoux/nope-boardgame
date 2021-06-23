@@ -1,6 +1,11 @@
-"use strict";
+import { Server } from "../Server.class.js";
+import { FilteringServer } from "../FilteringServer.class.js";
+import { Heap, while_, false_, try_, sequence_, block_} from "../Async.class.js";
+import { Layout } from "../Layout.class.js";
+import { Utils } from "../Utils.class.js";
 
-class EventManager {
+
+export class EventManager {
   constructor(layout, game) {
     var that = this;
 
@@ -535,10 +540,12 @@ class EventManager {
     console.log("Stacking: " + JSON.stringify(event));
     this._stack(event, liveId);
   }
+
   parse(event, liveId) {
     console.log("Parsing: " + JSON.stringify(event));
     this._parse(event, liveId);
   }
+
   canParse(event) {
     return this._canParse(event);
   }

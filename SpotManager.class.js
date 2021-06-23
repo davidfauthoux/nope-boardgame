@@ -1,6 +1,7 @@
-"use strict";
 
-class SpotManager {
+import { Utils } from "../Utils.class.js";
+
+export class SpotManager {
   constructor(game) {
     this._spots = {};
     this._generateFunctions = {};

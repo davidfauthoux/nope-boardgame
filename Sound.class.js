@@ -1,6 +1,7 @@
 "use strict";
+import { Utils } from "../Utils.class.js";
 
-class Sound {
+export class Sound {
   constructor(url) {
     this._url = url;
     this._audio = [];

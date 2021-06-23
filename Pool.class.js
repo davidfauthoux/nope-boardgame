@@ -1,6 +1,6 @@
-"use strict";
+import { Spot } from "../Spot.class.js";
 
-class Pool {
+export class Pool {
   constructor(layout, game, name, properties) {
     this._game = game;
     this.name = name;

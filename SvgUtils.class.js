@@ -1,6 +1,6 @@
-"use strict";
+import { Utils } from "../Utils.class.js";
 
-class SvgUtils {}
+export class SvgUtils {}
 
 SvgUtils.polygon = function (sides, padding) {
   var degreesToRadians = function (angleInDegrees) {

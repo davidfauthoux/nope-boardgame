@@ -1,6 +1,8 @@
-"use strict";
+import { Utils } from "../Utils.class.js";
+import { UserInteraction } from "../UserInteraction.class.js";
+import { Layout } from "../Layout.class.js";
 
-class LogManager {
+export class LogManager {
   constructor(rootLayout) {
     var logLayout = rootLayout.overlay(); //.layout().north().vertical();
 
