@@ -1,8 +1,17 @@
 import { SvgUtils } from "./SvgUtils.class.js";
-import { Utils } from "../Utils.class.js";
 import { Spot } from "./Spot.class.js";
 
 export class Grid {
+  /**
+   * Constructs a new Grid in the layout of a game, with it's name, type and size.
+   * @param {Layout} layout
+   * @param game
+   * @param {string} name
+   * @param {number} type
+   * @param {boolean} auto (grid auto sized)
+   * @param {number} width
+   * @param {number} height
+   */
   constructor(layout, game, name, type, auto, width, height) {
     this._game = game;
     this.name = name;
@@ -30,11 +39,11 @@ export class Grid {
     this.spots = [];
 
     if (this.auto) {
-      var that = this;
+      const that = this;
       this._game.spotManager.registerGenerate(
         "grid-" + this.name + "-",
         function (suffix) {
-          var ij = that.parseSpotLocation(suffix);
+          let ij = that.parseSpotLocation(suffix);
           //that.grow(ij.i, ij.j);
           that.grow(ij.i - 1, ij.j - 1);
           that.grow(ij.i + 1, ij.j + 1);
@@ -45,17 +54,22 @@ export class Grid {
     this.reset();
   }
 
+  /**
+   * Parse spot location from string parameters
+   * @param {string} l (parameters of the grid)
+   * @returns {{i: number, j: number}}
+   */
   parseSpotLocation(l) {
-    var s = l.split(/\-/g);
-    var ii = s[0];
-    var i;
+    let s = l.split(/\-/g);
+    let ii = s[0];
+    let i;
     if (ii.length > 1 && ii.startsWith("0")) {
       i = -parseInt(ii.substring(1));
     } else {
       i = parseInt(ii);
     }
-    var jj = s[1];
-    var j;
+    let jj = s[1];
+    let j;
     if (jj.length > 1 && jj.startsWith("0")) {
       j = -parseInt(jj.substring(1));
     } else {
@@ -67,23 +81,36 @@ export class Grid {
     };
   }
 
+  /**
+   * Returns formated spot location
+   * @param {number} i (distance of grid from left)
+   * @param {number} j (distance of grid from top)
+   * @returns {string} ( X-X )
+   */
   _spotLocation(i, j) {
     return (i < 0 ? "0" + -i : i) + "-" + (j < 0 ? "0" + -j : j);
   }
 
+  /**
+   * Return the width of a row
+   * @param {number} j (distance of grid from top)
+   * @returns {number}
+   */
   rowWidth(j) {
     return this.width - (this.type === 6 ? 1 - (Math.abs(j) % 2) : 0);
   }
 
+  /**
+   * Resets the position of the grid in top left
+   */
   reset() {
-    var that = this;
 
-    Utils.each(this.spots, function (row) {
+    for (const row of this.spots) {
       row.layout.$.remove();
-      Utils.each(row.row, function (spot) {
-        that._game.spotManager.unregisterSpot(spot.spot);
-      });
-    });
+      for (const spot of row.row) {
+        this._game.spotManager.unregisterSpot(spot.spot);
+      }
+    }
 
     this.spots = [];
 
@@ -92,257 +119,126 @@ export class Grid {
     this.width = this.minWidth;
     this.height = this.minHeight;
 
-    Utils.loop(0, this.height, 1, function (j) {
-      var rowLayout = that._layout.vertical().add();
-      var row = [];
-      that.spots.push({
+    for (let j = 0; j < this.height; j++) {
+      let rowLayout = this._layout.vertical().add();
+      let row = [];
+      this.spots.push({
         layout: rowLayout,
         row: row,
       });
-      var w = that.rowWidth(j);
-      Utils.loop(0, w, 1, function (i) {
-        var spot = new Spot(
-          rowLayout.horizontal().add(),
-          that._game,
-          "grid-" + that.name + "-" + that._spotLocation(i, j),
-          { overlayable: true, layout: "stack" },
-          that._cellContent.clone()
-        );
-        that._game.spotManager.registerSpot(spot);
-        row.push({
-          spot: spot,
-        });
-      });
+      let w = this.rowWidth(j);
+      for (let i = 0; i < w; i++) {
+        this.createSpot(i, j, row, rowLayout);
+      }
+    }
+  }
+
+  /**
+   * Creates a spot from distance (top-left) and row from the grid
+   * @param {number} i (distance of grid from left)
+   * @param {number} j (distance of grid from top)
+   * @param row
+   * @param rowLayout (layout of the row added - vertical/horizontal)
+   */
+
+  createSpot(i, j, row, rowLayout) {
+    let spot = new Spot(
+      rowLayout.horizontal().add(),
+      this._game,
+      "grid-" + this.name + "-" + this._spotLocation(i, j),
+      { overlayable: true, layout: "stack" },
+      this._cellContent.clone()
+    );
+    this._game.spotManager.registerSpot(spot);
+    row.push({
+      spot: spot,
     });
   }
 
-  /*%
-	_ungrow() {
-		var that = this;
-		var previousEmpty = true;
-		var minWidth = this.minWidth;
-		var minHeight = this.minHeight;
-		Utils.loop(0, this.height, -1, function(j) {
-			var r = that.spots[j];
-			var row = r.row;
-			var w = that.width - ((that.type === 6) ? (1 - (j % 2)) : 0);
-			var empty = true;
-			Utils.loop(0, w, -1, function(i) {
-				if (!empty) {
-					return;
-				}
-				if (!row[i].spot.empty()) {
-					if ((i + 1) > minWidth) {
-						minWidth = (i + 1);
-					}
-					empty = false;
-				}
-			});
-			if (previousEmpty && (j >= minHeight) && empty) {
-				Utils.each(row, function(s) {
-					s = s.spot;
-					s.$.remove();
-					that._game.spotManager.unregisterSpot(s);
-				});
-				minHeight = j;
-			} else {
-				if ((j + 1) > minHeight) {
-					minHeight = (j + 1);
-				}
-				previousEmpty = false;
-			}
-		});
-		this.spots = this.spots.slice(0, minHeight);
-
-		Utils.each(that.spots, function(r) {
-			var row = r.row;
-			var w = that.width - ((that.type === 6) ? (1 - (j % 2)) : 0);
-			Utils.loop(minWidth, w, -1, function(i) {
-				var s = row[i].spot;
-				s.$.remove();
-				that._game.spotManager.unregisterSpot(s);
-			});
-			r.row = r.row.slice(0, minWidth);
-		});
-
-		if ((this.width !== minWidth) || (this.height !== this.spots.length)) {
-			console.log("Ungrow: " + minWidth + " x " + this.spots.length);
-
-			this.width = minWidth;
-			this.height = this.spots.length;
-		}
-	}
-
-	_willUngrow() {
-		if (this._willUngrowTimeoutId == null) {
-			var that = this;
-			this._willUngrowTimeoutId = setTimeout(function() {
-				that._willUngrowTimeoutId = null;
-				that._ungrow();
-			}, 0);
-		}
-	}
-
-	ungrow() {
-		this._willUngrow();
-	}
-
-	grow(ii, jj) {
-		var height = jj + 1;
-		var width = ii + 1 + ((this.type === 6) ? (1 - (jj % 2)) : 0);
-
-		if ((height <= this.height) && (width <= this.width)) {
-			return;
-		}
-
-		if (height < this.height) {
-			height = this.height;
-		}
-		if (width < this.width) {
-			width = this.width;
-		}
-
-		console.log("Growing grid from: " + this.width + "x" + this.height + "/" + this.spots.length + " to " + width + "x" + height);
-
-		this.width = width;
-		this.height = height;
-
-		var locationPrefix = "grid-" + this.name + "-";
-
-		var that = this;
-		Utils.loop(0, height, 1, function(j) {
-			var row;
-			var rowLayout;
-			if (j >= that.spots.length) {
-				rowLayout = that._layout.vertical().add();
-				row = [];
-				that.spots.push({
-					layout: rowLayout,
-					row: row
-				});
-			} else {
-				var r = that.spots[j];
-				rowLayout = r.layout;
-				row = r.row;
-			}
-			var w = width - ((that.type === 6) ? (1 - (j % 2)) : 0);
-			Utils.loop(0, w, 1, function(i) {
-				if (i >= row.length) {
-					var spot = new Spot(rowLayout.horizontal().add(), that._game, locationPrefix + i + "-" + j, { overlayable: true, layout: "stack" }, that._cellContent.clone());
-					that._game.spotManager.registerSpot(spot);
-					that._game.dragAndDropManager.configureSpot(spot);
-					row.push({
-						spot: spot
-					});
-				}
-			});
-		});
-
-		this._willUngrow();
-	}
-*/
-
+  /**
+   * Grow the grid of 1 down
+   */
   growDown() {
     this.height++;
 
-    var that = this;
-    var rowLayout = this._layout.vertical().add();
-    var row = [];
+    let rowLayout = this._layout.vertical().add();
+    let row = [];
     this.spots.push({
       layout: rowLayout,
       row: row,
     });
-    var j = this.height - 1 + this.top;
-    var w = this.rowWidth(j);
-    Utils.loop(this.left, w + this.left, 1, function (i) {
-      var spot = new Spot(
-        rowLayout.horizontal().add(),
-        that._game,
-        "grid-" + that.name + "-" + that._spotLocation(i, j),
-        { overlayable: true, layout: "stack" },
-        that._cellContent.clone()
-      );
-      that._game.spotManager.registerSpot(spot);
-      row.push({
-        spot: spot,
-      });
-    });
+    let j = this.height - 1 + this.top;
+    let w = this.rowWidth(j);
+    for (let i = this.left; i < w + this.left; i++) {
+      this.createSpot(i, j, row, rowLayout);
+    }
   }
+
+  /**
+   * Grow the grid of 1 up
+   */
   growUp() {
     this.top--;
     this.height++;
 
-    var that = this;
-    var rowLayout = this._layout.vertical().predd();
-    var row = [];
+    let rowLayout = this._layout.vertical().predd();
+    let row = [];
     this.spots.splice(0, 0, {
       layout: rowLayout,
       row: row,
     });
-    var j = this.top;
-    var w = this.rowWidth(j);
-    Utils.loop(this.left, w + this.left, 1, function (i) {
-      var spot = new Spot(
-        rowLayout.horizontal().add(),
-        that._game,
-        "grid-" + that.name + "-" + that._spotLocation(i, j),
-        { overlayable: true, layout: "stack" },
-        that._cellContent.clone()
-      );
-      that._game.spotManager.registerSpot(spot);
-      row.push({
-        spot: spot,
-      });
-    });
+    let j = this.top;
+    let w = this.rowWidth(j);
+    for (let i = this.left; i < w + this.left; i++) {
+      this.createSpot(i, j, row, rowLayout);
+    }
   }
 
+  /**
+   * Grow the grid of 1 to the right
+   */
   growRight() {
     this.width++;
 
-    var that = this;
-    Utils.loop(this.top, this.height + this.top, 1, function (j) {
-      var r = that.spots[j - that.top];
-      var rowLayout = r.layout;
-      var row = r.row;
-      var w = that.rowWidth(j);
-      var i = w - 1 + that.left;
-      var spot = new Spot(
-        rowLayout.horizontal().add(),
-        that._game,
-        "grid-" + that.name + "-" + that._spotLocation(i, j),
-        { overlayable: true, layout: "stack" },
-        that._cellContent.clone()
-      );
-      that._game.spotManager.registerSpot(spot);
-      row.push({
-        spot: spot,
-      });
-    });
+    for (let j = this.top; j < this.height + this.top; j++) {
+      let r = this.spots[j - this.top];
+      let rowLayout = r.layout;
+      let row = r.row;
+      let w = this.rowWidth(j);
+      let i = w - 1 + this.left;
+      this.createSpot(i, j, row, rowLayout);
+    }
   }
+
+  /**
+   * Grow the grid of 1 to the left
+   */
   growLeft() {
     this.left--;
     this.width++;
 
-    var that = this;
-    Utils.loop(this.top, this.height + this.top, 1, function (j) {
-      var r = that.spots[j - that.top];
-      var rowLayout = r.layout;
-      var row = r.row;
-      var i = that.left;
-      var spot = new Spot(
+    for (let j = this.top; j < this.height + this.top; j++) {
+      let r = this.spots[j - this.top];
+      let rowLayout = r.layout;
+      let row = r.row;
+      let i = this.left;
+      let spot = new Spot(
         rowLayout.horizontal().predd(),
-        that._game,
-        "grid-" + that.name + "-" + that._spotLocation(i, j),
+        this._game,
+        "grid-" + this.name + "-" + this._spotLocation(i, j),
         { overlayable: true, layout: "stack" },
-        that._cellContent.clone()
+        this._cellContent.clone()
       );
-      that._game.spotManager.registerSpot(spot);
+      this._game.spotManager.registerSpot(spot);
       row.splice(0, 0, {
         spot: spot,
       });
-    });
+    }
   }
 
+  /**
+   * Grow the grid to a size i(left),j(top)
+   */
   grow(i, j) {
     while (j >= this.height + this.top) {
       this.growDown();
@@ -358,6 +254,9 @@ export class Grid {
     }
   }
 
+  /**
+   * Get a spot i,j on the grid
+   */
   spot(i, j) {
     if (this.auto) {
       this.grow(i, j);

@@ -13,15 +13,14 @@ jobs:
     steps:
      
       - name: Clone Nop
-        run:  git clone https://${{ secrets.REPO }}@github.com/davidfauthoux/nop.git nop && pwd && cd nop && pwd
+        run:  git clone https://${{ secrets.REPO }}@github.com/davidfauthoux/nop.git nop
       - name: Clone Boardgame
-        run: cd nop/nope && git clone https://github.com/davidfauthoux/nope-boardgame.git boardgame && cd boardgame && pwd
+        run: cd nop/nope && git clone https://github.com/davidfauthoux/nope-boardgame.git boardgame
    
       - name: Install dependencies
-        run:  ls -a && cd nop/nope && yarn
+        run:  cd nop/nope && yarn
  
       - name: Run Tests
-        continue-on-error: true
         run: cd nop/nope && yarn test
  
       - name: Run ESLint
