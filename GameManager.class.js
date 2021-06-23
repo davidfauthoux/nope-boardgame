@@ -1,7 +1,10 @@
-
-import {Grid} from "./Grid.class.js";
+import { Grid } from "./Grid.class.js";
 
 export class GameManager {
+  /**
+    * construct the GameManager for a given game (unique)
+    * @param game
+   */
   constructor(game) {
     this._game = game;
     this.pools = {};
@@ -12,10 +15,28 @@ export class GameManager {
     this._newedPools = {};
   }
 
+  /**
+   * Creates a Pool from a given layout, with its name and properties
+   * @param {Layout} intoLayout
+   * @param {string} name
+   * @param properties
+   */
   createPool(intoLayout, name, properties) {
     this.pools[name] = new Pool(intoLayout, this._game, name, properties);
   }
 
+  /**
+   * Creates a Track from a given layout, with it's name and properties
+   * @param {Layout} intoLayout
+   * @param {string} name
+   * @param title
+   * @param size
+   * @param vertical
+   * @param start
+   * @param step
+   * @param limit
+   * @param reversed
+   */
   createTrack(
     intoLayout,
     name,
@@ -41,6 +62,15 @@ export class GameManager {
     );
   }
 
+  /**
+   * Creates a Grid from a given layout, with its name and properties
+   * @param {Layout} intoLayout
+   * @param {string} name
+   * @param {number} type (number of sides of the grid)
+   * @param {boolean} auto (auto sized grid ?)
+   * @param {number} width
+   * @param {number} height
+   */
   createGrid(intoLayout, name, type, auto, width, height) {
     this.grids[name] = new Grid(
       intoLayout,
@@ -54,8 +84,15 @@ export class GameManager {
   }
 
   //TODO In the future, do the same for track and grid
+  /**
+   * Initialize a new Layout with a name, with a Pool (name+properties) inside
+   * @param {string} layoutName
+   * @param {string} name
+   * @param properties
+   * @param {boolean} floating
+   */
   newPool(layoutName, name, properties, floating) {
-    var layout = this.layouts[layoutName].add();
+    const layout = this.layouts[layoutName].add();
     //%% layout.$.addClass("panel-" + layoutName);
     this._newedPools[name] = {
       layout: layout,
@@ -68,10 +105,13 @@ export class GameManager {
     );
   }
 
+  /**
+   * Clears all newedPools and resets all Grids
+   */
   clear() {
-    var that = this;
+    let that = this;
     Utils.each(this._newedPools, function (p, name) {
-      var pool = that.pools[name];
+      let pool = that.pools[name];
       delete that.pools[name];
       if (p.floating === true) {
         pool.$.parent().parent().parent().remove();
