@@ -1,6 +1,7 @@
-"use strict";
 
-class GameManager {
+import {Grid} from "./Grid.class.js";
+
+export class GameManager {
   constructor(game) {
     this._game = game;
     this.pools = {};
