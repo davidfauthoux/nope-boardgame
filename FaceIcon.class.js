@@ -1,6 +1,6 @@
-"use strict";
+import { Utils } from "../Utils.class.js";
 
-class FaceIcon {
+export class FaceIcon {
   constructor(layout, game) {
     this._imgContainer = $("<div>").addClass("face");
     layout.set(this._imgContainer);

@@ -1,4 +1,7 @@
 import { UserInteraction } from "../UserInteraction.class.js";
+import { Utils } from "../Utils.class.js";
+import { Throttle } from "./Throttle.class.js";
+import { ExecutionContext } from "./ExecutionContext.class.js";
 
 
 export class DragAndDropManager {
@@ -281,7 +284,7 @@ export class DragAndDropManager {
 					}
 					that._currentlyHover = hoveringDiv;
 					currentlyHoverId = hoveringDivId;
-				
+
 					if (that._catchingTouch) {
 						that._currentlyHover.addClass("hover");
 					}
@@ -306,7 +309,7 @@ export class DragAndDropManager {
 		body.mousemove(function(e) {
 			that._mousemoveHandler({ pageX: e.pageX, pageY: e.pageY }, $(e.target));
 		});
-		
+
 		var cancelDragging;
 		var cancelDraggingTimeoutId = null;
 		var clearDelayCancelDragging = function() {
@@ -629,7 +632,7 @@ export class DragAndDropManager {
 			that._mousemoveHandler({ pageX: t.pageX, pageY: t.pageY }, $(document.elementFromPoint(t.clientX, t.clientY)));
 			e.preventDefault();
 			e.stopPropagation();
-		}, { passive: false });		
+		}, { passive: false });
 
 		//%% }
 		div

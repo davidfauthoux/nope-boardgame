@@ -1,6 +1,12 @@
-"use strict";
+import { Utils } from "../Utils.class.js";
+import { GameSpot } from "./GameSpot.class.js";
+import { GameItem } from "./GameItem.class.js";
+import { GamePool } from "./GamePool.class.js";
+import { Layout } from "../Layout.class.js";
+import { GameTrack } from "./GameTrack.class.js";
+import { GameGrid } from "../GameGrid.class.js";
 
-class ExecutionContext {
+export class ExecutionContext {
   constructor(game) {
     var toStack = [];
     var stack = function (nopping, liveId) {
@@ -327,10 +333,10 @@ ExecutionContext.stackAndTrigger = function (
   new ExecutionContext(game)._stackAndTrigger(event, from, spot, item, liveId);
 };
 
-ExecutionContext.runScripts = function (game, scripts, liveId) {
+ExecutionContext.runScripts = function(game, scripts, liveId) {
   return new ExecutionContext(game)._runScripts(scripts, liveId);
 };
 
-ExecutionContext.runDoNothingScripts = function (game, scripts, liveId) {
+ExecutionContext.runDoNothingScripts = function(game, scripts, liveId) {
   return new ExecutionContext(game)._runDoNothingScripts(scripts, liveId);
 };

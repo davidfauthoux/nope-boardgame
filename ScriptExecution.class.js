@@ -1,5 +1,9 @@
 import { Multimap } from "../Multimap.class.js";
 import { Utils } from "../Utils.class.js";
+import { CssComposition } from "./CssComposition.class.js";
+import { LayoutBuilder } from "../LayoutBuilder.class.js";
+import { ExecutionContext } from "./ExecutionContext.class.js";
+import { Server } from "./Server.class.js";
 
 export class ScriptExecution {
   constructor(layout, game, contents) {
@@ -936,8 +940,8 @@ export class ScriptExecution {
       };
 
       (function (context) {
-        var rebuiltScript = "<script type=\"module\"> import { Utils } from \"../Utils.class.js\";\n" + "\n";
-        rebuiltScript += "return function(context) {" + "\n";
+        var rebuiltScript = "\n" + "\n";
+        rebuiltScript += " return function(context) { " + "\n";
 
         Utils.each(context, function (_, k) {
           rebuiltScript += "var " + k + " = context." + k + ";" + "\n";
@@ -960,7 +964,7 @@ export class ScriptExecution {
 				});
 				rebuiltScript += ";" + '\n';
 				*/
-        rebuiltScript += "};" + "<script>" +"\n";
+        rebuiltScript += "};"  +"\n";
 
         //console.log(rebuiltScript);
 

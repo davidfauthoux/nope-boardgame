@@ -1,4 +1,6 @@
 import { Administration } from "./Administration.class.js";
+import { FaceIcon } from "./FaceIcon.class.js";
+import { Utils } from "../Utils.class.js";
 
 export class FriendFaces {
   constructor(game) {

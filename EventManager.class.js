@@ -1,8 +1,9 @@
-"use strict";
 import { Server } from "../Server.class.js";
 import { FilteringServer } from "../FilteringServer.class.js";
 import { Heap, while_, false_, try_, sequence_, block_} from "../Async.class.js";
 import { Layout } from "../Layout.class.js";
+import { Utils } from "../Utils.class.js";
+
 
 export class EventManager {
   constructor(layout, game) {

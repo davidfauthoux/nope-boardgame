@@ -17,6 +17,10 @@ import { NewsManager } from "./NewsManager.class.js";
 import { DragAndDropManager } from "./DragAndDropManager.class.js";
 import { VideoIcon } from "./VideoIcon.class.js";
 import { Sound } from "./Sound.class.js";
+import { ItemManager } from "./ItemManager.class.js";
+import { Store } from "../Store.class.js";
+import { LogManager } from "./LogManager.class.js";
+
 
 class Game {
   constructor() {

@@ -1,5 +1,5 @@
-"use strict";
 import { Sound } from "./Sound.class.js";
+import { Utils } from "../Utils.class.js";
 
 export class GeneralReference {
   constructor() {

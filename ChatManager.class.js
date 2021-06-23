@@ -1,5 +1,8 @@
-"use strict";
 import { Utils } from "../Utils.class.js";
+import { FaceIcon } from "./FaceIcon.class.js";
+import { FriendMouse } from "./FriendMouse.class.js";
+import { Chat } from "../Chat.class.js";
+import { FaceChangeButton } from "./FaceChangeButton.class.js";
 
 export class ChatManager {
   constructor(game) {

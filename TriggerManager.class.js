@@ -1,5 +1,7 @@
 import { Utils } from "../Utils.class.js";
 import { Multimap } from "../Multimap.class.js";
+import { GeneralReference } from "./GeneralReference.class.js";
+import { ExecutionContext } from "./ExecutionContext.class.js";
 
 export class TriggerManager {
   constructor(game) {

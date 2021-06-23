@@ -1,6 +1,4 @@
-"use strict";
-
-class Throttle {
+export class Throttle {
   constructor() {
     var that = this;
     this.throttle = 0.05;

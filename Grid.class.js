@@ -1,5 +1,6 @@
 import { SvgUtils } from "./SvgUtils.class.js";
 import { Utils } from "../Utils.class.js";
+import { Spot } from "./Spot.class.js";
 
 export class Grid {
   constructor(layout, game, name, type, auto, width, height) {
