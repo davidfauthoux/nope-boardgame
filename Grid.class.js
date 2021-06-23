@@ -4,7 +4,7 @@ export class Grid {
    * @param {Layout} layout
    * @param game
    * @param {string} name
-   * @param {number} type
+   * @param {number} type (number of sides for the grid)
    * @param {boolean} auto (grid auto sized)
    * @param {number} width
    * @param {number} height
