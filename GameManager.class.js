@@ -109,10 +109,9 @@ export class GameManager {
    * Clears all newedPools and resets all Grids
    */
   clear() {
-    let that = this;
-    Utils.each(this._newedPools, function (p, name) {
-      let pool = that.pools[name];
-      delete that.pools[name];
+    for (let [p,name] of Object.keys(this._newedPools)) {
+      let pool = this.pools[name];
+      delete this.pools[name];
       if (p.floating === true) {
         pool.$.parent().parent().parent().remove();
       } else {
@@ -120,12 +119,12 @@ export class GameManager {
       }
       p.layout.$.remove();
       pool.destroy();
-    });
+    }
     this._newedPools = {};
 
     //TODO Do the same for tracks and pools (reset)
-    Utils.each(this.grids, function (grid) {
-      grid.reset();
-    });
+    for (let grid of Object.keys(this.grids)) {
+      this.grids[grid].reset();
+    }
   }
 }
