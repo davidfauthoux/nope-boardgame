@@ -1,6 +1,7 @@
-"use strict";
+import {GameManager} from "./GameManager.class.js";
 
-class Game {
+
+export class Game {
   constructor() {
     UserInteraction.get().register(function () {
       // After a user interaction, all of this can be unmuted
