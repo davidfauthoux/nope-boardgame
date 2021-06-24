@@ -1,5 +1,4 @@
 import { Layout } from "../Layout.class.js";
-import { Utils } from "../Utils.class.js";
 import { DomUtils } from "../DomUtils.class.js";
 import { Heap } from "../Async.class.js";
 import { Server } from "../Server.class.js";
@@ -231,13 +230,13 @@ class Game {
           game.triggerManager = new TriggerManager(game);
 
           let res = {};
-          Utils.each(contents, function (v, k) {
+          for (const [v,k] in contents) {
             if (k.endsWith(".xml")) {
               res["../" + k] = v; // { contents: v };
             }
-          });
+          }
           let addRes = function (base) {
-            Utils.each(contents[base], function (v, k) {
+            for (const [v,k] in contents[base]) {
               if (v === null) {
                 if (k.endsWith(".mp3")) {
                   let soundId = k.substring(0, k.length - ".mp3".length);
@@ -256,7 +255,7 @@ class Game {
               } else {
                 res[k] = v; // { contents: v };
               }
-            });
+            }
           };
           addRes("../../res");
           addRes("../res");
