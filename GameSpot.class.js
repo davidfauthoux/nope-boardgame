@@ -107,9 +107,9 @@ export class GameSpot {
         a.push(item);
       });
     }
-    a.each = function (callback) {
-      Utils.each(a, callback);
-    };
+    // a.each = function (callback) {
+    //   Utils.each(a, callback);
+    // };
     return a;
   }
 
