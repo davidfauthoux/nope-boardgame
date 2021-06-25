@@ -1,5 +1,4 @@
 import { GameItem } from "./GameItem.class.js";
-import {Utils} from "../Utils.class.js";
 
 export class GameSpot {
   /**
@@ -107,9 +106,6 @@ export class GameSpot {
         a.push(item);
       });
     }
-    // a.each = function (callback) {
-    //   Utils.each(a, callback);
-    // };
     return a;
   }
 
