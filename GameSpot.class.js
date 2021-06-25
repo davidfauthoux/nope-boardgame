@@ -36,10 +36,11 @@ export class GameSpot {
     if (kind === undefined) {
       return new GameItem(this._stack, this._game, null);
     }
+    let that = this;
     this._stack({
       action: "drop",
       kind: kind,
-      location: this._spot.location,
+      location: that._spot.location,
       count: count,
     });
     let itemInstance = this._spot.getItemInstance(kind);
@@ -63,10 +64,11 @@ export class GameSpot {
     if (kind === undefined) {
       return new GameItem(this._stack, this._game, null);
     }
+    let that = this;
     this._stack({
       action: "move",
       kind: kind,
-      location: this._spot.location,
+      location: that._spot.location,
       to: to._spot.location,
       count: count,
     });
@@ -83,11 +85,11 @@ export class GameSpot {
     if (this._spot === null) {
       return;
     }
-
+    let that = this;
     this._stack({
       action: "destroy",
       kind: kind,
-      location: this._spot.location,
+      location: that._spot.location,
       count: count,
     });
   }
@@ -97,11 +99,11 @@ export class GameSpot {
    * @returns {*[]}
    */
   items() {
-
+    let that = this;
     let a = [];
     if (this._spot !== null) {
       this._spot.eachItemInstances(function (i) {
-        let item = new GameItem(this._stack, this._game, i);
+        let item = new GameItem(that._stack, that._game, i);
         a.push(item);
       });
     }
