@@ -1,4 +1,5 @@
 import { GameItem } from "./GameItem.class.js";
+import {Utils} from "../Utils.class.js";
 
 export class GameSpot {
   /**
@@ -105,10 +106,10 @@ export class GameSpot {
       });
     }
     a.each = function (callback) {
-      for (const item of a) {
-        callback();
-      }
-      //Utils.each(a, callback);
+      // for (const item of a) {
+      //   callback();
+      // }
+      Utils.each(a, callback);
     };
     return a;
   }

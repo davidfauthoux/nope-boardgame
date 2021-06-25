@@ -230,14 +230,16 @@ class Game {
           game.triggerManager = new TriggerManager(game);
 
           let res = {};
-          for (const [v,k] in contents) {
+
+          for (const k in contents) {
             if (k.endsWith(".xml")) {
-              res["../" + k] = v; // { contents: v };
+              res["../" + k] = contents[k]; // { contents: contents[k] };
             }
           }
           let addRes = function (base) {
-            for (const [v,k] in contents[base]) {
-              if (v === null) {
+
+            for (const k in contents[base]) {
+              if (contents[base][k] === null || contents[base][k] === undefined) {
                 if (k.endsWith(".mp3")) {
                   let soundId = k.substring(0, k.length - ".mp3".length);
                   game.generalReference.setSound(soundId, base + "/" + k);
@@ -253,7 +255,7 @@ class Game {
                   // Ignored
                 }
               } else {
-                res[k] = v; // { contents: v };
+                res[k] = contents[base][k]; // { contents: v };
               }
             }
           };
