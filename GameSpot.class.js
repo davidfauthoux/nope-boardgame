@@ -108,9 +108,6 @@ export class GameSpot {
       });
     }
     a.each = function (callback) {
-      // for (const item of a) {
-      //   callback();
-      // }
       Utils.each(a, callback);
     };
     return a;
