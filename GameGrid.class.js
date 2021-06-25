@@ -1,7 +1,12 @@
 import { GameSpot } from "./GameSpot.class.js";
-import { Utils } from "../Utils.class.js";
 
 export class GameGrid {
+  /**
+   * connects a given Grid to a given Game
+   * @param stack
+   * @param {Game} game
+   * @param {Grid} grid
+   */
   constructor(stack, game, grid) {
     this._stack = stack;
     this._game = game;
@@ -9,21 +14,38 @@ export class GameGrid {
     this.name = grid === null ? undefined : grid.name;
   }
 
+  /**
+   * returns Grid's width
+   * @returns {number}
+   */
   width() {
     return this._grid.width;
   }
+
+  /**
+   * returns Grid's height
+   * @returns {number}
+   */
   height() {
     return this._grid.height;
   }
 
+  /**
+   * returns Spot(s) associated to a given cell (other cells around it)
+   * @param {number} i
+   * @param {number} j
+   * @param {boolean} valid
+   * @returns {GameSpot}
+   * @private
+   */
   _cell(i, j, valid) {
-    var a;
+    let a;
     if (!valid) {
       a = new GameSpot(this._stack, this._game, null);
     } else {
       a = new GameSpot(this._stack, this._game, this._grid.spot(i, j));
     }
-    var that = this;
+    let that = this;
     a.up = function () {
       return that._cell(i, j - 1, valid && that._grid.type === 4);
     };
@@ -49,7 +71,7 @@ export class GameGrid {
       return that._cell(i - (Math.abs(j) % 2) + 1, j + 1, valid);
     };
     a.around = function () {
-      var ar;
+      let ar;
       if (that._grid.type === 6) {
         ar = [
           a.left(),
@@ -71,9 +93,7 @@ export class GameGrid {
           a.downRight(),
         ];
       }
-      ar.each = function (callback) {
-        Utils.each(ar, callback);
-      };
+
       return ar;
     };
     a.i = i;
@@ -118,7 +138,11 @@ export class GameGrid {
 		this._grid.ungrow();
 	}
 */
-
+  /**
+   * grows Grid of size (i,j)
+   * @param {number} ii
+   * @param {number} jj
+   */
   grow(ii, jj) {
     this._grid.grow(ii, jj);
   }
