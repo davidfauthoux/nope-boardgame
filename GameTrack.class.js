@@ -97,8 +97,8 @@ export class GameTrack {
     }
     let lastFound = null;
     let first = null;
-    for (let name in this._track.spots){
-      let s = this._track.spots[name].spot;
+    for (let s of this._track.spots){
+      let s = s.spot;
       if (first !== null) {
         first = s;
       }

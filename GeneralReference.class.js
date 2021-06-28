@@ -1,9 +1,11 @@
 import { Sound } from "./Sound.class.js";
-import { Utils } from "../Utils.class.js";
 
 export class GeneralReference {
+  /**
+   * creates the General Reference for kinds
+   */
   constructor() {
-    var that = this;
+    let that = this;
 
     this._sounds = {};
 
@@ -12,19 +14,16 @@ export class GeneralReference {
     this._referenced = {};
 
     this._build = function (kind) {
-      var content = that._referenced[kind];
-      Utils.each(
-        GeneralReference.getGeneralKinds(kind),
-        function (generalKind) {
-          if (content !== undefined) {
-            return;
-          }
-          var overridenContent = that._referenced[generalKind.kind];
-          if (overridenContent !== undefined) {
-            content = overridenContent;
-          }
+      let content = that._referenced[kind];
+      for (const generalKind of GeneralReference.getGeneralKinds(kind)) {
+        if (content !== undefined) {
+          break;
         }
-      );
+        let overridenContent = that._referenced[generalKind.kind];
+        if (overridenContent !== undefined) {
+          content = overridenContent;
+        }
+      }
       if (content !== undefined) {
         return $(content).addClass("content");
       } else {
@@ -33,19 +32,16 @@ export class GeneralReference {
     };
 
     this._getProperties = function (kind) {
-      var content = that._properties[kind];
-      Utils.each(
-        GeneralReference.getGeneralKinds(kind),
-        function (generalKind) {
-          if (content !== undefined) {
-            return;
-          }
-          var overridenContent = that._properties[generalKind.kind];
-          if (overridenContent !== undefined) {
-            content = overridenContent;
-          }
+      let content = that._properties[kind];
+      for (const generalKind of GeneralReference.getGeneralKinds(kind)) {
+        if (content !== undefined) {
+          break;
         }
-      );
+        let overridenContent = that._properties[generalKind.kind];
+        if (overridenContent !== undefined) {
+          content = overridenContent;
+        }
+      }
       if (content !== undefined) {
         return content;
       } else {
@@ -53,22 +49,21 @@ export class GeneralReference {
       }
     };
     this._getModifiers = function (kind) {
-      var content = that._modifiers[kind];
-      Utils.each(
-        GeneralReference.getGeneralKinds(kind),
-        function (generalKind) {
-          if (content !== undefined) {
-            return;
-          }
-          var overridenContent = that._modifiers[generalKind.kind];
-          if (overridenContent !== undefined) {
-            content = {};
-            Utils.each(overridenContent, function (v, k) {
-              content[k] = v === null ? generalKind.suffix : v; // null is a special value meaning 'this suffix'
-            });
+      let content = that._modifiers[kind];
+      for (const generalKind of GeneralReference.getGeneralKinds(kind)) {
+        if (content !== undefined) {
+          break;
+        }
+        let overridenContent = that._modifiers[generalKind.kind];
+        if (overridenContent !== undefined) {
+          content = {};
+          for (const k in overridenContent) {
+            content[k] = overridenContent[k] === null ? generalKind.suffix : overridenContent[k]; // null is a special value meaning 'this suffix'
+
           }
         }
-      );
+      }
+
       if (content !== undefined) {
         return content;
       } else {
@@ -83,42 +78,81 @@ export class GeneralReference {
     };
   }
 
+  /**
+   * Adds a kind to the referenced kinds
+   * @param {string} kind
+   * @param content
+   * @param properties
+   * @param modifiers
+   */
   setContent(kind, content, properties, modifiers) {
     this._setContent(kind, content);
     this._modifiers[kind] = modifiers;
     this._properties[kind] = properties;
   }
 
+  /**
+   * search for properties of a kind
+   * @param {string} kind
+   * @returns {*|{}}
+   */
   properties(kind) {
     return this._getProperties(kind);
   }
+
+  /**
+   * search for modifiers of a kind
+   * @param {string} kind
+   * @returns {*|{}}
+   */
   modifiers(kind) {
     return this._getModifiers(kind);
   }
 
+  /**
+   * builds the given kind if referenced
+   * @param {string} kind
+   * @returns {*}
+   */
   build(kind) {
     return this._build(kind);
   }
 
+  /**
+   * sets a new sound with an id and an url
+   * @param id
+   * @param url
+   */
   setSound(id, url) {
     this._sounds[id] = new Sound(url);
   }
+
+  /**
+   * get the sound from it's id
+   * @param id
+   * @returns {null}
+   */
   getSound(id) {
     return this._sounds[id] || null;
   }
 }
 
+/**
+ * gets the General kind of specified kind
+ * @param kind
+ * @returns {*[]}
+ */
 GeneralReference.getGeneralKinds = function (kind) {
-  var generalKinds = [];
-  var ik = 0;
+  let generalKinds = [];
+  let ik = 0;
   while (true) {
-    var k = kind.indexOf("-", ik);
+    let k = kind.indexOf("-", ik);
     if (k < 0) {
       // No more general kind
       break;
     } else {
-      var generalKind = kind.substring(0, k);
-      var suffix = kind.substring(k + 1);
+      let generalKind = kind.substring(0, k);
+      let suffix = kind.substring(k + 1);
       generalKinds.push({
         kind: generalKind,
         suffix: suffix,
