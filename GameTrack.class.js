@@ -25,7 +25,7 @@ export class GameTrack {
   /**
    * moves an Item of a certain kind to another Spot in the Track
    * @param {string} kind
-   * @param count
+   * @param {number} count
    * @returns {{from: GameSpot, to: GameSpot}}
    */
   move(kind, count) {
@@ -60,7 +60,7 @@ export class GameTrack {
   /**
    * finds an Item of a certain kind in the current Track
    * @param {string} kind
-   * @returns
+   * @returns {number|undefined|null}
    */
   find(kind) {
     if (kind === undefined) {
