@@ -4,8 +4,16 @@ import { Multimap } from "../Multimap.class.js";
 import { DomUtils } from "../DomUtils.class.js";
 
 export class Spot {
+  /**
+   * creates a new Spot (location,properties,underlay) from a Layout in a given Game
+   * @param layout
+   * @param game
+   * @param location
+   * @param properties
+   * @param underlay
+   */
   constructor(layout, game, location, properties, underlay) {
-    var that = this;
+    let that = this;
 
     this.location = location;
 
@@ -13,42 +21,43 @@ export class Spot {
     this.state = {};
     this._itemInstances = {};
 
-    var div = layout;
+    let div = layout;
 
-    var itemLayout;
-    var updateItemPositions;
-    var removeItem;
+    let itemLayout;
+    let updateItemPositions;
+    let removeItem;
     if (properties.layout === "stack") {
-      var itemsLayout = div.packed().overlay();
+      let itemsLayout = div.packed().overlay();
       itemsLayout.$.addClass("stack");
       itemLayout = function () {
         return itemsLayout.overlay().packed();
       };
       updateItemPositions = function () {
-        var widthToDivide = 0.3; // 30%
-        var children = [];
-        var randomFound = null;
-        Utils.each(that._itemInstances, function (i) {
+        let widthToDivide = 0.3; // 30%
+        let children = [];
+        let randomFound = null;
+        for (const key in that._itemInstances) {
+          let i = that._itemInstances[key];
           if (
-            i.item.properties.hidden === undefined &&
-            i.item.properties.invisible === undefined
+              i.item.properties.hidden === undefined &&
+              i.item.properties.invisible === undefined
           ) {
             children.push(i);
           }
           if (i.item.properties.random !== undefined) {
             randomFound = i;
           }
-        });
+        }
         if (randomFound !== null) {
-          var filtered = [];
-          Utils.each(children, function (i) {
+          let filtered = [];
+          for (const i of children) {
             if (i.infinite || i === randomFound) {
               filtered.push(i);
             }
-          });
+          }
           children = filtered;
         }
-        var n = children.length;
+        let n = children.length;
         if (n === 0) {
           return;
         }
@@ -59,20 +68,20 @@ export class Spot {
           });
           return;
         }
-        Utils.each(children, function (i, k) {
-          var angle = Math.PI / 2 + ((Math.PI * 2.0) / n) * k;
-          i.$.parent().css({
+        for (const key in children) {
+          let angle = Math.PI / 2 + ((Math.PI * 2.0) / n) * key;
+          children[key].$.parent().css({
             left: Math.round(Math.cos(angle) * 100 * widthToDivide) + "%",
             top: Math.round(Math.sin(angle) * 100 * widthToDivide) + "%",
           });
-        });
+        }
       };
       removeItem = function (i) {
         i.$.parent().remove(); //TODO Upgrade Layout class to handle remove/addClass/removeClass/attr on set()
         updateItemPositions();
       };
     } else {
-      var cellLayout;
+      let cellLayout;
       if (properties.layout === "vertical") {
         cellLayout = div.vertical();
       } else {
@@ -82,19 +91,19 @@ export class Spot {
         return cellLayout.add();
       };
       updateItemPositions = function () {
-        var stackableItems = [];
-        Utils.each(that._itemInstances, function (i) {
-          if (i.item.properties.stackable !== undefined) {
-            stackableItems.push(i);
+        let stackableItems = [];
+        for (const key in that._itemInstances) {
+          if (that._itemInstances[key].item.properties.stackable !== undefined) {
+            stackableItems.push(that._itemInstances[key]);
           }
-        });
-        Utils.each(stackableItems, function (i, ii) {
-          if (ii < stackableItems.length - 1) {
-            i.$.addClass("stacking");
+        }
+        for (const key in stackableItems) {
+          if (key < stackableItems.length - 1) {
+            stackableItems[key].$.addClass("stacking");
           } else {
-            i.$.removeClass("stacking");
+            stackableItems[key].$.removeClass("stacking");
           }
-        });
+        }
       };
       removeItem = function (i) {
         i.$.remove();
@@ -105,41 +114,45 @@ export class Spot {
     div.$.addClass("spot")
       .attr("data-location", location)
       .attr("data-id", "spot:" + location);
-    Utils.each(properties, function (_, k) {
-      if (k !== "layout") {
-        div.$.addClass("property-" + k);
+    for (const key in properties) {
+      if (key !== "layout") {
+        div.$.addClass("property-" + key);
       }
-    });
+    }
 
-    var overlayDiv = layout.underlay();
+    let overlayDiv = layout.underlay();
     overlayDiv.$.addClass("overlay");
 
     if (underlay !== undefined) {
-      var underlayDiv = layout.underlay();
+      let underlayDiv = layout.underlay();
       underlayDiv.set(underlay);
       underlayDiv.$.addClass("underlay");
     }
 
     this.$ = div.$;
 
-    var updateRandom = function () {
-      var randomFound = null;
-      var total = 0;
-      Utils.each(that._itemInstances, function (i) {
+    let updateRandom = function () {
+      let randomFound = null;
+      let total = 0;
+      for (const key in that._itemInstances) {
+        let i = that._itemInstances[key];
         if (i.item.properties.random !== undefined && !i.infinite) {
           randomFound = i;
         } else if (i.item.properties.hidden === undefined && !i.infinite) {
           total += i.count;
         }
-      });
+      }
       div.$.removeClass("random");
       if (randomFound !== null) {
         div.$.addClass("random");
         randomFound.setState("auto_flag", "" + total);
       }
     };
-
-    var destroy = function (instance) {
+    /**
+     * destroys the infos in the given instance
+     * @param instance
+     */
+    let destroy = function (instance) {
       if (instance.faceIcon !== null) {
         instance.faceIcon.destroy();
         game.friendFaces.remove(instance.faceIcon);
@@ -150,13 +163,16 @@ export class Spot {
       game.dragAndDropManager.unconfigureItemInstance(instance);
       removeItem(instance);
     };
-
-    var updateOverlays = function () {
-      var overlayFound = new Multimap.Array();
-      Utils.each(that._itemInstances, function (i) {
+    /**
+     * update the spot Overlays
+     */
+    let updateOverlays = function () {
+      let overlayFound = new Multimap.Array();
+      for (const key in that._itemInstances) {
+        let i = that._itemInstances[key];
         if (i.item.properties.overlay !== undefined) {
-          var consideredKind;
-          var generalKinds = GeneralReference.getGeneralKinds(i.item.kind);
+          let consideredKind;
+          let generalKinds = GeneralReference.getGeneralKinds(i.item.kind);
           if (generalKinds.length === 0) {
             consideredKind = i.item.kind;
           } else {
@@ -165,12 +181,12 @@ export class Spot {
           overlayFound.get(consideredKind).add(i);
           i.$.removeClass("overlayed");
         }
-      });
+      }
       overlayDiv.$.empty();
       overlayFound.each(function (overlayFoundPerKind, k) {
         // console.log("Found overlay [" + k + "] " + overlayFoundPerKind[0].item.kind + " (" + overlayFoundPerKind[0].count + ")");
         if (overlayFoundPerKind.length === 1) {
-          var onlyOverlayFoundPerKind = overlayFoundPerKind[0];
+          let onlyOverlayFoundPerKind = overlayFoundPerKind[0];
           if (
             (properties.overlayable !== undefined &&
               onlyOverlayFoundPerKind.count === 1) ||
@@ -187,26 +203,29 @@ export class Spot {
         }
       });
     };
-
-    var updateModifiers = function () {
-      var modifierFound = new Multimap.Array();
-      Utils.each(that._itemInstances, function (i) {
+    /**
+     * update the spots modifiers
+     */
+    let updateModifiers = function () {
+      let modifierFound = new Multimap.Array();
+      for (const key in that._itemInstances) {
+        let i = that._itemInstances[key];
         if (i.infinite) {
           return;
         }
         if (i.count !== 1) {
           return;
         }
-        Utils.each(i.item.modifiers, function (v, k) {
-          modifierFound.get(k).add(v);
-        });
-      });
+        for (const key in i.item.modifiers) {
+          modifierFound.get(key).add(i.item.modifiers[key]);
+        }
+      }
       that.state = {};
       modifierFound.each(function (a, k) {
-        var s = null;
-        Utils.each(a, function (v) {
+        let s = null;
+        for (const v of a) {
           s = v;
-        });
+        }
         that.state[k] = s; // Let's keep only the last one
       });
       DomUtils.eachClass(div.$, function (c) {
@@ -214,23 +233,23 @@ export class Spot {
           div.$.removeClass(c);
         }
       });
-      Utils.each(that.state, function (v, k) {
-        div.$.addClass("state-" + k + "-" + v);
-      });
+      for (const key in that.state) {
+        div.$.addClass("state-" + key + "-" + that.state[key]);
+      }
     };
 
     this._destroyItem = function (kind, count) {
       // console.log("Destroying " + kind + " from " + location + " (" + count + ")");
       if (kind === undefined) {
-        Utils.each(that._itemInstances, function (i) {
-          destroy(i);
-        });
+        for (const i of that._itemInstances) {
+          destroy(i)
+        }
         that._itemInstances = {};
         updateOverlays();
         updateRandom();
         updateModifiers();
       } else {
-        var existingItemInstance = that._itemInstances[kind];
+        let existingItemInstance = that._itemInstances[kind];
         if (existingItemInstance === undefined) {
           return;
         }
@@ -240,8 +259,7 @@ export class Spot {
         } else {
           if (!existingItemInstance.infinite) {
             existingItemInstance.inc(-count);
-            if (
-              !Utils.contains(existingItemInstance.state, "count") &&
+            if (!("count" in existingItemInstance.state) &&
               existingItemInstance.count === 0
             ) {
               delete that._itemInstances[existingItemInstance.item.kind];
@@ -252,7 +270,7 @@ export class Spot {
         if (existingItemInstance.item.properties.overlay !== undefined) {
           updateOverlays();
         }
-        if (!Utils.empty(existingItemInstance.item.modifiers)) {
+        if ($.isEmptyObject(existingItemInstance.item.modifiers)) {
           updateModifiers();
         }
         //if (existingItemInstance.item.properties.random !== undefined) {
@@ -262,7 +280,7 @@ export class Spot {
     };
 
     this._setItemState = function (kind, key, value) {
-      var existingItemInstance = that._itemInstances[kind];
+      let existingItemInstance = that._itemInstances[kind];
       if (existingItemInstance === undefined) {
         return;
       }
@@ -272,7 +290,7 @@ export class Spot {
     this._addItem = function (kind, count, liveId) {
       // console.log("Adding " + kind + " to " + location + " (" + count + ") " + liveId);
 
-      var existingItemInstance = that._itemInstances[kind];
+      let existingItemInstance = that._itemInstances[kind];
       if (
         existingItemInstance !== undefined &&
         existingItemInstance.faceIcon !== null
@@ -296,19 +314,19 @@ export class Spot {
       }
 
       if (existingItemInstance === undefined) {
-        var item = game.itemManager.getItem(kind);
+        let item = game.itemManager.getItem(kind);
 
         if (item !== null) {
           if (item.properties.unique !== undefined && count !== undefined) {
-            Utils.each(that._itemInstances, function (i) {
+            for (const i of that._itemInstances) {
               if (
-                i.item.properties.unique === item.properties.unique &&
-                !i.infinite
+                  i.item.properties.unique === item.properties.unique &&
+                  !i.infinite
               ) {
                 delete that._itemInstances[i.item.kind];
                 destroy(i);
               }
-            });
+            }
           }
 
           existingItemInstance = item.createInstance(
@@ -346,7 +364,7 @@ export class Spot {
         if (existingItemInstance.item.properties.overlay !== undefined) {
           updateOverlays();
         }
-        if (!Utils.empty(existingItemInstance.item.modifiers)) {
+        if ($.isEmptyObject(existingItemInstance.item.modifiers)) {
           updateModifiers();
         }
         //if (existingItemInstance.item.properties.random !== undefined) {
@@ -356,7 +374,7 @@ export class Spot {
     };
 
     this._updateItem = function (kind, liveId) {
-      var existingItemInstance = that._itemInstances[kind];
+      let existingItemInstance = that._itemInstances[kind];
       if (
         existingItemInstance === undefined ||
         existingItemInstance.faceIcon === null
@@ -406,7 +424,7 @@ export class Spot {
   }
 
   empty() {
-    return Utils.empty(this._itemInstances);
+    return $.isEmptyObject(this._itemInstances);
   }
 
   destroy() {
