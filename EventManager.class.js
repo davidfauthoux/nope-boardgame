@@ -315,9 +315,9 @@ export class EventManager {
 
       game.newsManager.clear();
       game.spotManager.each(function (s) {
-        s.eachItemInstances(function (i) {
-          s.destroyItem(i.item.kind);
-        });
+        for (const key in s._itemInstances){
+          s.destroyItem(s._itemInstances[key].item.kind);
+        }
       });
       game.gameManager.clear();
       game.chatManager.discardFriendMice();

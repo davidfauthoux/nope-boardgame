@@ -419,10 +419,6 @@ export class Spot {
     return this._itemInstances[kind] || null;
   }
 
-  eachItemInstances(callback) {
-    Utils.each(this._itemInstances, callback);
-  }
-
   empty() {
     return $.isEmptyObject(this._itemInstances);
   }

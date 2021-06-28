@@ -70,10 +70,10 @@ export class GameSpot {
     var that = this;
     var a = [];
     if (this._spot !== null) {
-      this._spot.eachItemInstances(function (i) {
-        var item = new GameItem(that._stack, that._game, i);
+      for (const key in this._spot._itemInstances){
+        var item = new GameItem(that._stack, that._game, this._spot._itemInstances[key]);
         a.push(item);
-      });
+      }
     }
     a.each = function (callback) {
       Utils.each(a, callback);
