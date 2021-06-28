@@ -13,23 +13,25 @@ export class DragAndDropManager {
     var draggingDiv = null;
 
     var setAllSpotsHoverable = function () {
-      game.spotManager.each(function (spot) {
+      for (const key in game.spotManager) {
+        let spot = game.spotManager[key]
         spot.$.addClass("hoverable");
-        for (const key in spot._itemInstances){
-          spot._itemInstances[key].$.removeClass("hoverable");
+        for (const key2 in spot._itemInstances) {
+          spot._itemInstances[key2].$.removeClass("hoverable");
         }
-      });
+      }
     };
     var setAllItemsHoverable = function () {
-      game.spotManager.each(function (spot) {
+      for (const key in game.spotManager) {
+        let spot = game.spotManager[key]
         spot.$.removeClass("hoverable");
-        for (const key in spot._itemInstances){
-          let item = spot._itemInstances[key];
+        for (const key2 in spot._itemInstances){
+          let item = spot._itemInstances[key2];
           if (item.item.properties.steady === undefined) {
             item.$.addClass("hoverable");
           }
         }
-      });
+      }
     };
 
     var unselect = function () {

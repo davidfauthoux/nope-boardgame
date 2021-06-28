@@ -2,16 +2,29 @@
 import { Utils } from "../Utils.class.js";
 
 export class SpotManager {
+  /**
+   * creates a (unique) SpotManager for a given Game
+   * @param {Game} game
+   */
   constructor(game) {
     this._spots = {};
     this._generateFunctions = {};
     this._game = game;
   }
 
+  /**
+   * affects a generation function to a location (prefix form)
+   * @param {string} locationPrefix
+   * @param generationFunction
+   */
   registerGenerate(locationPrefix, generationFunction) {
     this._generateFunctions[locationPrefix] = generationFunction;
   }
 
+  /**
+   * configure the given Spot to the SpotManager
+   * @param {Spot} spot
+   */
   registerSpot(spot) {
     //console.log("Spot registered: " + spot.location);
     if (this._spots[spot.location] !== undefined) {
@@ -21,6 +34,10 @@ export class SpotManager {
     this._game.dragAndDropManager.configureSpot(spot);
   }
 
+  /**
+   * remove given Spot from this SpotManager
+   * @param spot
+   */
   unregisterSpot(spot) {
     //console.log("Spot unregistered: " + spot.location);
     if (this._spots[spot.location] !== undefined) {
@@ -29,27 +46,29 @@ export class SpotManager {
     }
   }
 
+  /**
+   * get the Spot associated to the given location
+   * @param location
+   * @returns {null}
+   */
   getSpot(location) {
-    Utils.each(
-      this._generateFunctions,
-      function (generationFunction, locationPrefix) {
-        if (location.startsWith(locationPrefix)) {
-          //console.log("Generating spot: " + location);
-          generationFunction(location.substring(locationPrefix.length));
-        }
+    for (const key in this._generateFunctions){
+      let generationFunction = this._generateFunctions[key];
+      if (location.startsWith(key)) {
+        //console.log("Generating spot: " + location);
+        generationFunction(location.substring(key.length));
       }
-    );
+    }
     return this._spots[location] || null;
   }
 
-  each(callback) {
-    Utils.each(this._spots, callback);
-  }
-
+  /**
+   * clears the associated Spots and generation functions
+   */
   clear() {
-    Utils.each(this._spots, function (spot) {
+    for (const spot of this._spots) {
       this._game.dragAndDropManager.unconfigureSpot(spot);
-    });
+    }
     this._spots = {};
     this._generateFunctions = {};
   }
