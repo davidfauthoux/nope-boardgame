@@ -1,5 +1,4 @@
 
-import { Utils } from "../Utils.class.js";
 
 export class SpotManager {
   /**
