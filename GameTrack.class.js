@@ -25,7 +25,7 @@ export class GameTrack {
   /**
    * moves an Item of a certain kind to another Spot in the Track
    * @param {string} kind
-   * @param {number} count
+   * @param count
    * @returns {{from: GameSpot, to: GameSpot}}
    */
   move(kind, count) {
@@ -39,7 +39,8 @@ export class GameTrack {
         to: new GameSpot(this._stack, this._game, null),
       };
     }
-
+    console.log("OSK "+l+" "+typeof l)
+    console.log("OSK "+count+" "+typeof count)
     let from = this._track.spots[l].spot;
     let next = this._track.spots[l + count].spot;
     this._stack({
@@ -59,7 +60,7 @@ export class GameTrack {
   /**
    * finds an Item of a certain kind in the current Track
    * @param {string} kind
-   * @returns {null|undefined}
+   * @returns
    */
   find(kind) {
     if (kind === undefined) {
@@ -69,11 +70,11 @@ export class GameTrack {
     for (const name in this._track.spots){
       let s = this._track.spots[name].spot;
       if (found !== null) {
-        return;
+        return found;
       }
       let i = s.getItemInstance(kind);
       if (i !== null) {
-        found = name;
+        found = Number(name);
       }
     }
     if (found === null) {
