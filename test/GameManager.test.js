@@ -1,4 +1,3 @@
-import { GameManager } from "../GameManager.class.js";
 
 describe("Verify GameManager functions", () => {
 
