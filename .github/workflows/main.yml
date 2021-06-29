@@ -13,9 +13,9 @@ jobs:
     steps:
      
       - name: Clone Nop
-        run:  git clone https://${{ secrets.REPO }}@github.com/davidfauthoux/nop.git nop
+        run:  git clone -branch develop https://${{ secrets.REPO }}@github.com/davidfauthoux/nop.git nop
       - name: Clone Boardgame
-        run: cd nop/nope && git clone https://github.com/davidfauthoux/nope-boardgame.git boardgame
+        run: cd nop/nope && git clone -branch develop https://github.com/davidfauthoux/nope-boardgame.git boardgame
    
       - name: Install dependencies
         run:  cd nop/nope && yarn
