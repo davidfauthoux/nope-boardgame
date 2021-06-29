@@ -1,4 +1,4 @@
-import { Spot } from "../Spot.class.js";
+import { Spot } from "./Spot.class.js";
 
 export class Pool {
   /**
