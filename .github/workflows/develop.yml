@@ -16,7 +16,7 @@ jobs:
         run:  git clone --branch develop https://${{ secrets.REPO }}@github.com/davidfauthoux/nop.git nop && pwd && cd nop && pwd
       - name: Clone Boardgame
         run: cd nop/nope && git clone --branch develop https://github.com/davidfauthoux/nope-boardgame.git boardgame && cd boardgame && pwd
-   
+        
       - name: Install dependencies
         run:  cd nop/nope && yarn
  

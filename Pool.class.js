@@ -1,6 +1,13 @@
-import { Spot } from "../Spot.class.js";
+import { Spot } from "./Spot.class.js";
 
 export class Pool {
+  /**
+   * creates new Pool (name,properties) from a Layout in a given Game
+   * @param {Layout} layout
+   * @param {Game} game
+   * @param {string} name
+   * @param properties
+   */
   constructor(layout, game, name, properties) {
     this._game = game;
     this.name = name;
@@ -8,7 +15,7 @@ export class Pool {
 
     layout.$.addClass("pool").addClass("pool-" + name);
 
-    var i = name.indexOf("-");
+    let i = name.indexOf("-");
     if (i >= 0) {
       layout.$.addClass("pool-" + name.substring(0, i) + "-_");
     }
@@ -28,6 +35,9 @@ export class Pool {
     game.spotManager.registerSpot(this.spot.spot);
   }
 
+  /**
+   * destroys this Pool
+   */
   destroy() {
     this._game.spotManager.unregisterSpot(this.spot.spot);
   }

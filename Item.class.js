@@ -66,17 +66,17 @@ export class Item {
             });
             var prevSpot = game.spotManager.getSpot(extraSpotLocation);
             if (prevSpot !== null) {
-              prevSpot.eachItemInstances(function (ii) {
-                // console.log("Adding to extra spot " + extraSpotLocation + ": " + ii.item.kind);
+              for (const key in prevSpot._itemInstances){
+                let ii = prevSpot._itemInstances[key];
                 extraSpot.addItem(
-                  ii.item.kind,
-                  ii.infinite ? undefined : ii.count,
-                  ii.liveId
+                    ii.item.kind,
+                    ii.infinite ? undefined : ii.count,
+                    ii.liveId
                 );
                 Utils.each(ii.state, function (v, k) {
                   extraSpot.setItemState(ii.item.kind, k, v);
                 });
-              });
+              }
               prevSpot.destroy();
             }
             game.spotManager.registerSpot(extraSpot); // We do not unregister on item delete, the spot may become a ghost but that's ok
