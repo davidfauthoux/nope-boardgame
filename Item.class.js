@@ -69,8 +69,8 @@ export class Item {
             });
             let prevSpot = game.spotManager.getSpot(extraSpotLocation);
             if (prevSpot !== null) {
-              prevSpot.eachItemInstances(function (ii) {
-                // console.log("Adding to extra spot " + extraSpotLocation + ": " + ii.item.kind);
+              for (const key in prevSpot._itemInstances){
+                let ii = prevSpot._itemInstances[key];
                 extraSpot.addItem(
                     ii.item.kind,
                     ii.infinite ? undefined : ii.count,

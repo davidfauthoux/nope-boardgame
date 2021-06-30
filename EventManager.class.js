@@ -314,11 +314,12 @@ export class EventManager {
       game.loading(true);
 
       game.newsManager.clear();
-      game.spotManager.each(function (s) {
-        s.eachItemInstances(function (i) {
-          s.destroyItem(i.item.kind);
-        });
-      });
+      for (const key in game.spotManager) {
+        let s = game.spotManager[key];
+        for (const key2 in s._itemInstances) {
+          s.destroyItem(s._itemInstances[key2].item.kind);
+        }
+      }
       game.gameManager.clear();
       game.chatManager.discardFriendMice();
       Layout.fit();
