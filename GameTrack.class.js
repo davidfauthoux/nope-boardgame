@@ -1,7 +1,12 @@
 import { GameSpot } from "./GameSpot.class.js";
-import { Utils } from "../Utils.class.js";
 
 export class GameTrack {
+  /**
+   * connects a given Track to a given Game
+   * @param stack
+   * @param {Game} game
+   * @param {Track} track
+   */
   constructor(stack, game, track) {
     this._stack = stack;
     this._game = game;
@@ -9,24 +14,35 @@ export class GameTrack {
     this.name = track === null ? undefined : track.name;
   }
 
+  /**
+   * returns Track's size
+   * @returns {*}
+   */
   size() {
     return this._track.size;
   }
 
+  /**
+   * moves an Item of a certain kind to another Spot in the Track
+   * @param {string} kind
+   * @param {number} count
+   * @returns {{from: GameSpot, to: GameSpot}}
+   */
   move(kind, count) {
     if (count === undefined) {
       count = 1;
     }
-    var l = this.find(kind);
+    let l = this.find(kind);
     if (l === undefined || l + count >= this._track.size || l + count < 0) {
       return {
         from: new GameSpot(this._stack, this._game, null),
         to: new GameSpot(this._stack, this._game, null),
       };
     }
-
-    var from = this._track.spots[l].spot;
-    var next = this._track.spots[l + count].spot;
+    console.log("OSK "+l+" "+typeof l)
+    console.log("OSK "+count+" "+typeof count)
+    let from = this._track.spots[l].spot;
+    let next = this._track.spots[l + count].spot;
     this._stack({
       action: "move",
       kind: kind,
@@ -41,27 +57,37 @@ export class GameTrack {
     };
   }
 
+  /**
+   * finds an Item of a certain kind in the current Track
+   * @param {string} kind
+   * @returns {number|undefined|null}
+   */
   find(kind) {
     if (kind === undefined) {
       return undefined;
     }
-    var found = null;
-    Utils.each(this._track.spots, function (s, l) {
-      s = s.spot;
+    let found = null;
+    for (const name in this._track.spots){
+      let s = this._track.spots[name].spot;
       if (found !== null) {
-        return;
+        return found;
       }
-      var i = s.getItemInstance(kind);
+      let i = s.getItemInstance(kind);
       if (i !== null) {
-        found = l;
+        found = Number(name);
       }
-    });
+    }
     if (found === null) {
       return undefined;
     }
     return found;
   }
 
+  /**
+   * resets an Item of a certain kind in the current Track
+   * @param kind
+   * @returns {{from: GameSpot, to: GameSpot}}
+   */
   reset(kind) {
     if (kind === undefined) {
       return {
@@ -69,18 +95,18 @@ export class GameTrack {
         to: new GameSpot(this._stack, this._game, null),
       };
     }
-    var lastFound = null;
-    var first = null;
-    Utils.each(this._track.spots, function (s) {
-      s = s.spot;
+    let lastFound = null;
+    let first = null;
+    for (let s of this._track.spots){
+      let s = s.spot;
       if (first !== null) {
         first = s;
       }
-      var i = s.getItemInstance(kind);
+      let i = s.getItemInstance(kind);
       if (i !== null) {
         lastFound = i;
       }
-    });
+    }
     if (lastFound !== null && first !== null && first !== lastFound.spot) {
       this._stack({
         action: "move",

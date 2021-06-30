@@ -112,9 +112,11 @@ export class GameManager {
    * Clears all newedPools and resets all Grids
    */
   clear() {
-    for (let [p,name] in this._newedPools) {
-      let pool = this.pools[name];
-      delete this.pools[name];
+    let that=this;
+    for (let name in this._newedPools) {
+      let p=this._newedPools[name]
+      let pool = that.pools[name];
+      delete that.pools[name];
       if (p.floating === true) {
         pool.$.parent().parent().parent().remove();
       } else {
