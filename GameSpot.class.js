@@ -101,10 +101,10 @@ export class GameSpot {
     let that = this;
     let a = [];
     if (this._spot !== null) {
-      this._spot.eachItemInstances(function (i) {
-        let item = new GameItem(that._stack, that._game, i);
+      for (const key in this._spot._itemInstances){
+        var item = new GameItem(that._stack, that._game, this._spot._itemInstances[key]);
         a.push(item);
-      });
+      }
     }
     return a;
   }
