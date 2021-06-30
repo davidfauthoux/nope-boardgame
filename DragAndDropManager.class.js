@@ -13,8 +13,8 @@ export class DragAndDropManager {
     var draggingDiv = null;
 
     var setAllSpotsHoverable = function () {
-      for (const key in game.spotManager) {
-        let spot = game.spotManager[key]
+      for (const key in game.spotManager._spots) {
+        let spot = game.spotManager._spots[key]
         spot.$.addClass("hoverable");
         for (const key2 in spot._itemInstances) {
           spot._itemInstances[key2].$.removeClass("hoverable");
@@ -22,8 +22,8 @@ export class DragAndDropManager {
       }
     };
     var setAllItemsHoverable = function () {
-      for (const key in game.spotManager) {
-        let spot = game.spotManager[key]
+      for (const key in game.spotManager._spots) {
+        let spot = game.spotManager._spots[key]
         spot.$.removeClass("hoverable");
         for (const key2 in spot._itemInstances){
           let item = spot._itemInstances[key2];
