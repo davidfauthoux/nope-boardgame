@@ -1,6 +1,7 @@
-"use strict";
+import { UserInteraction } from "../UserInteraction.class.js";
 
-class Administration {
+
+export class Administration {
   constructor(rootLayout, layout, game) {
     this._adminLayout = layout.layout().east().horizontal();
     layout.$.addClass("administration");

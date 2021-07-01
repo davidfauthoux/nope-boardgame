@@ -1,7 +1,30 @@
-import {GameManager} from "./GameManager.class.js";
+import { Layout } from "../Layout.class.js";
+import { DomUtils } from "../DomUtils.class.js";
+import { Heap } from "../Async.class.js";
+import { Server } from "../Server.class.js";
+import { EventManager } from "./EventManager.class.js";
+import { GeneralReference } from "./GeneralReference.class.js";
+import { TriggerManager } from "./TriggerManager.class.js";
+import { ScriptExecution } from "./ScriptExecution.class.js";
+import { ChatManager } from "./ChatManager.class.js";
+import { SpotManager } from "./SpotManager.class.js";
+import { GameManager } from "./GameManager.class.js";
+import { UserInteraction } from "../UserInteraction.class.js";
+import { Administration } from "./Administration.class.js";
+import { FriendFaces } from "./FriendFaces.class.js";
+import { NewsManager } from "./NewsManager.class.js";
+import { DragAndDropManager } from "./DragAndDropManager.class.js";
+import { VideoIcon } from "./VideoIcon.class.js";
+import { Sound } from "./Sound.class.js";
+import { ItemManager } from "./ItemManager.class.js";
+import { Store } from "../Store.class.js";
+import { LogManager } from "./LogManager.class.js";
 
 
-export class Game {
+class Game {
+  /**
+   * creates a new Game
+   */
   constructor() {
     UserInteraction.get().register(function () {
       // After a user interaction, all of this can be unmuted
@@ -9,20 +32,20 @@ export class Game {
       Sound.unmute();
     });
 
-    var game = {};
+    let game = {};
     this.game = game;
 
     game.store = new Store();
 
-    var rootLayout = new Layout();
+    let rootLayout = new Layout();
     rootLayout.fit(false);
 
     game.overlay = rootLayout.overlay();
     game.overlay.$.addClass("gameOverlay");
 
-    var required = "Chrome/80.0.3900 Firefox/75";
+    let required = "Chrome/80.0.3900 Firefox/75";
     if (!DomUtils.browser(required)) {
-      var warningOverlay = rootLayout.overlay().layout().north();
+      let warningOverlay = rootLayout.overlay().layout().north();
       warningOverlay.$.addClass("warning");
       warningOverlay
         .horizontal()
@@ -42,7 +65,7 @@ export class Game {
       );
     }
 
-    var loadingOverlay = rootLayout.overlay();
+    let loadingOverlay = rootLayout.overlay();
     loadingOverlay.$.addClass("isLoading");
     loadingOverlay
       .layout()
@@ -63,7 +86,7 @@ export class Game {
     game.logManager = new LogManager(rootLayout);
 
     //TODO Change this code with Async
-    var _download = function (
+    let _download = function (
       server,
       prefix,
       files,
@@ -76,7 +99,7 @@ export class Game {
         callback(contents);
         return;
       }
-      var file = files[i];
+      let file = files[i];
       console.log("DOWNLOADING " + file + " FROM " + server.base);
       if (
         file.endsWith(".xml") ||
@@ -85,7 +108,7 @@ export class Game {
         file.endsWith(".json")
       ) {
         console.log("Downloading " + file);
-        var contentHeap = new Heap();
+        let contentHeap = new Heap();
         server
           .download(
             new Heap((prefix === null ? "" : prefix) + file),
@@ -109,7 +132,7 @@ export class Game {
             );
           })
           .res(function () {
-            var content = contentHeap.get();
+            let content = contentHeap.get();
             console.log("Downloaded " + file);
             contents[file] = content;
             _download(
@@ -130,8 +153,8 @@ export class Game {
         _download(server, prefix, files, i + 1, defaults, contents, callback);
       }
     };
-    var listAndDownload = function (server, resourceDir, contents, callback) {
-      var listHeap = new Heap();
+    let listAndDownload = function (server, resourceDir, contents, callback) {
+      let listHeap = new Heap();
       server
         .list(new Heap(resourceDir), listHeap)
         .err(function (e) {
@@ -140,7 +163,7 @@ export class Game {
           callback(contents);
         })
         .res(function () {
-          var list = listHeap.get();
+          let list = listHeap.get();
           if (list === null) {
             contents[resourceDir] = {};
             callback(contents);
@@ -161,8 +184,8 @@ export class Game {
         })
         .run();
     };
-    var download = function (files, defaults, callback) {
-      var server = new Server("/" + Server.location().id);
+    let download = function (files, defaults, callback) {
+      let server = new Server("/" + Server.location().id);
       _download(server, null, files, 0, defaults, {}, function (contents) {
         listAndDownload(server, "../../res", contents, function (contents) {
           listAndDownload(server, "../res", contents, callback);
@@ -206,17 +229,19 @@ export class Game {
           game.chatManager = new ChatManager(game);
           game.triggerManager = new TriggerManager(game);
 
-          var res = {};
-          Utils.each(contents, function (v, k) {
+          let res = {};
+
+          for (const k in contents) {
             if (k.endsWith(".xml")) {
-              res["../" + k] = v; // { contents: v };
+              res["../" + k] = contents[k]; // { contents: contents[k] };
             }
-          });
-          var addRes = function (base) {
-            Utils.each(contents[base], function (v, k) {
-              if (v === null) {
+          }
+          let addRes = function (base) {
+
+            for (const k in contents[base]) {
+              if (contents[base][k] === null || contents[base][k] === undefined) {
                 if (k.endsWith(".mp3")) {
-                  var soundId = k.substring(0, k.length - ".mp3".length);
+                  let soundId = k.substring(0, k.length - ".mp3".length);
                   game.generalReference.setSound(soundId, base + "/" + k);
                   /*%%
 									if (soundId.startsWith("../res/")) {
@@ -230,9 +255,9 @@ export class Game {
                   // Ignored
                 }
               } else {
-                res[k] = v; // { contents: v };
+                res[k] = contents[base][k]; // { contents: v };
               }
-            });
+            }
           };
           addRes("../../res");
           addRes("../res");
@@ -250,12 +275,15 @@ export class Game {
     };
   }
 
+  /**
+   * launch the current game
+   */
   launch() {
     this._launch();
   }
 }
 
 $(function () {
-  var game = new Game();
+  let game = new Game();
   game.launch();
 });

@@ -1,6 +1,9 @@
-"use strict";
+import { Utils } from "../Utils.class.js";
+import { Multimap } from "../Multimap.class.js";
+import { GeneralReference } from "./GeneralReference.class.js";
+import { ExecutionContext } from "./ExecutionContext.class.js";
 
-class TriggerManager {
+export class TriggerManager {
   constructor(game) {
     var that = this;
 
@@ -50,11 +53,12 @@ class TriggerManager {
         }
 
         console.log("Checking if should run script in: " + spot.location);
-        spot.eachItemInstances(function (i) {
+        for (const key in spot._itemInstances){
+          let i = spot._itemInstances[key];
           that._instantTriggers.get(i.item.kind).each(function (f) {
             //TODO Remove instant triggers if useless
             console.log(
-              "Instant script triggered (" +
+                "Instant script triggered (" +
                 i.item.kind +
                 " in " +
                 spot.location +
@@ -66,7 +70,7 @@ class TriggerManager {
           if (foundItemInstance !== null) {
             that._dropinTriggers.get(i.item.kind).each(function (f) {
               console.log(
-                "Dropin script triggered (" +
+                  "Dropin script triggered (" +
                   i.item.kind +
                   " in " +
                   spot.location +
@@ -75,7 +79,7 @@ class TriggerManager {
               exec.push(f(from, foundItemInstance, spot, null));
             });
           }
-        });
+        }
 
         console.log(exec.length + " scripts to run in: " + spot.location);
       }

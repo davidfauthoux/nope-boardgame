@@ -1,6 +1,19 @@
-"use strict";
+import { Spot } from "./Spot.class.js";
 
-class Track {
+export class Track {
+  /**
+   * creates a new Track (name,title,size,vertical,start,step,limit,reversed) from a Layout in a given Game
+   * @param {Layout} layout
+   * @param {Game} game
+   * @param {string} name
+   * @param {string|null} title
+   * @param {number} size
+   * @param {boolean} vertical
+   * @param {number} start
+   * @param {number} step
+   * @param {number|null} limit
+   * @param {boolean} reversed
+   */
   constructor(
     layout,
     game,
@@ -31,13 +44,13 @@ class Track {
 
     this.$ = layout.$;
 
-    var locationPrefix = "track-" + name + "-";
+    let locationPrefix = "track-" + name + "-";
 
     this.spots = [];
-    var that = this;
-    var level = 0;
+    let that = this;
+    let level = 0;
     if (vertical) {
-      var currentContainedLayout;
+      let currentContainedLayout;
       if (limit !== null) {
         currentContainedLayout = layout.horizontal().add().vertical();
       } else {
@@ -45,21 +58,21 @@ class Track {
       }
 
       if (title !== null) {
-        var levelLayout = currentContainedLayout.add();
+        let levelLayout = currentContainedLayout.add();
         levelLayout
           .layout()
           .inside()
           .set($("<div>").addClass("title").addClass("mainTitle").text(title));
         levelLayout.layout().west().set($("<div>").addClass("title").text(""));
       }
-      Utils.loop(start, start + size * step, step, function (i) {
+      for (let i = start; i < start + size * step; i = i + step) {
         if (currentContainedLayout === null) {
           currentContainedLayout = layout.horizontal().add().vertical();
         }
-        var levelLayout = reversed
+        let levelLayout = reversed
           ? currentContainedLayout.predd()
           : currentContainedLayout.add();
-        var spot = new Spot(
+        let spot = new Spot(
           levelLayout.layout().inside(),
           game,
           locationPrefix + level,
@@ -84,28 +97,27 @@ class Track {
         if (limit !== null && level % limit === 0) {
           currentContainedLayout = null;
         }
-      });
+      }
     } else {
-      var currentContainedLayout;
+      let currentContainedLayout;
       if (limit !== null) {
         currentContainedLayout = layout.vertical().add().horizontal();
       } else {
         currentContainedLayout = layout.horizontal();
       }
-
-      Utils.loop(start, start + size * step, step, function (i) {
+      for (let i = start; i < start + size * step; i = i + step) {
         if (currentContainedLayout === null) {
           currentContainedLayout = layout.vertical().add().horizontal();
         }
-        var levelLayout = currentContainedLayout.add();
-        var spot = new Spot(
+        let levelLayout = currentContainedLayout.add();
+        let spot = new Spot(
           levelLayout.layout().inside(),
           game,
           locationPrefix + level,
           { overlayable: true, layout: "vertical" }
         );
         game.spotManager.registerSpot(spot);
-        var t = $("<div>").addClass("title");
+        let t = $("<div>").addClass("title");
         if (level === 0 && title !== null) {
           t.addClass("mainTitle").text(title);
         } else {
@@ -122,7 +134,7 @@ class Track {
         if (limit !== null && level % limit === 0) {
           currentContainedLayout = null;
         }
-      });
+      }
     }
   }
 }
