@@ -1,10 +1,13 @@
 export class Throttle {
+  /**
+   * creates a new Throttle
+   */
   constructor() {
-    var that = this;
+    let that = this;
     this.throttle = 0.05;
 
-    var toExecute = null;
-    var timeoutId = null;
+    let toExecute = null;
+    let timeoutId = null;
     this._execute = function (f) {
       toExecute = f;
       if (timeoutId === null) {
@@ -19,6 +22,10 @@ export class Throttle {
     };
   }
 
+  /**
+   * executes throttle
+   * @param f
+   */
   execute(f) {
     this._execute(f);
   }
