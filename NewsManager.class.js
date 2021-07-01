@@ -2,12 +2,16 @@ import { UserInteraction } from "../UserInteraction.class.js";
 import { Administration } from "./Administration.class.js";
 import { Layout } from "../Layout.class.js";
 import { FaceIcon } from "./FaceIcon.class.js";
-import { Utils } from "../Utils.class.js";
 import { Server } from "../Server.class.js";
 
 export class NewsManager {
+  /**
+   * creates a new (unique) NewManager for a given Game
+   * @param {Layout} layout
+   * @param game
+   */
   constructor(layout, game) {
-    var that = this;
+    let that = this;
 
     this._game = game;
 
@@ -29,7 +33,7 @@ export class NewsManager {
         .$.addClass("historyButton")
         .addClass("markButton"),
       function () {
-        var event = { action: "mark", mark: Server.uuid() };
+        let event = { action: "mark", mark: Server.uuid() };
         game.eventManager.stack(event);
         game.eventManager.parse(event);
       }
@@ -38,7 +42,7 @@ export class NewsManager {
     UserInteraction.get().click(
       this._backButton.addClass("historyButton").addClass("backButton"),
       function () {
-        var to;
+        let to;
         if (that._countEvents > 0) {
           if (that._marks.length < 1) {
             to = null;
@@ -55,7 +59,7 @@ export class NewsManager {
         if (to !== null) {
           game.loading(true);
           setTimeout(function () {
-            var event = { action: "seek", to: to };
+            let event = { action: "seek", to: to };
             game.eventManager.stack(event);
             game.eventManager.parse(event);
           }, 100);
@@ -69,7 +73,7 @@ export class NewsManager {
         if (that._seek) {
           game.loading(true);
           setTimeout(function () {
-            var event = { action: "back" };
+            let event = { action: "back" };
             game.eventManager.stack(event);
             game.eventManager.parse(event);
           }, 100);
@@ -111,7 +115,7 @@ export class NewsManager {
     this._confirmDiv = null;
     this._confirmTimeoutId = null;
 
-    var storeKey = Administration.storeKey("news");
+    let storeKey = Administration.storeKey("news");
     if (game.store.get(storeKey) === "active") {
       this._active = true;
       this._rootLayout.show();
@@ -159,12 +163,20 @@ export class NewsManager {
     }
   }
 
+  /**
+   * checks if Manager is active
+   * @returns {boolean|*}
+   */
   isActive() {
     return this._active;
   }
 
+  /**
+   * activates (true) or deactivates (false) the Manager
+   * @param {boolean} flag
+   */
   activate(flag) {
-    var storeKey = Administration.storeKey("news");
+    let storeKey = Administration.storeKey("news");
     this._game.store.set(storeKey, flag ? "active" : null);
     if (flag) {
       this._rootLayout.show();
@@ -177,6 +189,9 @@ export class NewsManager {
     Layout.fit();
   }
 
+  /**
+   * clears everything from the Manager
+   */
   clear() {
     this._marks = [];
     this._countEvents = 0;
@@ -199,10 +214,14 @@ export class NewsManager {
     }
   }
 
+  /**
+   * add or remove class reversed to the connected div
+   * @param {number} id
+   */
   lineReversed(id) {
     this._clearConfirm();
 
-    var div = $("#newsLine-" + id);
+    let div = $("#newsLine-" + id);
     if (!div.hasClass("reversed")) {
       div.addClass("reversed");
     } else {
@@ -210,6 +229,14 @@ export class NewsManager {
     }
   }
 
+  /**
+   * Adds a line to the associated news (id)
+   * @param id
+   * @param liveId
+   * @param texts
+   * @param reverse
+   * @param reverseback
+   */
   appendLine(id, liveId, texts, reverse, reverseback) {
     if (!this._active) {
       return;
@@ -217,17 +244,17 @@ export class NewsManager {
 
     this._clearConfirm();
 
-    var outside = function (container, div) {
+    let outside = function (container, div) {
       return div.position().top >= container.height();
     };
 
-    var that = this;
+    let that = this;
 
-    var l = new Layout();
+    let l = new Layout();
     this._layout.$.prepend(l.$);
     l.$.addClass("newsLine").attr("id", "newsLine-" + id);
 
-    var faceIcon = new FaceIcon(l.layout().west(), this._game);
+    let faceIcon = new FaceIcon(l.layout().west(), this._game);
     faceIcon.update(null, liveId);
     console.log("Adding face icon: " + liveId);
     this._game.friendFaces.add(faceIcon);
@@ -236,45 +263,44 @@ export class NewsManager {
       face: faceIcon,
       div: l.$,
     });
-
-    Utils.each(texts, function (t) {
-      var text = t.text;
+    for (const t of texts) {
+      let text = t.text;
       if (text === undefined) {
         return;
       }
 
-      var locations = t.locations;
-      var d = l.layout().inside().vertical().add().$.addClass("newsText");
+      let locations = t.locations;
+      let d = l.layout().inside().vertical().add().$.addClass("newsText");
       d.text(text);
 
       if (locations !== undefined) {
         UserInteraction.get().click(
-          d.addClass("newsTextWithLocations"),
-          function () {
-            if (that._lineHighlight !== null) {
-              that._lineHighlight.removeClass("highlight");
-            }
-            Utils.each(that._spotHighlights, function (d) {
-              d.removeClass("highlight");
-            });
-            that._spotHighlights = [];
-            if (that._lineHighlight === d) {
-              that._lineHighlight = null;
-              return;
-            }
-            that._lineHighlight = d;
-            Utils.each(locations, function (location) {
-              var spot = that._game.spotManager.getSpot(location);
-              if (spot !== null) {
-                that._spotHighlights.push(spot.$);
-                spot.$.addClass("highlight");
+            d.addClass("newsTextWithLocations"),
+            function () {
+              if (that._lineHighlight !== null) {
+                that._lineHighlight.removeClass("highlight");
               }
-            });
-            that._lineHighlight.addClass("highlight");
-          }
+              for (const d of that._spotHighlights) {
+                d.removeClass("highlight");
+              }
+              that._spotHighlights = [];
+              if (that._lineHighlight === d) {
+                that._lineHighlight = null;
+                return;
+              }
+              that._lineHighlight = d;
+              for (const location of locations) {
+                let spot = that._game.spotManager.getSpot(location);
+                if (spot !== null) {
+                  that._spotHighlights.push(spot.$);
+                  spot.$.addClass("highlight");
+                }
+              }
+              that._lineHighlight.addClass("highlight");
+            }
         );
       }
-    });
+    }
 
     if (reverse !== undefined) {
       UserInteraction.get().click(
@@ -284,26 +310,26 @@ export class NewsManager {
             that._lineHighlight.removeClass("highlight");
             that._lineHighlight = null;
           }
-          Utils.each(that._spotHighlights, function (d) {
+          for (const d of that._spotHighlights) {
             d.removeClass("highlight");
-          });
+          }
           that._spotHighlights = [];
 
-          var confirm = l.overlay();
+          let confirm = l.overlay();
           confirm.$.addClass("newsConfirm");
-          var button = confirm
+          let button = confirm
             .layout()
             .north()
             .packed()
             .$.addClass("newsConfirmButton");
 
-          var buttonText;
-          var buttonAction;
+          let buttonText;
+          let buttonAction;
           if (l.$.hasClass("reversed")) {
             buttonText = "Confirm back?";
             buttonAction = function () {
               if (reverseback !== undefined) {
-                var event = {
+                let event = {
                   action: "multiple",
                   events: reverseback,
                 };
@@ -315,7 +341,7 @@ export class NewsManager {
           } else {
             buttonText = "Confirm reversal?";
             buttonAction = function () {
-              var event = {
+              let event = {
                 action: "multiple",
                 events: reverse,
               };
@@ -341,16 +367,17 @@ export class NewsManager {
       );
     }
 
-    var firstLineOutside = null;
-    Utils.each(this._lines, function (line, lineIndex) {
+    let firstLineOutside = null;
+    for (const lineIndex in this._lines) {
+      let line = this._lines[lineIndex];
       if (firstLineOutside !== null || outside(that._layout.$, line.div)) {
         console.log("Removing outside news line: " + lineIndex);
         if (line.div === that._lineHighlight) {
           that._lineHighlight.removeClass("highlight");
           that._lineHighlight = null;
-          Utils.each(that._spotHighlights, function (d) {
+          for (const d of that._spotHighlights) {
             d.removeClass("highlight");
-          });
+          }
           that._spotHighlights = [];
         }
         line.div.remove();
@@ -360,14 +387,20 @@ export class NewsManager {
           firstLineOutside = lineIndex;
         }
       }
-    });
+    }
     if (firstLineOutside !== null) {
       this._lines = this._lines.slice(0, firstLineOutside);
     }
   }
 
+  /**
+   * handle an event with its answer
+   * @param event
+   * @param received
+   * @returns {*}
+   */
   handle(event, received) {
-    var that = this;
+    let that = this;
 
     if (event.action === "mark") {
       this._marks.push(event.mark);
@@ -390,8 +423,8 @@ export class NewsManager {
       return;
     }
 
-    var simplifyKind = function (kind) {
-      var i = kind.indexOf("-");
+    let simplifyKind = function (kind) {
+      let i = kind.indexOf("-");
       if (i < 0) {
         return kind;
       }
@@ -402,14 +435,14 @@ export class NewsManager {
         "'"
       );
     };
-    var simplifyLocation = function (location) {
-      var i = location.indexOf("-");
+    let simplifyLocation = function (location) {
+      let i = location.indexOf("-");
       if (i < 0) {
         return location;
       }
       location = location.substring(i + 1);
       i = location.indexOf("-");
-      var suffix;
+      let suffix;
       if (i < 0) {
         suffix = "";
       } else {
@@ -418,35 +451,38 @@ export class NewsManager {
       }
       return location + suffix;
     };
-    var buildText = function (context, defaultTitle) {
-      var t = context.title === undefined ? defaultTitle : context.title;
+    let buildText = function (context, defaultTitle) {
+      let t = context.title === undefined ? defaultTitle : context.title;
 
-      var count = 0;
+      let count = 0;
 
       if (context.states !== undefined) {
-        Utils.each(context.states, function (stateElements, k) {
+        for (const k in context.states) {
+          let stateElements = context.states[k];
           if (count === 0) {
             t += ": ";
           } else {
             t += ", ";
           }
           t += simplifyKind(k);
-          Utils.each(stateElements, function (stateValue, stateKey) {
+          for (const stateKey in stateElements) {
+            let stateValue = stateElements[stateKey];
             t +=
-              " " +
-              stateKey +
-              (stateValue.value === undefined
-                ? ""
-                : " (" + stateValue.value + ")");
-          });
+                " " +
+                stateKey +
+                (stateValue.value === undefined
+                    ? ""
+                    : " (" + stateValue.value + ")");
+          }
           count++;
-        });
+        }
       }
 
       if (context.kinds !== undefined) {
-        Utils.each(context.kinds, function (n, k) {
+        for (let k in context.kinds) {
+          let n = context.kinds[k];
           if (context.map !== undefined) {
-            var m = context.map[k];
+            let m = context.map[k];
             if (m !== undefined) {
               k = m;
             }
@@ -460,7 +496,7 @@ export class NewsManager {
             t += simplifyKind(k) + (n === 1 ? "" : " (" + n + ")");
             count++;
           }
-        });
+        }
       }
       if (context.title === undefined && count === 0) {
         return null;
@@ -471,8 +507,8 @@ export class NewsManager {
       return t;
     };
 
-    var interpretDrop = function (context, location, kind, count) {
-      var newsTrigger = {
+    let interpretDrop = function (context, location, kind, count) {
+      let newsTrigger = {
         location: location,
         kind: kind,
       };
@@ -498,7 +534,7 @@ export class NewsManager {
           };
           context.kinds[kind] = count;
         } else {
-          var c = context.kinds[kind];
+          let c = context.kinds[kind];
           if (c === undefined) {
             c = 0;
           }
@@ -528,12 +564,12 @@ export class NewsManager {
       return context;
     };
 
-    var interpretDestroy = function (context, location, kind, count) {
+    let interpretDestroy = function (context, location, kind, count) {
       if (kind === undefined) {
         return context;
       }
 
-      var newsTrigger = {
+      let newsTrigger = {
         location: location,
         kind: kind,
       };
@@ -559,7 +595,7 @@ export class NewsManager {
           };
           context.kinds[kind] = count;
         } else {
-          var c = context.kinds[kind];
+          let c = context.kinds[kind];
           if (c === undefined) {
             c = 0;
           }
@@ -588,8 +624,8 @@ export class NewsManager {
 
       return context;
     };
-    var interpretMove = function (context, location, to, kind, count) {
-      var newsTrigger = {
+    let interpretMove = function (context, location, to, kind, count) {
+      let newsTrigger = {
         location: to,
         from: location,
         kind: kind,
@@ -622,7 +658,7 @@ export class NewsManager {
           };
           context.kinds[kind] = count;
         } else {
-          var c = context.kinds[kind];
+          let c = context.kinds[kind];
           if (c === undefined) {
             c = 0;
           }
@@ -654,8 +690,8 @@ export class NewsManager {
 
       return context;
     };
-    var interpretPaint = function (context, location, kind, key, value) {
-      var newsTrigger = {
+    let interpretPaint = function (context, location, kind, key, value) {
+      let newsTrigger = {
         location: location,
         kind: kind,
         key: key,
@@ -675,12 +711,12 @@ export class NewsManager {
           states: {},
         };
       }
-      var c = context.states[kind];
+      let c = context.states[kind];
       if (c === undefined) {
         c = {};
         context.states[kind] = c;
       }
-      var cc = c[key];
+      let cc = c[key];
       if (cc === undefined) {
         cc = {
           value: value,
@@ -715,15 +751,15 @@ export class NewsManager {
       return context;
     };
 
-    var mergeNewLine = function () {
+    let mergeNewLine = function () {
       if (that._currentContext.text !== undefined) {
-        var locations = [];
+        let locations = [];
         locations.push(that._currentContext.location);
         if (that._currentContext.to !== undefined) {
           locations.push(that._currentContext.to);
         }
 
-        var text = that._currentContext.text();
+        let text = that._currentContext.text();
 
         if (text !== null) {
           // Finally not added...
@@ -736,7 +772,7 @@ export class NewsManager {
       that._currentContext = {};
     };
 
-    var mergeContext = function (newContext) {
+    let mergeContext = function (newContext) {
       if (newContext === null) {
         return;
       }
@@ -754,7 +790,7 @@ export class NewsManager {
       that._timeoutId = null;
     }
 
-    var reversedEvent;
+    let reversedEvent;
 
     //TODO reversedEvent = null if count === undefined ??
     if (event.action === "drop") {
@@ -808,15 +844,15 @@ export class NewsManager {
         )
       );
     } else if (event.action === "paint") {
-      var paintedSpot = that._game.spotManager.getSpot(event.location);
+      let paintedSpot = that._game.spotManager.getSpot(event.location);
       if (paintedSpot === null) {
         return context;
       }
-      var paintedItem = paintedSpot.getItemInstance(event.kind);
+      let paintedItem = paintedSpot.getItemInstance(event.kind);
       if (paintedItem === null) {
         return context;
       }
-      var currentState = paintedItem.state[event.key];
+      let currentState = paintedItem.state[event.key];
 
       reversedEvent = {
         action: "paint",
@@ -858,7 +894,7 @@ export class NewsManager {
     that._timeoutId = setTimeout(function () {
       mergeNewLine();
 
-      var id = Server.uuid();
+      let id = Server.uuid();
 
       if (that._mergedContext.reverse !== null) {
         that._mergedContext.reverse.push({
@@ -873,7 +909,7 @@ export class NewsManager {
         });
       }
 
-      var stripped = that._mergedContext.texts;
+      let stripped = that._mergedContext.texts;
       if (stripped.length > 10) {
         stripped = stripped.slice(0, 10 - 1);
         stripped.push({
