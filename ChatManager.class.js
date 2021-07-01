@@ -536,8 +536,8 @@ export class ChatManager {
 			});
 		}
 		*/
-    for (const friend of this._chatMap) {
-      friend.createOut(type, stream);
+    for (const key in this._chatMap) {
+      this._chatMap[key].createOut(type, stream);
     }
   }
 
