@@ -314,8 +314,8 @@ export class EventManager {
       game.loading(true);
 
       game.newsManager.clear();
-      for (const key in game.spotManager) {
-        let s = game.spotManager[key];
+      for (const key in game.spotManager._spots) {
+        let s = game.spotManager._spots[key];
         for (const key2 in s._itemInstances) {
           s.destroyItem(s._itemInstances[key2].item.kind);
         }
