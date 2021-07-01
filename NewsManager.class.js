@@ -720,7 +720,6 @@ export class NewsManager {
       if (cc === undefined) {
         cc = {
           value: value,
-          previous: currentState,
         };
       } else {
         cc = {
