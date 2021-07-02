@@ -98,14 +98,14 @@ class Game {
         return;
       }
       var file = files[i];
-      console.log("DOWNLOADING " + file + " FROM " + server.base);
+      //console.log("DOWNLOADING " + file + " FROM " + server.base);
       if (
         file.endsWith(".xml") ||
         file.endsWith(".css") ||
         file.endsWith(".js") ||
         file.endsWith(".json")
       ) {
-        console.log("Downloading " + file);
+        //console.log("Downloading " + file);
         var contentHeap = new Heap();
         server
           .download(
@@ -186,15 +186,17 @@ class Game {
       var server = new Server("/" + Server.location().id);
       _download(server, null, files, 0, defaults, {}, function (contents) {
         listAndDownload(server, "../../res", contents, function (contents) {
-          listAndDownload(server, "../res", contents, callback);
+          listAndDownload(server, "../res", contents, function (contents){
+            listAndDownload(server,"../items",contents,callback);
+          });
         });
+
       });
     };
 
     this._launch = function () {
       download(
         [
-          "../game.declare.xml",
           "../game.layout.xml",
           "../game.css",
           "../game.prepare.js",
@@ -228,11 +230,27 @@ class Game {
           game.triggerManager = new TriggerManager(game);
 
           var res = {};
+          let items = {};
           Utils.each(contents, function (v, k) {
+
             if (k.endsWith(".xml")) {
               res["../" + k] = v; // { contents: v };
+
+            }
+            if (k==="../items"){
+              /*v.forEach((file,dataFile) => {
+                items[file]=dataFile;
+              });*/
+              //console.debug(v);
+              items=v;
+
             }
           });
+          //console.debug(items);
+          // TODO items filtrate start with ../items
+          // path : objet xml et js
+
+
           var addRes = function (base) {
             Utils.each(contents[base], function (v, k) {
               if (v === null) {
@@ -259,7 +277,7 @@ class Game {
           addRes("../res");
 
           new ScriptExecution(rootLayout.layout().inside(), game, {
-            declare: contents["../game.declare.xml"],
+            items: items,
             layout: contents["../game.layout.xml"],
             css: contents["../game.css"],
             prepare: contents["../game.prepare.js"],
