@@ -2,29 +2,33 @@ import { Server } from "../Server.class.js";
 import { FilteringServer } from "../FilteringServer.class.js";
 import { Heap, while_, false_, try_, sequence_, block_} from "../Async.class.js";
 import { Layout } from "../Layout.class.js";
-import { Utils } from "../Utils.class.js";
 
 
 export class EventManager {
+  /**
+   * creates a new (unique) EventManager for a Game
+   * @param layout
+   * @param game
+   */
   constructor(layout, game) {
-    var that = this;
+    let that = this;
 
-    var stackActivated = false;
-    var launchInit;
-    var finishInit;
+    let stackActivated = false;
+    let launchInit;
+    let finishInit;
     let launchReadEvent;
     let stopReadEvent;
-    var gameInit = null;
+    let gameInit = null;
 
-    var savingDiv = $("<div>").text("Saving...").addClass("saving").hide();
-    var errorDiv = $("<div>").text("Connection error").addClass("error").hide();
-    var horizontal = layout.layout().north().layout().west().horizontal();
+    let savingDiv = $("<div>").text("Saving...").addClass("saving").hide();
+    let errorDiv = $("<div>").text("Connection error").addClass("error").hide();
+    let horizontal = layout.layout().north().layout().west().horizontal();
     horizontal.add().set(savingDiv);
     horizontal.add().set(errorDiv);
 
-    var showSavingCount = 0;
-    var showSavingTimeoutId = undefined;
-    var showSaving = function () {
+    let showSavingCount = 0;
+    let showSavingTimeoutId = undefined;
+    let showSaving = function () {
       if (showSavingCount === 0) {
         clearTimeout(showSavingTimeoutId);
         showSavingTimeoutId = setTimeout(function () {
@@ -33,7 +37,7 @@ export class EventManager {
       }
       showSavingCount++;
     };
-    var hideSaving = function (err) {
+    let hideSaving = function (err) {
       showSavingCount--;
       if (showSavingCount === 0) {
         clearTimeout(showSavingTimeoutId);
@@ -49,15 +53,15 @@ export class EventManager {
       }
     };
 
-    var parseEvent = function (event, received, doIt) {
+    let parseEvent = function (event, received, doIt) {
       if (event.action === "multiple") {
-        var ok = true;
-        Utils.each(event.events, function (e) {
+        let ok = true;
+        for (const e of event.events) {
           e.live = event.live;
           if (!parseEvent(e, received, doIt)) {
             ok = false;
           }
-        });
+        }
         return ok;
       }
 
@@ -107,12 +111,12 @@ export class EventManager {
       }
 
       if (event.action === "paint") {
-        var spot = game.spotManager.getSpot(event.location);
+        let spot = game.spotManager.getSpot(event.location);
         if (spot !== null) {
           if (doIt) {
             spot.setItemState(event.kind, event.key, event.value);
           } else {
-            var itemInstance = spot.getItemInstance(event.kind);
+            let itemInstance = spot.getItemInstance(event.kind);
             return game.triggerManager.watchdog(
               "paint",
               spot,
@@ -128,15 +132,15 @@ export class EventManager {
       }
 
       if (event.action === "drop") {
-        var spot = game.spotManager.getSpot(event.location);
+        let spot = game.spotManager.getSpot(event.location);
         if (spot !== null) {
           //%% if ((event.count === undefined) || (event.count > 0)) {
-          //%% var itemInstance = spot.getItemInstance(event.kind);
+          //%% let itemInstance = spot.getItemInstance(event.kind);
           //%% if ((itemInstance === null) || !itemInstance.infinite || (event.kind === "live")) {
           if (doIt) {
             spot.addItem(event.kind, event.count, event.live);
           } else {
-            var itemInstance = spot.getItemInstance(event.kind);
+            let itemInstance = spot.getItemInstance(event.kind);
             return game.triggerManager.watchdog(
               "drop",
               spot,
@@ -154,15 +158,15 @@ export class EventManager {
       }
 
       if (event.action === "destroy") {
-        var spot = game.spotManager.getSpot(event.location);
+        let spot = game.spotManager.getSpot(event.location);
         if (spot !== null) {
-          //%% var itemInstance = spot.getItemInstance(event.kind);
+          //%% let itemInstance = spot.getItemInstance(event.kind);
           //%% if (itemInstance !== null) {
           //%% if (itemInstance.infinite || (event.count === undefined) || (itemInstance.count >= event.count)) {
           if (doIt) {
             spot.destroyItem(event.kind, event.count);
           } else {
-            var itemInstance = spot.getItemInstance(event.kind);
+            let itemInstance = spot.getItemInstance(event.kind);
             return game.triggerManager.watchdog(
               "destroy",
               spot,
@@ -181,12 +185,12 @@ export class EventManager {
 
       if (event.action === "move") {
         if (event.location === event.to) {
-          var spot = game.spotManager.getSpot(event.location);
+          let spot = game.spotManager.getSpot(event.location);
           if (spot !== null) {
             if (doIt) {
               spot.updateItem(event.kind, event.live);
             } else {
-              var itemInstance = spot.getItemInstance(event.kind);
+              let itemInstance = spot.getItemInstance(event.kind);
               return game.triggerManager.watchdog(
                 "move",
                 spot,
@@ -201,23 +205,23 @@ export class EventManager {
           }
         }
 
-        var spot = game.spotManager.getSpot(event.location);
+        let spot = game.spotManager.getSpot(event.location);
         if (spot !== null) {
-          var itemInstance = spot.getItemInstance(event.kind);
+          let itemInstance = spot.getItemInstance(event.kind);
           if (itemInstance !== null) {
-            var to = game.spotManager.getSpot(event.to);
+            let to = game.spotManager.getSpot(event.to);
             if (to !== null) {
               if (doIt) {
-                var state = itemInstance.state;
+                let state = itemInstance.state;
                 spot.destroyItem(event.kind, event.count);
                 if (state.count === undefined) {
                   to.addItem(event.kind, event.count, event.live);
-                  Utils.each(state, function (v, k) {
-                    if (k.startsWith("auto_")) {
+                  for (const key in state) {
+                    if (key.startsWith("auto_")) {
                       return;
                     }
-                    to.setItemState(event.kind, k, v);
-                  });
+                    to.setItemState(event.kind, key, state[key]);
+                  }
                 }
               } else {
                 return game.triggerManager.watchdog(
@@ -261,7 +265,7 @@ export class EventManager {
 
       if (event.action === "play") {
         if (doIt && stackActivated) {
-          var s = game.generalReference.getSound(event.sound);
+          let s = game.generalReference.getSound(event.sound);
           if (s !== null) {
             s.play();
           }
@@ -280,12 +284,12 @@ export class EventManager {
     };
 
     /*%%%
-		var toRun = [];
-		var toRunFinished = false;
-		var requestToRunFinished = false;
+		let toRun = [];
+		let toRunFinished = false;
+		let requestToRunFinished = false;
 		setInterval(function() {
 			if (toRun.length > 0) {
-				var f = toRun.shift();
+				let f = toRun.shift();
 				f();
 			} else {
 				if (requestToRunFinished) {
@@ -293,7 +297,7 @@ export class EventManager {
 				}
 			}
 		}, 50);
-		var appendToRun = function(f) {
+		let appendToRun = function(f) {
 			if (toRunFinished) {
 				f();
 				return;
@@ -305,8 +309,8 @@ export class EventManager {
 		toRunFinished = true; // Deactivate to replay in slow motion when reload
 		*/
 
-    var server = new FilteringServer(new Server("/" + Server.location().id));
-    var hasEvents = false;
+    let server = new FilteringServer(new Server("/" + Server.location().id));
+    let hasEvents = false;
 
     launchInit = function () {
       hasEvents = false;
@@ -314,11 +318,12 @@ export class EventManager {
       game.loading(true);
 
       game.newsManager.clear();
-      game.spotManager.each(function (s) {
-        s.eachItemInstances(function (i) {
-          s.destroyItem(i.item.kind);
-        });
-      });
+      for (const key in game.spotManager._spots) {
+        let s = game.spotManager._spots[key];
+        for (const key2 in s._itemInstances) {
+          s.destroyItem(s._itemInstances[key2].item.kind);
+        }
+      }
       game.gameManager.clear();
       game.chatManager.discardFriendMice();
       Layout.fit();
@@ -342,7 +347,7 @@ export class EventManager {
       stopReadEvent();
       let stopHeap = new Heap(false);
       currentStopHeap = stopHeap;
-      var eventHeap = new Heap();
+      let eventHeap = new Heap();
       while_(false_(stopHeap))
         .do_(
           try_(
@@ -350,7 +355,7 @@ export class EventManager {
               Server.fullHistory(server, eventHeap),
               // sleep_(0.1),
               block_(function () {
-                var event = eventHeap.get();
+                let event = eventHeap.get();
                 if (event.old !== undefined) {
                   if (event.old.length === 0) {
                     that._reset();
@@ -425,7 +430,7 @@ export class EventManager {
 			*/
     };
 
-    var stack = function (event) {
+    let stack = function (event) {
       if (!stackActivated) {
         console.log(
           "Not possible to save any event during the configuration script"
@@ -451,14 +456,14 @@ export class EventManager {
 
     this._stack = function (event, liveId) {
       if (liveId !== null) {
-        event = Utils.clone(event);
+        event = {...event};
         event.live = liveId === undefined ? game.thisLiveId : liveId;
       }
       stack(event);
     };
     this._parse = function (event, liveId) {
       if (liveId !== null) {
-        event = Utils.clone(event);
+        event = {...event};
         event.live = liveId === undefined ? game.thisLiveId : liveId;
       }
       parseEvent(event, false, true);
@@ -468,7 +473,7 @@ export class EventManager {
     };
 
     this._reset = function () {
-      var stackAndParse = function (e) {
+      let stackAndParse = function (e) {
         that._parse(e);
         stackActivated = true;
         that._stack(e);
@@ -485,9 +490,9 @@ export class EventManager {
       }, 100);
     };
     /*%%
-		var that = this;
+		let that = this;
 		this._reset = function() {
-			var event = { action: "snapshot", live: game.thisLiveId };
+			let event = { action: "snapshot", live: game.thisLiveId };
 			game.newsManager.handleAdmin(event);
 			that.stack(event);
 			clear();
@@ -497,27 +502,34 @@ export class EventManager {
 			Layout.fit();
 		};
 		this._mark = function() {
-			var event = { action: "mark", live: game.thisLiveId };
+			let event = { action: "mark", live: game.thisLiveId };
 			game.newsManager.handleAdmin(event);
 			that.stack(event);
 		};
 		this._back = function() {
-			var event = { action: "back", live: game.thisLiveId };
+			let event = { action: "back", live: game.thisLiveId };
 			game.newsManager.handleAdmin(event);
 			that.stack(event);
 		};
 		this._forward = function() {
-			var event = { action: "forward", live: game.thisLiveId };
+			let event = { action: "forward", live: game.thisLiveId };
 			game.newsManager.handleAdmin(event);
 			that.stack(event);
 		};
 		%%*/
   }
 
+  /**
+   * launches the Game's initialization
+   * @param init
+   */
   launch(init) {
     this._launch(init);
   }
 
+  /**
+   * reset's the Game
+   */
   reset() {
     this._reset();
   }
@@ -536,16 +548,31 @@ export class EventManager {
 		this._forward();
 	}
 %%*/
+  /**
+   * adds an event to the stack
+   * @param event
+   * @param liveId
+   */
   stack(event, liveId) {
     console.log("Stacking: " + JSON.stringify(event));
     this._stack(event, liveId);
   }
 
+  /**
+   * parse given event
+   * @param event
+   * @param liveId
+   */
   parse(event, liveId) {
     console.log("Parsing: " + JSON.stringify(event));
     this._parse(event, liveId);
   }
 
+  /**
+   * checks if parsing is possible for this event
+   * @param event
+   * @returns {boolean|boolean|*}
+   */
   canParse(event) {
     return this._canParse(event);
   }

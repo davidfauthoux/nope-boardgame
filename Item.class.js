@@ -1,5 +1,4 @@
 import { GeneralReference } from "./GeneralReference.class.js";
-import { Utils } from "../Utils.class.js";
 import { FaceIcon } from "./FaceIcon.class.js";
 import { VideoIcon } from "./VideoIcon.class.js";
 import { Layout } from "../Layout.class.js";
@@ -8,42 +7,46 @@ import { ExecutionContext } from "./ExecutionContext.class.js";
 import { Spot } from "./Spot.class.js";
 
 export class Item {
+  /**
+   * creates a new Item in a given Game, with a given kind
+   * @param game
+   * @param {string} kind
+   */
   constructor(game, kind) {
-    var that = this;
+    let that = this;
 
     this.kind = kind;
     this.properties = game.generalReference.properties(kind);
     this.modifiers = game.generalReference.modifiers(kind);
 
-    var generalKinds = GeneralReference.getGeneralKinds(kind);
+    let generalKinds = GeneralReference.getGeneralKinds(kind);
 
     this._createInstance = function (layout, countable, liveId) {
-      var itemDiv;
-      var countItem;
-      var faceIcon = null;
+      let itemDiv;
+      let countItem;
+      let faceIcon = null;
 
       itemDiv = layout;
       itemDiv.$.addClass("item")
-        .addClass("item-" + kind)
-        .attr("data-kind", kind);
-      Utils.each(generalKinds, function (generalKind) {
+          .addClass("item-" + kind)
+          .attr("data-kind", kind);
+      for (const generalKind of generalKinds) {
         itemDiv.$.addClass("item-" + generalKind.kind);
         itemDiv.$.addClass("_-" + generalKind.suffix);
-      });
-
-      Utils.each(that.properties, function (_, k) {
+      }
+      for (const k in that.properties) {
         itemDiv.$.addClass("property-" + k);
-      });
-      Utils.each(that.modifiers, function (_, k) {
+      }
+      for (const k in that.modifiers) {
         itemDiv.$.addClass("modifier-" + k);
-      });
+      }
 
-      var innerLayout = countable
-        ? itemDiv.packed().horizontal().add()
-        : itemDiv;
+      let innerLayout = countable
+          ? itemDiv.packed().horizontal().add()
+          : itemDiv;
 
-      var extraSpots = [];
-      var defaultInputVal = "";
+      let extraSpots = [];
+      let defaultInputVal = "";
 
       if (kind === "live") {
         faceIcon = new FaceIcon(innerLayout, game);
@@ -55,28 +58,28 @@ export class Item {
         faceIcon = new VideoIcon(innerLayout, game, "audio");
         faceIcon.update(null, liveId);
       } else {
-        var foundContentDiv = game.generalReference.build(kind);
+        let foundContentDiv = game.generalReference.build(kind);
 
         if (countable) {
           foundContentDiv.find("[data-location]").append(function () {
-            var extraSpotLayout = new Layout();
-            var extraSpotLocation = $(this).attr("data-location");
-            var extraSpot = new Spot(extraSpotLayout, game, extraSpotLocation, {
+            let extraSpotLayout = new Layout();
+            let extraSpotLocation = $(this).attr("data-location");
+            let extraSpot = new Spot(extraSpotLayout, game, extraSpotLocation, {
               extra: true,
             });
-            var prevSpot = game.spotManager.getSpot(extraSpotLocation);
+            let prevSpot = game.spotManager.getSpot(extraSpotLocation);
             if (prevSpot !== null) {
-              prevSpot.eachItemInstances(function (ii) {
-                // console.log("Adding to extra spot " + extraSpotLocation + ": " + ii.item.kind);
+              for (const key in prevSpot._itemInstances){
+                let ii = prevSpot._itemInstances[key];
                 extraSpot.addItem(
-                  ii.item.kind,
-                  ii.infinite ? undefined : ii.count,
-                  ii.liveId
+                    ii.item.kind,
+                    ii.infinite ? undefined : ii.count,
+                    ii.liveId
                 );
-                Utils.each(ii.state, function (v, k) {
-                  extraSpot.setItemState(ii.item.kind, k, v);
-                });
-              });
+                for (const key in ii.state) {
+                  extraSpot.setItemState(ii.item.kind, key, ii.state[key]);
+                }
+              }
               prevSpot.destroy();
             }
             game.spotManager.registerSpot(extraSpot); // We do not unregister on item delete, the spot may become a ghost but that's ok
@@ -86,62 +89,62 @@ export class Item {
         }
 
         foundContentDiv
-          .find("input")
-          .first()
-          .replaceWith(function () {
-            defaultInputVal = $(this).val();
-            var titleDiv = $("<div>")
-              .addClass("editable")
-              .text(defaultInputVal);
+            .find("input")
+            .first()
+            .replaceWith(function () {
+              defaultInputVal = $(this).val();
+              let titleDiv = $("<div>")
+                  .addClass("editable")
+                  .text(defaultInputVal);
 
-            var input = null;
-            var onClick;
-            var backToTitle = function () {
-              input.remove();
-              input = null;
-              UserInteraction.get().click(titleDiv, onClick);
-            };
-            onClick = function () {
-              var previous = titleDiv.text();
-              var cancel = function () {
-                titleDiv.text(previous);
-                backToTitle();
+              let input = null;
+              let onClick;
+              let backToTitle = function () {
+                input.remove();
+                input = null;
+                UserInteraction.get().click(titleDiv, onClick);
               };
-              input = $("<input>").attr("spellcheck", "false").val(previous);
-              titleDiv.text("");
-              titleDiv.append(input);
-
-              titleDiv.off();
-              input.on("keydown", function (e) {
-                console.log("Key pressed in input: [" + e.key + "]");
-                if (e.key === "Enter") {
-                  var newTitle = input.val().trim();
-                  titleDiv.text(newTitle);
+              onClick = function () {
+                let previous = titleDiv.text();
+                let cancel = function () {
+                  titleDiv.text(previous);
                   backToTitle();
-                  ExecutionContext.stackAndTrigger(
-                    game,
-                    {
-                      action: "paint",
-                      key: "input",
-                      value: newTitle,
-                      kind: kind,
-                      location: countItem.spot.location,
-                    },
-                    null,
-                    countItem.spot,
-                    countItem.item
-                  );
-                } else if (e.key === "Escape") {
-                  cancel();
-                }
-              });
-              input.on("blur", cancel);
-              input.focus();
-            };
+                };
+                input = $("<input>").attr("spellcheck", "false").val(previous);
+                titleDiv.text("");
+                titleDiv.append(input);
 
-            UserInteraction.get().click(titleDiv, onClick);
-            return titleDiv;
-          });
+                titleDiv.off();
+                input.on("keydown", function (e) {
+                  console.log("Key pressed in input: [" + e.key + "]");
+                  if (e.key === "Enter") {
+                    let newTitle = input.val().trim();
+                    titleDiv.text(newTitle);
+                    backToTitle();
+                    ExecutionContext.stackAndTrigger(
+                        game,
+                        {
+                          action: "paint",
+                          key: "input",
+                          value: newTitle,
+                          kind: kind,
+                          location: countItem.spot.location,
+                        },
+                        null,
+                        countItem.spot,
+                        countItem.item
+                    );
+                  } else if (e.key === "Escape") {
+                    cancel();
+                  }
+                });
+                input.on("blur", cancel);
+                input.focus();
+              };
+
+              UserInteraction.get().click(titleDiv, onClick);
+              return titleDiv;
+            });
 
         innerLayout.set(foundContentDiv);
       }
@@ -174,11 +177,11 @@ export class Item {
           }
 
           if (
-            (countItem.count === 1 || countItem.infinite) &&
-            that.properties.count === undefined &&
-            countItem.state.count === undefined
+              (countItem.count === 1 || countItem.infinite) &&
+              that.properties.count === undefined &&
+              countItem.state.count === undefined
           ) {
-            var flag = countItem.state.auto_flag;
+            let flag = countItem.state.auto_flag;
             if (flag === undefined) {
               flag = that.properties.flag;
             }
@@ -215,14 +218,14 @@ export class Item {
             n = 1;
           }
           /*%%
-					var c;
+					let c;
 					if ((countItem.count + n) < 0) {
 						c = 0;
 					} else {
 						c = countItem.count + n;
 					}
 					*/
-          var c = countItem.count + n;
+          let c = countItem.count + n;
           // console.log("Inc item: " + countItem.count + " -> " + c);
           countItem.count = c;
           countItem._updateCountDiv();
@@ -235,7 +238,7 @@ export class Item {
           if (n === undefined) {
             n = 1;
           }
-          var c = n;
+          let c = n;
           // console.log("Set item: " + countItem.count + " -> " + c);
           countItem.count = c;
           countItem._updateCountDiv();
@@ -259,7 +262,7 @@ export class Item {
 						if (itemDiv !== null) {
 							itemDiv.$.find(".tip").remove();
 							if (value !== undefined) {
-								var tipDiv = $("<div>").addClass("tip").text(value);
+								let tipDiv = $("<div>").addClass("tip").text(value);
 								tipDiv.click(function() {
 									tipDiv.remove();
 								});
@@ -271,7 +274,7 @@ export class Item {
 					*/
 
           if (itemDiv !== null) {
-            var old = countItem.state[key];
+            let old = countItem.state[key];
             if (value === undefined) {
               if (old !== undefined) {
                 itemDiv.$.removeClass("state-" + key);
@@ -318,6 +321,13 @@ export class Item {
     };
   }
 
+  /**
+   * creates an instance for the Item
+   * @param {Layout} layout
+   * @param {boolean} countable
+   * @param {number} liveId
+   * @returns {*}
+   */
   createInstance(layout, countable, liveId) {
     return this._createInstance(layout, countable, liveId);
   }
