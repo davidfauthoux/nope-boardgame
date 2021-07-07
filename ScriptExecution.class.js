@@ -370,558 +370,276 @@ export class ScriptExecution {
       var cssComposition = new CssComposition();
       var allKindStateFound = new Multimap.Map();
       // for each files in the directory items, parse it
-      for (let it in contents.items){
-        $($.parseXML(contents.items[it])).children().first().each(function (_, item) {
-          item = $(item);
-          let tag = item.prop("tagName");
-          if (!tag) {
-            return null;
-          }
-          // tag = tag.toLowerCase();
-          if (tag === "palette") {
-            item.children().each(function (_, i) {
-              i = $(i);
-              var colorId = i.prop("tagName");
-              if (colorId === "color") {
-                colorId = i.attr("name");
-              }
-              var colorValue = i.text().trim();
-              // cssComposition.css("body { --" + colorId + ": " + colorValue + "; }");
-              cssComposition.css(
-                ".item._-" +
-                colorId +
-                " > svg { fill: " +
-                colorValue +
-                " !important; }"
-              );
-              cssComposition.css(
-                ".item._-" +
-                colorId +
-                " > span { background: " +
-                colorValue +
-                " !important; }"
-              );
-              cssComposition.css(
-                ".item._-" +
-                colorId +
-                " > div > div > svg { fill: " +
-                colorValue +
-                " !important; }"
-              );
-              cssComposition.css(
-                ".item._-" +
-                colorId +
-                " > div > div > span { background: " +
-                colorValue +
-                " !important; }"
-              );
-              cssComposition.css(
-                ".spot.state-_-" +
-                colorId +
-                " > .underlay > svg { stroke: " +
-                colorValue +
-                " !important; }"
-              );
-              cssComposition.css(
-                ".spot.state-_-" +
-                colorId +
-                " > .underlay > svg { fill: " +
-                colorValue +
-                " !important; }"
-              );
-              cssComposition.css(
-                ".spot.state-border-" +
-                colorId +
-                " > .underlay > svg { stroke: " +
-                colorValue +
-                " !important; }"
-              );
-              cssComposition.css(
-                ".spot.state-background-" +
-                colorId +
-                " > .underlay > svg { fill: " +
-                colorValue +
-                " !important; }"
-              );
-              cssComposition.css(
-                ".pool > div > .spot.state-border-" +
-                colorId +
-                " { border-color: " +
-                colorValue +
-                " !important; }"
-              );
-              cssComposition.css(
-                ".pool > div > .spot.state-background-" +
-                colorId +
-                " { background: " +
-                colorValue +
-                " !important; }"
-              );
-            });
-          } else if (tag === "item") {
-            const kind = item.children("kind").text().trim();
-            let content = null;
-            item.children().each(function (_, i) {
-              i = $(i);
-              var t = i.prop("tagName");
-              if (t === "content") {
-                if (content === null) {
-                  content = "";
+      for (let it in contents.items) {
+        $($.parseXML(contents.items[it]))
+          .children()
+          .first()
+          .each(function (_, item) {
+            item = $(item);
+            let tag = item.prop("tagName");
+            if (!tag) {
+              return null;
+            }
+            // tag = tag.toLowerCase();
+            if (tag === "palette") {
+              item.children().each(function (_, i) {
+                i = $(i);
+                var colorId = i.prop("tagName");
+                if (colorId === "color") {
+                  colorId = i.attr("name");
                 }
-                content += ("" + i[0].innerHTML).trim();
-              } else if (t === "state") {
-                var stateKey = i.attr("key");
-                var stateValue = i.attr("value");
-                if (stateValue === undefined) {
-                  stateValue = null;
-                }
-                var a = allKindStateFound.get(kind).get(stateKey);
-                if (a === null) {
-                  a = [];
-                  allKindStateFound.get(kind).put(stateKey, a);
-                }
-                a.push(stateValue);
+                var colorValue = i.text().trim();
+                // cssComposition.css("body { --" + colorId + ": " + colorValue + "; }");
+                cssComposition.css(
+                  ".item._-" +
+                    colorId +
+                    " > svg { fill: " +
+                    colorValue +
+                    " !important; }"
+                );
+                cssComposition.css(
+                  ".item._-" +
+                    colorId +
+                    " > span { background: " +
+                    colorValue +
+                    " !important; }"
+                );
+                cssComposition.css(
+                  ".item._-" +
+                    colorId +
+                    " > div > div > svg { fill: " +
+                    colorValue +
+                    " !important; }"
+                );
+                cssComposition.css(
+                  ".item._-" +
+                    colorId +
+                    " > div > div > span { background: " +
+                    colorValue +
+                    " !important; }"
+                );
+                cssComposition.css(
+                  ".spot.state-_-" +
+                    colorId +
+                    " > .underlay > svg { stroke: " +
+                    colorValue +
+                    " !important; }"
+                );
+                cssComposition.css(
+                  ".spot.state-_-" +
+                    colorId +
+                    " > .underlay > svg { fill: " +
+                    colorValue +
+                    " !important; }"
+                );
+                cssComposition.css(
+                  ".spot.state-border-" +
+                    colorId +
+                    " > .underlay > svg { stroke: " +
+                    colorValue +
+                    " !important; }"
+                );
+                cssComposition.css(
+                  ".spot.state-background-" +
+                    colorId +
+                    " > .underlay > svg { fill: " +
+                    colorValue +
+                    " !important; }"
+                );
+                cssComposition.css(
+                  ".pool > div > .spot.state-border-" +
+                    colorId +
+                    " { border-color: " +
+                    colorValue +
+                    " !important; }"
+                );
+                cssComposition.css(
+                  ".pool > div > .spot.state-background-" +
+                    colorId +
+                    " { background: " +
+                    colorValue +
+                    " !important; }"
+                );
+              });
+            } else if (tag === "item") {
+              const kind = item.children("kind").text().trim();
+              let content = null;
+              item.children().each(function (_, i) {
+                i = $(i);
+                var t = i.prop("tagName");
+                if (t === "content") {
+                  if (content === null) {
+                    content = "";
+                  }
+                  content += ("" + i[0].innerHTML).trim();
+                } else if (t === "state") {
+                  var stateKey = i.attr("key");
+                  var stateValue = i.attr("value");
+                  if (stateValue === undefined) {
+                    stateValue = null;
+                  }
+                  var a = allKindStateFound.get(kind).get(stateKey);
+                  if (a === null) {
+                    a = [];
+                    allKindStateFound.get(kind).put(stateKey, a);
+                  }
+                  a.push(stateValue);
 
-                i.children("content")
-                  .children()
-                  .each(function (_, j) {
-                    j = $(j);
+                  i.children("content")
+                    .children()
+                    .each(function (_, j) {
+                      j = $(j);
 
-                    if (content === null) {
-                      content = "";
-                    }
-                    j.addClass("if-" + stateKey);
-                    if (stateValue === null) {
-                      j.addClass("if-" + stateKey + "-_");
-                    } else {
-                      j.addClass("if-" + stateKey + "-" + stateValue);
-                    }
-                    content += ("" + j[0].outerHTML).trim();
-                  });
-                /*%%
+                      if (content === null) {
+                        content = "";
+                      }
+                      j.addClass("if-" + stateKey);
+                      if (stateValue === null) {
+                        j.addClass("if-" + stateKey + "-_");
+                      } else {
+                        j.addClass("if-" + stateKey + "-" + stateValue);
+                      }
+                      content += ("" + j[0].outerHTML).trim();
+                    });
+                  /*%%
 							Utils.each(keyValues, function(jv, jk) {
 								allStateKeyValueFound.get(jk).add(jv);
 							});
 							*/
-              }
-            });
-
-            let properties = {};
-            item.children("property").each(function (_, p) {
-              p = $(p);
-              var key;
-              var k = p.children("key");
-              if (k.length > 0) {
-                key = k.text().trim();
-              } else {
-                key = "_";
-              }
-              var v = p.children("value");
-              var value;
-              if (v.length > 0) {
-                value = v.text().trim();
-              } else {
-                value = null;
-              }
-              properties[key] = value;
-            });
-
-            var modifiers = {};
-            item.children("modifier").each(function (_, p) {
-              p = $(p);
-              var key;
-              var k = p.children("key");
-              if (k.length > 0) {
-                key = k.text().trim();
-              } else {
-                key = "_";
-              }
-              var v = p.children("value");
-              var value;
-              if (v.length > 0) {
-                value = v.text().trim();
-              } else {
-                value = null;
-              }
-              modifiers[key] = value;
-            });
-
-            var triggers = [];
-            var keyTriggers = [];
-            var dropTriggers = [];
-            var watchdogTriggers = [];
-            var newsTriggers = [];
-            item.children("trigger").each(function (_, p) {
-              var t = $(p).text().trim();
-              if (t.startsWith("key:")) {
-                var key = t.substring("key:".length).trim();
-                keyTriggers.push(key);
-              } else if (t === "instant") {
-                triggers.push({
-                  instant: kind,
-                });
-              } else if (t === "passive") {
-                triggers.push({
-                  passive: kind,
-                });
-              } else if (t === "drop") {
-                triggers.push({
-                  dropin: kind,
-                });
-              } else if (t.startsWith("drop:")) {
-                var dropKind = t.substring("drop:".length).trim();
-                dropTriggers.push(dropKind);
-              } else if (t.startsWith("news:")) {
-                var newsKind = t.substring("news:".length).trim();
-                newsTriggers.push(newsKind);
-              } else if (t.startsWith("watchdog:")) {
-                var dropKind = t.substring("watchdog:".length).trim();
-                watchdogTriggers.push(dropKind);
-              }
-            });
-            if (keyTriggers.length > 0) {
-              triggers.push({
-                keys: keyTriggers,
-              });
-            }
-            if (dropTriggers.length > 0) {
-              triggers.push({
-                drops: dropTriggers,
-              });
-            }
-            if (newsTriggers.length > 0) {
-              triggers.push({
-                news: newsTriggers,
-              });
-            }
-            if (watchdogTriggers.length > 0) {
-              triggers.push({
-                watchdogs: watchdogTriggers,
-              });
-            }
-
-            var script = null;
-            item.children("script").each(function (_, s) {
-              s = $(s).text().trim();
-              if (script === null) {
-                script = s + ";";
-              } else {
-                script += "\n" + s + ";";
-              }
-            });
-
-            if (content === "") {
-              properties.undefined = true;
-            }
-            game.generalReference.setContent(
-              kind,
-              content,
-              properties,
-              modifiers
-            );
-            if (script !== null) {
-              var scriptToRun = buildScript(script);
-              game.triggerManager.link(
-                triggers,
-                function (from, itemInstance, spot, extraContext) {
-                  return runScript(scriptToRun)(
-                    from,
-                    itemInstance,
-                    spot,
-                    extraContext
-                  );
                 }
+              });
+
+              let properties = {};
+              item.children("property").each(function (_, p) {
+                p = $(p);
+                var key;
+                var k = p.children("key");
+                if (k.length > 0) {
+                  key = k.text().trim();
+                } else {
+                  key = "_";
+                }
+                var v = p.children("value");
+                var value;
+                if (v.length > 0) {
+                  value = v.text().trim();
+                } else {
+                  value = null;
+                }
+                properties[key] = value;
+              });
+
+              var modifiers = {};
+              item.children("modifier").each(function (_, p) {
+                p = $(p);
+                var key;
+                var k = p.children("key");
+                if (k.length > 0) {
+                  key = k.text().trim();
+                } else {
+                  key = "_";
+                }
+                var v = p.children("value");
+                var value;
+                if (v.length > 0) {
+                  value = v.text().trim();
+                } else {
+                  value = null;
+                }
+                modifiers[key] = value;
+              });
+
+              var triggers = [];
+              var keyTriggers = [];
+              var dropTriggers = [];
+              var watchdogTriggers = [];
+              var newsTriggers = [];
+              item.children("trigger").each(function (_, p) {
+                var t = $(p).text().trim();
+                if (t.startsWith("key:")) {
+                  var key = t.substring("key:".length).trim();
+                  keyTriggers.push(key);
+                } else if (t === "instant") {
+                  triggers.push({
+                    instant: kind,
+                  });
+                } else if (t === "passive") {
+                  triggers.push({
+                    passive: kind,
+                  });
+                } else if (t === "drop") {
+                  triggers.push({
+                    dropin: kind,
+                  });
+                } else if (t.startsWith("drop:")) {
+                  var dropKind = t.substring("drop:".length).trim();
+                  dropTriggers.push(dropKind);
+                } else if (t.startsWith("news:")) {
+                  var newsKind = t.substring("news:".length).trim();
+                  newsTriggers.push(newsKind);
+                } else if (t.startsWith("watchdog:")) {
+                  var dropKind = t.substring("watchdog:".length).trim();
+                  watchdogTriggers.push(dropKind);
+                }
+              });
+              if (keyTriggers.length > 0) {
+                triggers.push({
+                  keys: keyTriggers,
+                });
+              }
+              if (dropTriggers.length > 0) {
+                triggers.push({
+                  drops: dropTriggers,
+                });
+              }
+              if (newsTriggers.length > 0) {
+                triggers.push({
+                  news: newsTriggers,
+                });
+              }
+              if (watchdogTriggers.length > 0) {
+                triggers.push({
+                  watchdogs: watchdogTriggers,
+                });
+              }
+
+              var script = null;
+              item.children("script").each(function (_, s) {
+                s = $(s).text().trim();
+                if (script === null) {
+                  script = s + ";";
+                } else {
+                  script += "\n" + s + ";";
+                }
+              });
+
+              if (content === "") {
+                properties.undefined = true;
+              }
+              game.generalReference.setContent(
+                kind,
+                content,
+                properties,
+                modifiers
               );
+              if (script !== null) {
+                var scriptToRun = buildScript(script);
+                game.triggerManager.link(
+                  triggers,
+                  function (from, itemInstance, spot, extraContext) {
+                    return runScript(scriptToRun)(
+                      from,
+                      itemInstance,
+                      spot,
+                      extraContext
+                    );
+                  }
+                );
+              }
             }
-          }
-        });
+          });
       }
-      //console.debug(contents.declare);
-      // $($.parseXML(contents.declare))
-      //   .children()
-      //   .first()
-      //   .children()
-      //   .each(function (_, item) {
-      //     item = $(item);
-      //
-      //     let tag = item.prop("tagName");
-      //     console.debug(item);
-      //     if (!tag) {
-      //       return null;
-      //     }
-      //     // tag = tag.toLowerCase();
-      //     if (tag === "palette") {
-      //       item.children().each(function (_, i) {
-      //         i = $(i);
-      //         var colorId = i.prop("tagName");
-      //         if (colorId === "color") {
-      //           colorId = i.attr("name");
-      //         }
-      //         var colorValue = i.text().trim();
-      //         // cssComposition.css("body { --" + colorId + ": " + colorValue + "; }");
-      //         cssComposition.css(
-      //           ".item._-" +
-      //             colorId +
-      //             " > svg { fill: " +
-      //             colorValue +
-      //             " !important; }"
-      //         );
-      //         cssComposition.css(
-      //           ".item._-" +
-      //             colorId +
-      //             " > span { background: " +
-      //             colorValue +
-      //             " !important; }"
-      //         );
-      //         cssComposition.css(
-      //           ".item._-" +
-      //             colorId +
-      //             " > div > div > svg { fill: " +
-      //             colorValue +
-      //             " !important; }"
-      //         );
-      //         cssComposition.css(
-      //           ".item._-" +
-      //             colorId +
-      //             " > div > div > span { background: " +
-      //             colorValue +
-      //             " !important; }"
-      //         );
-      //         cssComposition.css(
-      //           ".spot.state-_-" +
-      //             colorId +
-      //             " > .underlay > svg { stroke: " +
-      //             colorValue +
-      //             " !important; }"
-      //         );
-      //         cssComposition.css(
-      //           ".spot.state-_-" +
-      //             colorId +
-      //             " > .underlay > svg { fill: " +
-      //             colorValue +
-      //             " !important; }"
-      //         );
-      //         cssComposition.css(
-      //           ".spot.state-border-" +
-      //             colorId +
-      //             " > .underlay > svg { stroke: " +
-      //             colorValue +
-      //             " !important; }"
-      //         );
-      //         cssComposition.css(
-      //           ".spot.state-background-" +
-      //             colorId +
-      //             " > .underlay > svg { fill: " +
-      //             colorValue +
-      //             " !important; }"
-      //         );
-      //         cssComposition.css(
-      //           ".pool > div > .spot.state-border-" +
-      //             colorId +
-      //             " { border-color: " +
-      //             colorValue +
-      //             " !important; }"
-      //         );
-      //         cssComposition.css(
-      //           ".pool > div > .spot.state-background-" +
-      //             colorId +
-      //             " { background: " +
-      //             colorValue +
-      //             " !important; }"
-      //         );
-      //       });
-      //     } else if (tag === "item") {
-      //       var kind = item.children("kind").text().trim();
-      //       var content = null;
-      //       item.children().each(function (_, i) {
-      //         i = $(i);
-      //         var t = i.prop("tagName");
-      //         if (t === "content") {
-      //           if (content === null) {
-      //             content = "";
-      //           }
-      //           content += ("" + i[0].innerHTML).trim();
-      //         } else if (t === "state") {
-      //           var stateKey = i.attr("key");
-      //           var stateValue = i.attr("value");
-      //           if (stateValue === undefined) {
-      //             stateValue = null;
-      //           }
-      //           var a = allKindStateFound.get(kind).get(stateKey);
-      //           if (a === null) {
-      //             a = [];
-      //             allKindStateFound.get(kind).put(stateKey, a);
-      //           }
-      //           a.push(stateValue);
-      //
-			// 				var keyValues = {};
-			// 				Utils.each(i[0].attributes, function(a) {
-			// 					if (a.nodeName) {
-			// 						if (a.nodeValue) {
-			// 							keyValues[a.nodeName] = a.nodeValue;
-			// 						} else {
-			// 							keyValues[a.nodeName] = "_";
-			// 						}
-			// 					}
-			// 				});
-      //
-      //           i.children("content")
-      //             .children()
-      //             .each(function (_, j) {
-      //               j = $(j);
-      //
-			// 					Utils.each(keyValues, function(jv, jk) {
-			// 						j.addClass("if-" + jk).addClass("if-" + jk + "-" + jv);
-			// 					});
-      //
-      //               if (content === null) {
-      //                 content = "";
-      //               }
-      //               j.addClass("if-" + stateKey);
-      //               if (stateValue === null) {
-      //                 j.addClass("if-" + stateKey + "-_");
-      //               } else {
-      //                 j.addClass("if-" + stateKey + "-" + stateValue);
-      //               }
-      //               content += ("" + j[0].outerHTML).trim();
-      //             });
-      //
-			// 				Utils.each(keyValues, function(jv, jk) {
-			// 					allStateKeyValueFound.get(jk).add(jv);
-			// 				});
-      //
-      //         }
-      //       });
-      //
-      //       var properties = {};
-      //       item.children("property").each(function (_, p) {
-      //         p = $(p);
-      //         var key;
-      //         var k = p.children("key");
-      //         if (k.length > 0) {
-      //           key = k.text().trim();
-      //         } else {
-      //           key = "_";
-      //         }
-      //         var v = p.children("value");
-      //         var value;
-      //         if (v.length > 0) {
-      //           value = v.text().trim();
-      //         } else {
-      //           value = null;
-      //         }
-      //         properties[key] = value;
-      //       });
-      //
-      //       var modifiers = {};
-      //       item.children("modifier").each(function (_, p) {
-      //         p = $(p);
-      //         var key;
-      //         var k = p.children("key");
-      //         if (k.length > 0) {
-      //           key = k.text().trim();
-      //         } else {
-      //           key = "_";
-      //         }
-      //         var v = p.children("value");
-      //         var value;
-      //         if (v.length > 0) {
-      //           value = v.text().trim();
-      //         } else {
-      //           value = null;
-      //         }
-      //         modifiers[key] = value;
-      //       });
-      //
-      //       var triggers = [];
-      //       var keyTriggers = [];
-      //       var dropTriggers = [];
-      //       var watchdogTriggers = [];
-      //       var newsTriggers = [];
-      //       item.children("trigger").each(function (_, p) {
-      //         var t = $(p).text().trim();
-      //         if (t.startsWith("key:")) {
-      //           var key = t.substring("key:".length).trim();
-      //           keyTriggers.push(key);
-      //         } else if (t === "instant") {
-      //           triggers.push({
-      //             instant: kind,
-      //           });
-      //         } else if (t === "passive") {
-      //           triggers.push({
-      //             passive: kind,
-      //           });
-      //         } else if (t === "drop") {
-      //           triggers.push({
-      //             dropin: kind,
-      //           });
-      //         } else if (t.startsWith("drop:")) {
-      //           var dropKind = t.substring("drop:".length).trim();
-      //           dropTriggers.push(dropKind);
-      //         } else if (t.startsWith("news:")) {
-      //           var newsKind = t.substring("news:".length).trim();
-      //           newsTriggers.push(newsKind);
-      //         } else if (t.startsWith("watchdog:")) {
-      //           var dropKind = t.substring("watchdog:".length).trim();
-      //           watchdogTriggers.push(dropKind);
-      //         }
-      //       });
-      //       if (keyTriggers.length > 0) {
-      //         triggers.push({
-      //           keys: keyTriggers,
-      //         });
-      //       }
-      //       if (dropTriggers.length > 0) {
-      //         triggers.push({
-      //           drops: dropTriggers,
-      //         });
-      //       }
-      //       if (newsTriggers.length > 0) {
-      //         triggers.push({
-      //           news: newsTriggers,
-      //         });
-      //       }
-      //       if (watchdogTriggers.length > 0) {
-      //         triggers.push({
-      //           watchdogs: watchdogTriggers,
-      //         });
-      //       }
-      //
-      //       var script = null;
-      //       item.children("script").each(function (_, s) {
-      //         s = $(s).text().trim();
-      //         if (script === null) {
-      //           script = s + ";";
-      //         } else {
-      //           script += "\n" + s + ";";
-      //         }
-      //       });
-      //
-      //       if (content === "") {
-      //         properties.undefined = true;
-      //       }
-      //       game.generalReference.setContent(
-      //         kind,
-      //         content,
-      //         properties,
-      //         modifiers
-      //       );
-      //       if (script !== null) {
-      //         var scriptToRun = buildScript(script);
-      //         game.triggerManager.link(
-      //           triggers,
-      //           function (from, itemInstance, spot, extraContext) {
-      //             return runScript(scriptToRun)(
-      //               from,
-      //               itemInstance,
-      //               spot,
-      //               extraContext
-      //             );
-      //           }
-      //         );
-      //       }
-      //     }
-      //   });
+
       allKindStateFound.each(function (values, kind) {
         addStateCss(cssComposition, kind, values);
       });
@@ -1207,7 +925,6 @@ export class ScriptExecution {
         },
 
         res: contents.res,
-
       };
 
       (function (context) {
@@ -1235,7 +952,7 @@ export class ScriptExecution {
 				});
 				rebuiltScript += ";" + '\n';
 				*/
-        rebuiltScript += "};"  +"\n";
+        rebuiltScript += "};" + "\n";
 
         //console.log(rebuiltScript);
 
