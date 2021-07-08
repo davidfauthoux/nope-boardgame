@@ -1,54 +1,52 @@
-import { Utils } from "../Utils.class.js";
-
 export class SvgUtils {}
 
 SvgUtils.polygon = function (sides, padding) {
-  var degreesToRadians = function (angleInDegrees) {
+  let degreesToRadians = function (angleInDegrees) {
     return (Math.PI * angleInDegrees) / 180.0;
   };
 
-  var points = function (count, radius, offset) {
-    var angle = (Math.PI * 2.0) / count;
-    var p = [];
-    Utils.loop(0, count, 1, function (i) {
+  let points = function (count, radius, offset) {
+    let angle = (Math.PI * 2.0) / count;
+    let p = [];
+    for (let i = 0; i < count; i++) {
       p.push({
         theta: offset + angle * i,
         r: radius,
       });
-    });
+    }
     return p;
   };
 
-  var toCartesian = function (center, p) {
+  let toCartesian = function (center, p) {
     return {
       x: center.x + p.r * Math.cos(p.theta),
       y: center.y + p.r * Math.sin(p.theta),
     };
   };
 
-  var size = 1000.0;
+  let size = 1000.0;
 
   if (padding === undefined) {
     padding = 0;
   }
   padding = padding * size;
 
-  var radius = size / 2.0 - padding;
-  var offset = Math.PI / sides;
-  var center = {
+  let radius = size / 2.0 - padding;
+  let offset = Math.PI / sides;
+  let center = {
     x: size / 2.0,
     y: size / 2.0,
   };
 
-  var content =
+  let content =
     '<svg viewBox="0,0 ' + size + "," + size + '"><polygon points="';
-  Utils.each(points(sides, radius, offset), function (p) {
+  for (let p of points(sides, radius, offset)) {
     p = toCartesian(center, p);
     if (content !== null) {
       content += " ";
     }
     content += p.x + "," + p.y;
-  });
+  }
   content += '"></svg>';
 
   return content;
