@@ -7,7 +7,7 @@ import * as async from "../../../modules/async.js";
 import { Server, history } from "../../../modules/server.js";
 
 const shell = require("shelljs");
-const pathToClone = "../";
+const pathToClone = "../../games/";
 
 let args = {};
 for (let a of process.argv) {
@@ -23,8 +23,7 @@ Server.BASE = args.base; // "http://localhost:8086";
 
 console.log("Server.BASE", Server.BASE);
 
-let platform = "boardgame";
-let superuserUserId = "users/" + platform + "/register";
+let superuserUserId = "boardgame/apps/deposit/users/register";
 let server = new Server("/" + superuserUserId);  // /users/boardgame/register
 
 async.run([
@@ -44,6 +43,7 @@ async.run([
           shell.exec("git clone " + event.urlGit);
           // TODO Parse the urlgit to avoid ";rm -r .."
           break;
+
       }
     }
   ])
