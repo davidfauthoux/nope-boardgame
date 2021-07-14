@@ -52,9 +52,10 @@ export class ScriptExecution {
                 layout,
                 function (lets, applyToLayout, item) {
                     let unlet = function (s) {
-                        Utils.each(lets, function (v, k) {
-                            s = s.replace(new RegExp("\\$" + k + "\\b"), v);
-                        });
+                        for (const key in lets) {
+                            s = s.replace(new RegExp("\\$" + key + "\\b"), lets[key]);
+                        }
+                        ;
                         return s;
                     };
                     let getName = function () {
@@ -88,9 +89,9 @@ export class ScriptExecution {
                                 kind,
                                 count === null ? undefined : count
                             );
-                            Utils.each(states, function (v, k) {
-                                it.paint(k, v);
-                            });
+                            for (const key in states) {
+                                it.paint(key, states[key]);
+                            }
                         });
                     };
 
@@ -300,9 +301,9 @@ export class ScriptExecution {
                 "pool",
             ];
 
-            Utils.each(methods, function (k) {
-                rebuiltScript += "let " + k + " = context." + k + ";\n";
-            });
+            for (const key of methods) {
+                rebuiltScript += "let " + key + " = context." + key + ";\n";
+            }
 
             rebuiltScript += script + ";\n";
             rebuiltScript += "};\n";
@@ -313,8 +314,9 @@ export class ScriptExecution {
         };
 
         let addStateCss = function (cssComposition, kind, states) {
-            Utils.each(states, function (stateValues, stateKey) {
-                Utils.each([" > div > div > ", " > "], function (chain) {
+            for (const stateKey in states) {
+                let stateValues = states[stateKey];
+                for (const chain of [" > div > div > ", " > "]) {
                     cssComposition.css(
                         ".item-" +
                         kind +
@@ -331,7 +333,7 @@ export class ScriptExecution {
                         stateKey +
                         "-_ { display: block ; }"
                     );
-                    Utils.each(stateValues, function (v) {
+                    for (const v of stateValues) {
                         if (v === null) {
                             return;
                         }
@@ -361,9 +363,12 @@ export class ScriptExecution {
                             stateKey +
                             "-_ { display: none; }"
                         );
-                    });
-                });
-            });
+                    }
+                    ;
+                }
+                ;
+            }
+            ;
         };
 
         let parseDeclarations = function () {
@@ -699,7 +704,7 @@ export class ScriptExecution {
                         loop: Utils.loop,
                         each: Utils.each,
                         random: function (max) {
-                            return Utils.random(max);
+                            return Math.floor(Math.random()*max);
                         },
 
                         pools: {
@@ -793,9 +798,9 @@ export class ScriptExecution {
                     }
 
                     if (extraDrops !== undefined) {
-                        Utils.each(extraDrops, function (d) {
+                        for (const d of extraDrops) {
                             d(context.pools, context.tracks, context.grids);
-                        });
+                        };
                     }
                     return script()(context, extraContext);
                 };
@@ -827,24 +832,26 @@ export class ScriptExecution {
                     } else {
                         let rebuiltContent = "";
                         let cc = $(content);
-                        Utils.each(states, function (_, stateKey) {
+                        for (const stateKey in states) {
                             cc.addClass("if-" + stateKey);
                             cc.addClass("if-" + stateKey + "-_");
-                        });
+                        };
                         rebuiltContent += ("" + cc[0].outerHTML).trim();
 
                         let stateKeyValues = {};
-                        Utils.each(states, function (stateValues, stateKey) {
+                        for (const stateKey in states) {
+                            let stateValues = states[stateKey];
                             let stateValuesAsArray = [];
-                            Utils.each(stateValues, function (stateContent, stateValue) {
+                            for (const stateValue in stateValues) {
+                                let stateContent = stateValues[stateValue];
                                 let c = $(stateContent);
                                 c.addClass("if-" + stateKey);
                                 c.addClass("if-" + stateKey + "-" + stateValue);
                                 rebuiltContent += ("" + c[0].outerHTML).trim();
                                 stateValuesAsArray.push(stateValue);
-                            });
+                            };
                             stateKeyValues[stateKey] = stateValuesAsArray;
-                        });
+                        };
                         addStateCss(cssComposition, kind, stateKeyValues);
 
                         game.generalReference.setContent(
@@ -931,9 +938,9 @@ export class ScriptExecution {
                 let rebuiltScript = "\n" + "\n";
                 rebuiltScript += " return function(context) { " + "\n";
 
-                Utils.each(context, function (_, k) {
+                for (const k in context) {
                     rebuiltScript += "let " + k + " = context." + k + ";" + "\n";
-                });
+                }
 
                 rebuiltScript +=
                     (contents.prepare === undefined ? ";" : contents.prepare) + "\n";
