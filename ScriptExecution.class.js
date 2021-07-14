@@ -7,18 +7,18 @@ import {Server} from "./Server.class.js";
 
 export class ScriptExecution {
     constructor(layout, game, contents) {
-        var runScript;
+        let runScript;
 
-        var dropsFoundInLayout = [];
+        let dropsFoundInLayout = [];
 
-        var generatedId = 0;
+        let generatedId = 0;
 
-        var makeAnonymousTextItem = function (kind, text, properties) {
+        let makeAnonymousTextItem = function (kind, text, properties) {
             if (kind === null) {
                 kind = "" + generatedId;
                 generatedId++;
             }
-            var textKind = "text-generated-" + kind;
+            let textKind = "text-generated-" + kind;
             game.generalReference.setContent(
                 textKind,
                 $("<span>").addClass("generatedText").text(text),
@@ -29,12 +29,12 @@ export class ScriptExecution {
             return textKind;
         };
 
-        var makeAnonymousColorItem = function (kind, text, properties) {
+        let makeAnonymousColorItem = function (kind, text, properties) {
             if (kind === null) {
                 kind = "" + generatedId;
                 generatedId++;
             }
-            var colorKind = "color-generated-" + kind;
+            let colorKind = "color-generated-" + kind;
             game.generalReference.setContent(
                 colorKind,
                 $("<div>").addClass("generatedColor").css({background: text}),
@@ -45,46 +45,46 @@ export class ScriptExecution {
             return colorKind;
         };
 
-        var parseLayout = function () {
-            var nextNameId = 0;
+        let parseLayout = function () {
+            let nextNameId = 0;
             game.gameManager.layouts = LayoutBuilder.build(
                 contents.layout,
                 layout,
-                function (vars, applyToLayout, item) {
-                    var unvar = function (s) {
-                        Utils.each(vars, function (v, k) {
+                function (lets, applyToLayout, item) {
+                    let unlet = function (s) {
+                        Utils.each(lets, function (v, k) {
                             s = s.replace(new RegExp("\\$" + k + "\\b"), v);
                         });
                         return s;
                     };
-                    var getName = function () {
-                        var itemNameFound = item.children("name");
+                    let getName = function () {
+                        let itemNameFound = item.children("name");
                         if (itemNameFound.length === 0) {
-                            var generatedName = "unidentified_" + nextNameId;
+                            let generatedName = "unidentified_" + nextNameId;
                             nextNameId++;
                             return generatedName;
                         } else {
-                            return unvar(itemNameFound.text().trim());
+                            return unlet(itemNameFound.text().trim());
                         }
                     };
 
-                    var parseDrop = function (
+                    let parseDrop = function (
                         c,
                         spotToDropIn,
                         states,
                         usingKind,
                         usingCount
                     ) {
-                        var kind =
-                            usingKind === undefined ? unvar(c.text().trim()) : usingKind;
-                        var count =
+                        let kind =
+                            usingKind === undefined ? unlet(c.text().trim()) : usingKind;
+                        let count =
                             usingCount === undefined
                                 ? c.attr("count") === undefined
                                 ? undefined
                                 : parseInt(c.attr("count"))
                                 : usingCount;
                         dropsFoundInLayout.push(function (pools, tracks, grids) {
-                            var it = spotToDropIn(pools, tracks, grids).drop(
+                            let it = spotToDropIn(pools, tracks, grids).drop(
                                 kind,
                                 count === null ? undefined : count
                             );
@@ -94,7 +94,7 @@ export class ScriptExecution {
                         });
                     };
 
-                    var parseElements = function (
+                    let parseElements = function (
                         buildSpot,
                         states,
                         cc,
@@ -103,14 +103,14 @@ export class ScriptExecution {
                     ) {
                         cc.children().each(function (_, c) {
                             c = $(c);
-                            var ctag = c.prop("tagName");
+                            let ctag = c.prop("tagName");
                             if (ctag === "state") {
-                                var stateKey = c.attr("key");
-                                var stateValue = c.attr("value");
+                                let stateKey = c.attr("key");
+                                let stateValue = c.attr("value");
                                 if (stateValue === undefined) {
                                     stateValue = null;
                                 }
-                                var clonedStates = Utils.clone(states);
+                                let clonedStates = Utils.clone(states);
                                 clonedStates[stateKey] = stateValue;
                                 parseElements(buildSpot, clonedStates, c);
                                 return;
@@ -120,9 +120,9 @@ export class ScriptExecution {
                                 return;
                             }
                             if (ctag === "text") {
-                                var text = c.text().trim();
+                                let text = c.text().trim();
                                 // Only one possible in the spot
-                                var kind = makeAnonymousTextItem(
+                                let kind = makeAnonymousTextItem(
                                     null,
                                     text,
                                     anonymousItemProperties
@@ -131,9 +131,9 @@ export class ScriptExecution {
                                 return;
                             }
                             if (ctag === "color") {
-                                var text = c.text().trim();
+                                let text = c.text().trim();
                                 // Only one possible in the spot
-                                var kind = makeAnonymousColorItem(
+                                let kind = makeAnonymousColorItem(
                                     null,
                                     text,
                                     anonymousItemProperties
@@ -143,12 +143,12 @@ export class ScriptExecution {
                             }
                             /*%%
                                       if (ctag === "colors") {
-                                          var from = c.children("from").text().trim();
-                                          var to = c.children("to").text().trim();
-                                          var extrapolated = DomUtils.generateColors(from, to, size);
+                                          let from = c.children("from").text().trim();
+                                          let to = c.children("to").text().trim();
+                                          let extrapolated = DomUtils.generateColors(from, to, size);
                                           Utils.loop(0, size, 1, function(l) {
                                               console.log("Extrapolated color: " + extrapolated[l] + " level " + l);
-                                              var kind = makeAnonymousColorItem("track-" + name + "-" + l, extrapolated[l]);
+                                              let kind = makeAnonymousColorItem("track-" + name + "-" + l, extrapolated[l]);
                                               dropsFoundInLayout.push(function(pools, tracks, grids) {
                                                   tracks[name].level(l).drop(kind);
                                               });
@@ -159,28 +159,28 @@ export class ScriptExecution {
                         });
                     };
 
-                    var tag = item.prop("tagName");
+                    let tag = item.prop("tagName");
                     if (tag === "track") {
-                        var name = getName();
-                        var title =
+                        let name = getName();
+                        let title =
                             item.children("title").length === 0
                                 ? null
                                 : item.children("title").text().trim();
-                        var size = parseInt(item.children("size").text().trim());
-                        var vertical = item.attr("direction") === "vertical";
-                        var start =
+                        let size = parseInt(item.children("size").text().trim());
+                        let vertical = item.attr("direction") === "vertical";
+                        let start =
                             item.children("start").length === 0
                                 ? 0
                                 : parseInt(item.children("start").text().trim());
-                        var step =
+                        let step =
                             item.children("step").length === 0
                                 ? 1
                                 : parseInt(item.children("step").text().trim());
-                        var limit =
+                        let limit =
                             item.children("limit").length === 0
                                 ? null
                                 : parseInt(item.children("limit").text().trim());
-                        var reversed = item.children("reversed").length > 0;
+                        let reversed = item.children("reversed").length > 0;
                         game.gameManager.createTrack(
                             applyToLayout,
                             name,
@@ -195,7 +195,7 @@ export class ScriptExecution {
 
                         parseElements(
                             function (c) {
-                                var level = parseInt(c.attr("level"));
+                                let level = parseInt(c.attr("level"));
                                 return function (pools, tracks, grids) {
                                     return tracks.get(name).level(level);
                                 };
@@ -209,10 +209,10 @@ export class ScriptExecution {
                         return true;
                     }
                     if (tag === "pool") {
-                        var name = getName();
-                        var direction = item.attr("direction") || "horizontal";
-                        var stacking = item.attr("stacking");
-                        var properties = {};
+                        let name = getName();
+                        let direction = item.attr("direction") || "horizontal";
+                        let stacking = item.attr("stacking");
+                        let properties = {};
                         properties.layout = direction;
                         if (stacking !== undefined) {
                             properties.stacking = stacking;
@@ -234,17 +234,17 @@ export class ScriptExecution {
                         return true;
                     }
                     if (tag === "grid") {
-                        var type = parseInt(item.children("type").text().trim());
-                        var name = getName();
-                        var width =
+                        let type = parseInt(item.children("type").text().trim());
+                        let name = getName();
+                        let width =
                             item.children("width").length === 0
                                 ? 0
                                 : parseInt(item.children("width").text().trim());
-                        var height =
+                        let height =
                             item.children("height").length === 0
                                 ? 0
                                 : parseInt(item.children("height").text().trim());
-                        var auto = item.children("auto").text().trim() === "true";
+                        let auto = item.children("auto").text().trim() === "true";
                         game.gameManager.createGrid(
                             applyToLayout,
                             name,
@@ -256,8 +256,8 @@ export class ScriptExecution {
 
                         parseElements(
                             function (c) {
-                                var i = parseInt(c.attr("i"));
-                                var j = parseInt(c.attr("j"));
+                                let i = parseInt(c.attr("i"));
+                                let j = parseInt(c.attr("j"));
                                 return function (pools, tracks, grids) {
                                     return grids.get(name).cell(i, j);
                                 };
@@ -275,11 +275,11 @@ export class ScriptExecution {
             );
         };
 
-        var buildScript = function (script) {
-            var rebuiltScript = '"use strict";\n';
+        let buildScript = function (script) {
+            let rebuiltScript = '"use strict";\n';
             rebuiltScript += "return function(context, _) {\n";
 
-            var methods = [
+            let methods = [
                 "global",
                 "loop",
                 "each",
@@ -301,7 +301,7 @@ export class ScriptExecution {
             ];
 
             Utils.each(methods, function (k) {
-                rebuiltScript += "var " + k + " = context." + k + ";\n";
+                rebuiltScript += "let " + k + " = context." + k + ";\n";
             });
 
             rebuiltScript += script + ";\n";
@@ -312,7 +312,7 @@ export class ScriptExecution {
             return Function(rebuiltScript);
         };
 
-        var addStateCss = function (cssComposition, kind, states) {
+        let addStateCss = function (cssComposition, kind, states) {
             Utils.each(states, function (stateValues, stateKey) {
                 Utils.each([" > div > div > ", " > "], function (chain) {
                     cssComposition.css(
@@ -366,9 +366,9 @@ export class ScriptExecution {
             });
         };
 
-        var parseDeclarations = function () {
-            var cssComposition = new CssComposition();
-            var allKindStateFound = new Multimap.Map();
+        let parseDeclarations = function () {
+            let cssComposition = new CssComposition();
+            let allKindStateFound = new Multimap.Map();
             // for each files in the directory items, parse it
             for (let it in contents.items) {
                 $($.parseXML(contents.items[it]))
@@ -384,11 +384,11 @@ export class ScriptExecution {
                         if (tag === "palette") {
                             item.children().each(function (_, i) {
                                 i = $(i);
-                                var colorId = i.prop("tagName");
+                                let colorId = i.prop("tagName");
                                 if (colorId === "color") {
                                     colorId = i.attr("name");
                                 }
-                                var colorValue = i.text().trim();
+                                let colorValue = i.text().trim();
                                 // cssComposition.css("body { --" + colorId + ": " + colorValue + "; }");
                                 cssComposition.css(
                                     ".item._-" +
@@ -466,19 +466,19 @@ export class ScriptExecution {
                             let content = null;
                             item.children().each(function (_, i) {
                                 i = $(i);
-                                var t = i.prop("tagName");
+                                let t = i.prop("tagName");
                                 if (t === "content") {
                                     if (content === null) {
                                         content = "";
                                     }
                                     content += ("" + i[0].innerHTML).trim();
                                 } else if (t === "state") {
-                                    var stateKey = i.attr("key");
-                                    var stateValue = i.attr("value");
+                                    let stateKey = i.attr("key");
+                                    let stateValue = i.attr("value");
                                     if (stateValue === undefined) {
                                         stateValue = null;
                                     }
-                                    var a = allKindStateFound.get(kind).get(stateKey);
+                                    let a = allKindStateFound.get(kind).get(stateKey);
                                     if (a === null) {
                                         a = [];
                                         allKindStateFound.get(kind).put(stateKey, a);
@@ -512,15 +512,15 @@ export class ScriptExecution {
                             let properties = {};
                             item.children("property").each(function (_, p) {
                                 p = $(p);
-                                var key;
-                                var k = p.children("key");
+                                let key;
+                                let k = p.children("key");
                                 if (k.length > 0) {
                                     key = k.text().trim();
                                 } else {
                                     key = "_";
                                 }
-                                var v = p.children("value");
-                                var value;
+                                let v = p.children("value");
+                                let value;
                                 if (v.length > 0) {
                                     value = v.text().trim();
                                 } else {
@@ -529,18 +529,18 @@ export class ScriptExecution {
                                 properties[key] = value;
                             });
 
-                            var modifiers = {};
+                            let modifiers = {};
                             item.children("modifier").each(function (_, p) {
                                 p = $(p);
-                                var key;
-                                var k = p.children("key");
+                                let key;
+                                let k = p.children("key");
                                 if (k.length > 0) {
                                     key = k.text().trim();
                                 } else {
                                     key = "_";
                                 }
-                                var v = p.children("value");
-                                var value;
+                                let v = p.children("value");
+                                let value;
                                 if (v.length > 0) {
                                     value = v.text().trim();
                                 } else {
@@ -549,15 +549,15 @@ export class ScriptExecution {
                                 modifiers[key] = value;
                             });
 
-                            var triggers = [];
-                            var keyTriggers = [];
-                            var dropTriggers = [];
-                            var watchdogTriggers = [];
-                            var newsTriggers = [];
+                            let triggers = [];
+                            let keyTriggers = [];
+                            let dropTriggers = [];
+                            let watchdogTriggers = [];
+                            let newsTriggers = [];
                             item.children("trigger").each(function (_, p) {
-                                var t = $(p).text().trim();
+                                let t = $(p).text().trim();
                                 if (t.startsWith("key:")) {
-                                    var key = t.substring("key:".length).trim();
+                                    let key = t.substring("key:".length).trim();
                                     keyTriggers.push(key);
                                 } else if (t === "instant") {
                                     triggers.push({
@@ -572,13 +572,13 @@ export class ScriptExecution {
                                         dropin: kind,
                                     });
                                 } else if (t.startsWith("drop:")) {
-                                    var dropKind = t.substring("drop:".length).trim();
+                                    let dropKind = t.substring("drop:".length).trim();
                                     dropTriggers.push(dropKind);
                                 } else if (t.startsWith("news:")) {
-                                    var newsKind = t.substring("news:".length).trim();
+                                    let newsKind = t.substring("news:".length).trim();
                                     newsTriggers.push(newsKind);
                                 } else if (t.startsWith("watchdog:")) {
-                                    var dropKind = t.substring("watchdog:".length).trim();
+                                    let dropKind = t.substring("watchdog:".length).trim();
                                     watchdogTriggers.push(dropKind);
                                 }
                             });
@@ -603,7 +603,7 @@ export class ScriptExecution {
                                 });
                             }
 
-                            var script = null;
+                            let script = null;
                             item.children("script").each(function (_, s) {
                                 s = $(s).text().trim();
                                 if (script === null) {
@@ -623,7 +623,7 @@ export class ScriptExecution {
                                 modifiers
                             );
                             if (script !== null) {
-                                var scriptToRun = buildScript(script);
+                                let scriptToRun = buildScript(script);
                                 game.triggerManager.link(
                                     triggers,
                                     function (from, itemInstance, spot, extraContext) {
@@ -658,7 +658,7 @@ export class ScriptExecution {
             cssComposition.finish();
         };
 
-        var globalVar = {};
+        let globalVar = {};
 
         runScript = function (script) {
             return function (from, itemInstance, spot, extraContext, extraDrops) {
@@ -670,23 +670,23 @@ export class ScriptExecution {
                     buildSpot,
                     buildItem
                 ) {
-                    var context;
+                    let context;
 
-                    var nopping = {
+                    let nopping = {
                         nop: false,
                     };
 
-                    var smartBuildSpot = function (spot) {
+                    let smartBuildSpot = function (spot) {
                         if (spot.location === undefined) {
                             return spot;
                         }
                         if (spot.location.startsWith("grid-")) {
-                            var g = spot.location.substring("grid-".length);
-                            var k = g.indexOf("-");
-                            var name = g.substring(0, k);
-                            var l = g.substring(k + 1);
-                            var grid = buildGrid(nopping, game.gameManager.grids[name]);
-                            var ij = grid._grid.parseSpotLocation(l);
+                            let g = spot.location.substring("grid-".length);
+                            let k = g.indexOf("-");
+                            let name = g.substring(0, k);
+                            let l = g.substring(k + 1);
+                            let grid = buildGrid(nopping, game.gameManager.grids[name]);
+                            let ij = grid._grid.parseSpotLocation(l);
                             return grid.cell(ij.i, ij.j);
                         }
                         //TODO Do the same for tracks
@@ -802,15 +802,15 @@ export class ScriptExecution {
             };
         };
 
-        var runPrepareScript = function (end) {
-            var cssComposition = new CssComposition();
-            var delayed = null;
+        let runPrepareScript = function (end) {
+            let cssComposition = new CssComposition();
+            let delayed = null;
 
-            var nopping = {
+            let nopping = {
                 nop: true,
             };
 
-            var initialContext = {
+            let initialContext = {
                 global: globalVar,
 
                 loop: Utils.loop,
@@ -825,19 +825,19 @@ export class ScriptExecution {
                             modifiers
                         );
                     } else {
-                        var rebuiltContent = "";
-                        var cc = $(content);
+                        let rebuiltContent = "";
+                        let cc = $(content);
                         Utils.each(states, function (_, stateKey) {
                             cc.addClass("if-" + stateKey);
                             cc.addClass("if-" + stateKey + "-_");
                         });
                         rebuiltContent += ("" + cc[0].outerHTML).trim();
 
-                        var stateKeyValues = {};
+                        let stateKeyValues = {};
                         Utils.each(states, function (stateValues, stateKey) {
-                            var stateValuesAsArray = [];
+                            let stateValuesAsArray = [];
                             Utils.each(stateValues, function (stateContent, stateValue) {
-                                var c = $(stateContent);
+                                let c = $(stateContent);
                                 c.addClass("if-" + stateKey);
                                 c.addClass("if-" + stateKey + "-" + stateValue);
                                 rebuiltContent += ("" + c[0].outerHTML).trim();
@@ -874,7 +874,7 @@ export class ScriptExecution {
                 },
 
                 link: function (triggers, script) {
-                    var scriptToRun = buildScript(script);
+                    let scriptToRun = buildScript(script);
 
                     game.triggerManager.link(
                         triggers,
@@ -928,17 +928,17 @@ export class ScriptExecution {
             };
 
             (function (context) {
-                var rebuiltScript = "\n" + "\n";
+                let rebuiltScript = "\n" + "\n";
                 rebuiltScript += " return function(context) { " + "\n";
 
                 Utils.each(context, function (_, k) {
-                    rebuiltScript += "var " + k + " = context." + k + ";" + "\n";
+                    rebuiltScript += "let " + k + " = context." + k + ";" + "\n";
                 });
 
                 rebuiltScript +=
                     (contents.prepare === undefined ? ";" : contents.prepare) + "\n";
                 /*
-                        var inRaw = false;
+                        let inRaw = false;
                         Utils.each(scriptToExecute.split('\n'), function(line) {
                             if (line.trim().startsWith("/*::raw/")) {
                                 inRaw = !inRaw;
@@ -970,7 +970,7 @@ export class ScriptExecution {
             }
         };
 
-        var gameCssComposition = new CssComposition();
+        let gameCssComposition = new CssComposition();
         gameCssComposition.css(contents.css);
         gameCssComposition.finish();
 
@@ -980,13 +980,13 @@ export class ScriptExecution {
         parseDeclarations();
         console.log("Running preparation script");
         runPrepareScript(function () {
-            var init = runScript(
+            let init = runScript(
                 buildScript(contents.reset === undefined ? ";" : contents.reset)
             );
             game.chatManager.launch();
             game.eventManager.launch(function () {
                 console.log("Running reset script");
-                var initScript = init(null, null, null, null, dropsFoundInLayout);
+                let initScript = init(null, null, null, null, dropsFoundInLayout);
                 ExecutionContext.runScripts(game, [initScript]);
             });
         });
