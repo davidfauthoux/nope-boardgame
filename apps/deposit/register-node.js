@@ -23,8 +23,8 @@ Server.BASE = args.base; // "http://localhost:8086";
 
 console.log("Server.BASE", Server.BASE);
 
-let superuserUserId = "boardgame/apps/deposit/users/register";
-let server = new Server("/" + superuserUserId);  // /users/boardgame/register
+let superuserUserId = "boardgame/apps/data/users/register";
+let server = new Server("/" + superuserUserId);
 
 async.run([
   () => async.while_(() => true).do_([
