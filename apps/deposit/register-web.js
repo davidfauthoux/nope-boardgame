@@ -4,7 +4,7 @@ import * as async from "../../../modules/async.js";
 import {Server, history} from "../../../modules/server.js";
 // jquery
 
-let superuserUserId = "boardgame/apps/deposit/users/register";
+let superuserUserId = "boardgame/apps/data/users/register";
 
 $(function () {
     // get queries in url in a map
@@ -62,8 +62,8 @@ $(function () {
         ]),
     ]);*/
 
-    let inputUrl = $("<input>").attr("type", "text");
-    let inputNameGame = $("<input>").attr("type", "text");
+    let inputUrl = $("<input>").attr("type", "text").attr("placeholder","url to clone");
+    let inputNameGame = $("<input>").attr("type", "text").attr("placeholder","name of the game");
     let button = $("<button>").text("Partagez votre jeu").on("click", function () {
         stack({
             urlGit: inputUrl.val() + " " + inputNameGame.val(),
