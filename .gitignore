@@ -1,5 +1,5 @@
 node_modules/
-carcassonne/
+games/carcassonne/
 terraformingmars/
 hello/
 package-lock.json
