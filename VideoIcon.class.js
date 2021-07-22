@@ -1,10 +1,7 @@
+import { Utils } from "../Utils.class.js";
+
+
 export class VideoIcon {
-  /**
-   * creates a new VideoIcon in a Layout for a given Game
-   * @param {Layout} layout
-   * @param {Game} game
-   * @param type
-   */
   constructor(layout, game, type) {
     this._imgContainer = $("<div>")
       .addClass("face")
@@ -29,19 +26,14 @@ export class VideoIcon {
     //%% this._registerTimeoutId = null;
   }
 
-  /**
-   * updates the current video icon
-   * @param o
-   * @param liveId
-   */
   update(o, liveId) {
-    let face = o === null ? null : this.type === "video" ? o.video : o.audio;
+    var face = o === null ? null : this.type === "video" ? o.video : o.audio;
 
     if (this._face === face && this.liveId === liveId) {
       return;
     }
 
-    let that = this;
+    var that = this;
 
     this.liveId = liveId;
     this._imgContainer.empty();
@@ -52,7 +44,7 @@ export class VideoIcon {
       this._promiseCanceled = null;
     }
 
-    let acquire = VideoIcon._acquire(this.type);
+    var acquire = VideoIcon._acquire(this.type);
 
     if (this._acquiredId !== null) {
       acquire.stop(this._acquiredId);
@@ -69,7 +61,7 @@ export class VideoIcon {
 
     if (this._face !== null) {
       if (liveId === this._game.thisLiveId) {
-        let localVideo = $("<" + that.type + " muted autoplay playsinline>");
+        var localVideo = $("<" + that.type + " muted autoplay playsinline>");
         if (this.type === "video") {
           localVideo.css({ transform: "scale(-1, 1)" }); // scale to mirror it
         }
@@ -79,7 +71,7 @@ export class VideoIcon {
         this._imgContainer.append(localVideo).addClass("active");
 
         if (this._face._dead) {
-          let promiseCanceled = {};
+          var promiseCanceled = {};
           this._promiseCanceled = promiseCanceled;
           acquire.acquire(function (id, localStream) {
             if (promiseCanceled.canceled) {
@@ -120,7 +112,7 @@ export class VideoIcon {
           });
         }
       } else {
-        let remoteVideo = $("<" + this.type + " muted autoplay playsinline>");
+        var remoteVideo = $("<" + this.type + " muted autoplay playsinline>");
         if (!this._face._dead) {
           remoteVideo[0].srcObject = this._face;
           remoteVideo[0]._srcObject = this._face; // Fix preparation
@@ -142,11 +134,8 @@ export class VideoIcon {
     }
   }
 
-  /**
-   * destroys current video icon
-   */
   destroy() {
-    let acquire = VideoIcon._acquire(this.type);
+    var acquire = VideoIcon._acquire(this.type);
 
     if (this._acquiredId !== null) {
       acquire.stop(this._acquiredId);
@@ -155,12 +144,12 @@ export class VideoIcon {
     this._face = null;
 
     /*%%%
-                // iOS fix
-                this._imgContainer.children(this.type).each(function(_, d) {
-                    d.pause();
-                    d.src = "";
-                });
-        */
+		// iOS fix
+		this._imgContainer.children(this.type).each(function(_, d) {
+			d.pause();
+			d.src = "";
+		});
+*/
 
     this._imgContainer.empty();
 
@@ -184,7 +173,7 @@ VideoIcon._fixAudio = function () {
 VideoIcon._muted = true;
 VideoIcon._registered = [];
 VideoIcon._globalRegister = function (icon) {
-  if (!(icon in VideoIcon._registered)) {
+  if (!Utils.contains(VideoIcon._registered, icon)) {
     VideoIcon._registered.push(icon);
   }
 
@@ -206,7 +195,7 @@ VideoIcon._globalRegister = function (icon) {
   }
 };
 VideoIcon._globalUnregister = function (icon) {
-  delete VideoIcon._registered.icon;
+  Utils.remove(VideoIcon._registered, icon);
 
   if (icon._registerTimeoutId !== null) {
     clearTimeout(icon._registerTimeoutId);
@@ -219,23 +208,23 @@ VideoIcon.unmute = function () {
     return;
   }
   VideoIcon._muted = false;
-  for (const icon of VideoIcon._registered) {
+  Utils.each(VideoIcon._registered, function (icon) {
     VideoIcon._globalRegister(icon);
-  }
+  });
 };
 
 VideoIcon._acquires = {};
 VideoIcon._acquire = function (type) {
-  let acquire = VideoIcon._acquires[type];
+  var acquire = VideoIcon._acquires[type];
   if (acquire === undefined) {
     acquire = {};
     VideoIcon._acquires[type] = acquire;
 
-    let stopStream = function (stream) {
+    var stopStream = function (stream) {
       if (stream.getTracks !== undefined) {
-        for (const track of stream.getTracks()) {
+        Utils.each(stream.getTracks(), function (track) {
           track.stop();
-        }
+        });
       }
       stream._dead = true;
     };
@@ -245,11 +234,11 @@ VideoIcon._acquire = function (type) {
       getting: false,
       callback: null,
       get: function (callback) {
-        let that = acquire._current;
+        var that = acquire._current;
 
         that.callback = callback;
         if (that.stream !== null) {
-          let c = that.callback;
+          var c = that.callback;
           that.callback = null;
           c(that.stream);
           return;
@@ -268,13 +257,13 @@ VideoIcon._acquire = function (type) {
               return;
             }
 
-            let c = that.callback;
+            var c = that.callback;
             that.callback = null;
             c(null);
             return;
           }
 
-          let err = function () {
+          var err = function () {
             that.getting = false;
             that.stream = {};
             that.stream._dead = true;
@@ -283,7 +272,7 @@ VideoIcon._acquire = function (type) {
               return;
             }
 
-            let c = that.callback;
+            var c = that.callback;
             that.callback = null;
             c(that.stream);
           };
@@ -310,7 +299,7 @@ VideoIcon._acquire = function (type) {
               }
 
               if (type === "video") {
-                let settings;
+                var settings;
                 try {
                   settings = localStream.getVideoTracks()[0].getSettings();
                 } catch (ee) {
@@ -341,7 +330,7 @@ VideoIcon._acquire = function (type) {
                 return;
               }
 
-              let c = that.callback;
+              var c = that.callback;
               that.callback = null;
               c(that.stream);
             })
@@ -352,7 +341,7 @@ VideoIcon._acquire = function (type) {
         }
       },
       cancel: function () {
-        let that = acquire._current;
+        var that = acquire._current;
 
         that.callback = null;
         if (that.stream !== null) {
@@ -366,7 +355,7 @@ VideoIcon._acquire = function (type) {
     acquire._nextId = 0;
 
     acquire.acquire = function (callback) {
-      let id = acquire._nextId;
+      var id = acquire._nextId;
       acquire._nextId++;
 
       acquire._acquiring[id] = function (stream) {
@@ -378,18 +367,18 @@ VideoIcon._acquire = function (type) {
       };
 
       acquire._current.get(function (stream) {
-        for (const key in acquire._acquiring) {
-          if (acquire._acquiring[key] !== null) {
-            acquire._acquiring[key](stream);
+        Utils.each(acquire._acquiring, function (f) {
+          if (f !== null) {
+            f(stream);
           }
-        }
+        });
       });
     };
 
     acquire.stop = function (id) {
       delete acquire._acquiring[id];
 
-      if ($.isEmptyObject(acquire._acquiring)) {
+      if (Utils.empty(acquire._acquiring)) {
         acquire._current.cancel();
       }
     };

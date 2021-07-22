@@ -1,1 +1,0 @@
-Here, you will find all the games on the platform

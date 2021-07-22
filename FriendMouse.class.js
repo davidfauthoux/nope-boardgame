@@ -1,26 +1,23 @@
+import { Utils } from "../Utils.class.js";
 import { Layout } from "../Layout.class.js";
 import { FaceIcon } from "./FaceIcon.class.js";
 
 export class FriendMouse {
-  /**
-   * creates a new FriendMouse of a given Game
-   * @param {Game} game
-   */
   constructor(game) {
     //, number) {
-    let that = this;
+    var that = this;
 
     this._game = game;
     // this._number = number;
 
-    let layout = new Layout();
+    var layout = new Layout();
     game.overlay.$.append(layout.$.addClass("friendMouse"));
 
-    let faceLayout = layout.overlay();
+    var faceLayout = layout.overlay();
     this.faceIcon = new FaceIcon(faceLayout, game);
     faceLayout.$.addClass("faceContainer");
 
-    let mouse = $(
+    var mouse = $(
       '<svg style="filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.5)); fill: white; stroke: black; stroke-width: 28; stroke-linecap: round; stroke-linejoin: round; stroke-miterlimit: 10;" width="20px" height="20px" viewBox="0 0 385 462"><polygon points="17,18 359,212 245,257 361,372 279,437 189,297 120,393"/></svg>'
     );
 
@@ -42,14 +39,14 @@ export class FriendMouse {
     this._clearOver = function () {
       if (that._currentHover !== null) {
         // that._currentHover.removeClass("friendHover-" + that._number);
-        let otherFriendHovering = false;
-        let classes = that._currentHover.attr("class");
+        var otherFriendHovering = false;
+        var classes = that._currentHover.attr("class");
         if (classes) {
-          for (const c of classes.split(/s+/)) {
+          Utils.each(classes.split(/s+/), function (c) {
             if (c.startsWith("friendHover-")) {
               otherFriendHovering = true;
             }
-          }
+          });
         }
         if (!otherFriendHovering) {
           that._currentHover.removeClass("friendHover");
@@ -62,14 +59,14 @@ export class FriendMouse {
     this._clearSelect = function () {
       if (that._currentSelect !== null) {
         // that._currentSelect.removeClass("friendSelected-" + that._number);
-        let otherFriendHovering = false;
-        let classes = that._currentSelect.attr("class");
+        var otherFriendHovering = false;
+        var classes = that._currentSelect.attr("class");
         if (classes) {
-          for (const c of classes.split(/s+/)) {
+          Utils.each(classes.split(/s+/), function (c) {
             if (c.startsWith("friendSelected-")) {
               otherFriendHovering = true;
             }
-          }
+          });
         }
         if (!otherFriendHovering) {
           that._currentSelect.removeClass("friendSelected");
@@ -82,9 +79,6 @@ export class FriendMouse {
     this._mouseDivHovered = false;
   }
 
-  /**
-   * destroys friend's mouse
-   */
   destroy() {
     this.faceIcon.destroy();
     this._mouseDiv.remove();
@@ -94,12 +88,6 @@ export class FriendMouse {
     this._clearOver();
   }
 
-  /**
-   * move friend's mouse of x,y starting at ref
-   * @param ref
-   * @param x
-   * @param y
-   */
   move(ref, x, y) {
     if (this._currentRef !== null) {
       if (this._currentRefId !== ref) {
@@ -127,10 +115,10 @@ export class FriendMouse {
       }
     }
     if (this._currentRef !== null) {
-      let p = this._game.overlay.offset(this._currentRef);
+      var p = this._game.overlay.offset(this._currentRef);
       if (p) {
-        let xx = x + p.x;
-        let yy = y + p.y;
+        var xx = x + p.x;
+        var yy = y + p.y;
         if (!this._visible) {
           this._mouseDiv.show();
           this._visible = true;
@@ -144,9 +132,6 @@ export class FriendMouse {
     }
   }
 
-  /**
-   * discards mouse
-   */
   discard() {
     this._mouseDiv.hide();
     this._visible = false;
@@ -154,14 +139,10 @@ export class FriendMouse {
     this._currentRefId = null;
   }
 
-  /**
-   * drags an Item of a certain kind
-   * @param kind
-   */
   drag(kind) {
     this._dragLayout.reset();
     if (kind !== undefined) {
-      let item = this._game.itemManager.getItem(kind);
+      var item = this._game.itemManager.getItem(kind);
       if (item === null) {
         return;
       }
@@ -169,17 +150,12 @@ export class FriendMouse {
     }
   }
 
-  /**
-   * selects a Spot of a certain kind
-   * @param {Spot} spot
-   * @param {string} kind
-   */
   select(spot, kind) {
     this._clearSelect();
     if (spot !== undefined && kind !== undefined) {
-      let s = this._game.spotManager.getSpot(spot);
+      var s = this._game.spotManager.getSpot(spot);
       if (s !== null) {
-        let i = s.getItemInstance(kind);
+        var i = s.getItemInstance(kind);
         if (i !== null) {
           this._currentSelect = i.$;
           if (this._currentSelect.length > 0) {
@@ -192,10 +168,6 @@ export class FriendMouse {
     }
   }
 
-  /**
-   * mark the ref as being hovered by a friend
-   * @param ref
-   */
   over(ref) {
     this._clearOver();
     if (ref !== undefined) {

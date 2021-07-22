@@ -1,19 +1,16 @@
+import { Utils } from "../Utils.class.js";
 import { UserInteraction } from "../UserInteraction.class.js";
 import { Layout } from "../Layout.class.js";
 
 export class LogManager {
-  /**
-   * creates a new (unique) LogManager for a Layout
-   * @param rootLayout
-   */
   constructor(rootLayout) {
-    let logLayout = rootLayout.overlay(); //.layout().north().vertical();
+    var logLayout = rootLayout.overlay(); //.layout().north().vertical();
 
-    let logContainer = null;
-    let lines = [];
+    var logContainer = null;
+    var lines = [];
 
     this._log = function (m) {
-      let logMousePosition = UserInteraction.get().mouse();
+      var logMousePosition = UserInteraction.get().mouse();
       if (logMousePosition === null) {
         return;
       }
@@ -22,7 +19,7 @@ export class LogManager {
         logContainer = new Layout();
         logLayout.$.append(logContainer.$.addClass("logContainer"));
       }
-      let p = rootLayout.mouse(logMousePosition);
+      var p = rootLayout.mouse(logMousePosition);
       logContainer.$.css({
         top: p.y + "px",
         left: p.x + "px",
@@ -32,16 +29,16 @@ export class LogManager {
         lines.shift().destroy();
       }
 
-      for (const l of lines) {
+      Utils.each(lines, function (l) {
         l.discard();
-      }
+      });
 
-      let line = {};
+      var line = {};
 
       line.div = logContainer.vertical().predd().$;
       line.div.addClass("log").html(m);
 
-      let remove = function () {
+      var remove = function () {
         line.div.off();
         clearTimeout(line.timeoutId);
         line.timeoutId = null;
@@ -59,7 +56,7 @@ export class LogManager {
         line.div.off();
         clearTimeout(line.timeoutId);
         line.div.remove();
-        delete lines[line]
+        Utils.remove(lines, line);
         if (lines.length === 0) {
           logContainer.$.remove();
           logContainer = null;
@@ -70,10 +67,6 @@ export class LogManager {
     };
   }
 
-  /**
-   * logs all informations that is happening in the layout
-   * @param m
-   */
   log(m) {
     this._log(m);
   }
