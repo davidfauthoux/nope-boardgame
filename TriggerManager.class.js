@@ -1,14 +1,11 @@
+import { Utils } from "../Utils.class.js";
 import { Multimap } from "../Multimap.class.js";
 import { GeneralReference } from "./GeneralReference.class.js";
 import { ExecutionContext } from "./ExecutionContext.class.js";
 
 export class TriggerManager {
-  /**
-   * creates a new (unique) TriggerManager for a given Game
-   * @param {Game} game
-   */
   constructor(game) {
-    let that = this;
+    var that = this;
 
     this._keyTriggers = new Multimap.Array();
     this._instantTriggers = new Multimap.Array();
@@ -21,9 +18,9 @@ export class TriggerManager {
     this._currentHoverItem = null;
 
     this._runScriptsInSpot = function (from, spot, item, runScripts) {
-      let exec = [];
+      var exec = [];
       if (spot !== null) {
-        let foundItemInstance;
+        var foundItemInstance;
         if (item !== null) {
           foundItemInstance = spot.getItemInstance(item.kind);
           console.log(
@@ -32,7 +29,7 @@ export class TriggerManager {
               " in: " +
               spot.location
           );
-          let checkAndExec = function (k) {
+          var checkAndExec = function (k) {
             that._dropTriggers.get(k).each(function (f) {
               console.log(
                 "Drop script triggered (" +
@@ -45,10 +42,12 @@ export class TriggerManager {
             });
           };
           checkAndExec(item.kind);
-          for (const generalKind of GeneralReference.getGeneralKinds(item.kind)) {
-            checkAndExec(generalKind.kind);
-          }
-
+          Utils.each(
+            GeneralReference.getGeneralKinds(item.kind),
+            function (generalKind) {
+              checkAndExec(generalKind.kind);
+            }
+          );
         } else {
           foundItemInstance = null;
         }
@@ -85,19 +84,19 @@ export class TriggerManager {
         console.log(exec.length + " scripts to run in: " + spot.location);
       }
       that._passiveTriggers.each(function (scripts) {
-        for (const f of scripts) {
+        Utils.each(scripts, function (f) {
           console.log("Passive script triggered");
           exec.push(f(from, null, spot, null));
-        }
+        });
       });
       runScripts(exec);
     };
 
     /*
-		let pressing = [];
-		let specialKeys = [ "Meta", "Control" ]; // Not Alt and Shift because they alter the characters
+		var pressing = [];
+		var specialKeys = [ "Meta", "Control" ]; // Not Alt and Shift because they alter the characters
 		$("body").on("keydown", function(e) {
-			let c = e.key;
+			var c = e.key;
 			if (Utils.contains(specialKeys, c)) {
 				if (!Utils.contains(pressing, c)) {
 					pressing.push(c);
@@ -105,22 +104,22 @@ export class TriggerManager {
 			}
 		});
 		$("body").on("keyup", function(e) {
-			let c = e.key;
+			var c = e.key;
 			if (Utils.contains(specialKeys, c)) {
 				Utils.remove(pressing, c);
 			}
 		});
 		*/
     $("body").on("keydown", function (e) {
-      let focused = $(document.activeElement);
+      var focused = $(document.activeElement);
       if (focused.length > 0) {
-        let tag = focused.prop("tagName").toLowerCase();
+        var tag = focused.prop("tagName").toLowerCase();
         if (tag === "input" || tag === "textarea") {
           return;
         }
       }
 
-      let c = e.key;
+      var c = e.key;
       if (c === " ") {
         c = "Space";
       }
@@ -144,31 +143,31 @@ export class TriggerManager {
 
       console.log("[" + c + "]");
 
-      let scripts = that._keyTriggers.get(c);
+      var scripts = that._keyTriggers.get(c);
       if (!scripts.empty()) {
         console.log("Trigger [" + c + "] " + scripts.size() + " scripts");
         /*%%%%%%%%%%%%
-				let currentOverItemInstance = null;
-				let currentOverSpot = null;
-				let id = that._currentHoverId;
+				var currentOverItemInstance = null;
+				var currentOverSpot = null;
+				var id = that._currentHoverId;
 				if (id !== null) {
-					let s = id.split(/\:/g);
+					var s = id.split(/\:/g);
 					if (s[0] === "item") {
-						let location = s[1];
-						let kind = s[2];
+						var location = s[1];
+						var kind = s[2];
 						currentOverSpot = game.spotManager.getSpot(location);
 						if (currentOverSpot !== null) {
 							currentOverItemInstance = currentOverSpot.getItemInstance(kind);
 						}
 					} else if (s[0] === "spot") {
-						let location = s[1];
+						var location = s[1];
 						currentOverSpot = game.spotManager.getSpot(location);
 					}
 				}
 				*/
 
-        let currentOverItemInstance = null;
-        let currentOverSpot = null;
+        var currentOverItemInstance = null;
+        var currentOverSpot = null;
         if (that._currentHoverSpot !== null) {
           currentOverSpot = that._currentHoverSpot;
         } else if (that._currentHoverItem !== null) {
@@ -176,7 +175,7 @@ export class TriggerManager {
           currentOverSpot = currentOverItemInstance.spot;
         }
 
-        let exec = [];
+        var exec = [];
         scripts.each(function (f) {
           exec.push(f(null, currentOverItemInstance, currentOverSpot, null));
         });
@@ -187,7 +186,7 @@ export class TriggerManager {
     });
 
     this._runNewsScriptsInSpot = function (action, newsContext) {
-      let exec = [];
+      var exec = [];
       that._newsTriggers.get(action).each(function (f) {
         exec.push(f(null, null, null, newsContext));
       });
@@ -204,10 +203,10 @@ export class TriggerManager {
       if (itemInstance === null) {
         return true;
       }
-      context = {...context};
+      context = Utils.clone(context); // TODO how to remove clone ?
       context.action = action;
-      let ok = true;
-      let checkAndExec = function (k) {
+      var ok = true;
+      var checkAndExec = function (k) {
         that._watchdogTriggers.get(k).each(function (f) {
           if (!ok) {
             return;
@@ -233,12 +232,15 @@ export class TriggerManager {
       };
       checkAndExec(itemInstance.item.kind);
       if (ok) {
-        for (const generalKind of GeneralReference.getGeneralKinds(itemInstance.item.kind)) {
-          if (!ok) {
-            return;
+        Utils.each(
+          GeneralReference.getGeneralKinds(itemInstance.item.kind),
+          function (generalKind) {
+            if (!ok) {
+              return;
+            }
+            checkAndExec(generalKind.kind);
           }
-          checkAndExec(generalKind.kind);
-        }
+        );
       }
       return ok;
     };
@@ -253,18 +255,13 @@ export class TriggerManager {
 		news: [] actions (drop, move...)
 		watchdogs: [] kind
 	*/
-  /**
-   * links all the given triggers to their scripts
-   * @param triggers
-   * @param scriptAsFunction
-   */
   link(triggers, scriptAsFunction) {
-    let that = this;
-    for (const e of triggers) {
+    var that = this;
+    Utils.each(triggers, function (e) {
       if (e.keys !== undefined) {
-        for (const k of e.keys) {
+        Utils.each(e.keys, function (k) {
           that._keyTriggers.get(k).add(scriptAsFunction);
-        }
+        });
       } else if (e.instant !== undefined) {
         that._instantTriggers.get(e.instant).add(scriptAsFunction);
       } else if (e.passive !== undefined) {
@@ -272,63 +269,39 @@ export class TriggerManager {
       } else if (e.dropin !== undefined) {
         that._dropinTriggers.get(e.dropin).add(scriptAsFunction);
       } else if (e.drops !== undefined) {
-        for (const k of e.drops) {
+        Utils.each(e.drops, function (k) {
           that._dropTriggers.get(k).add(scriptAsFunction);
-        }
+        });
       } else if (e.news !== undefined) {
-        for (const k of e.news) {
+        Utils.each(e.news, function (k) {
           that._newsTriggers.get(k).add(scriptAsFunction);
-        }
+        });
       } else if (e.watchdogs !== undefined) {
-        for (const k of e.watchdogs) {
+        Utils.each(e.watchdogs, function (k) {
           that._watchdogTriggers.get(k).add(scriptAsFunction);
-        }
+        });
       }
-    }
+    });
   }
 
   //
-  /**
-   * affects the currently hovered Spot
-   * @param {Spot} spot
-   */
+
   hoverOnSpot(spot) {
     this._currentHoverSpot = spot;
   }
-
-  /**
-   * affects the currently hovered Item
-   * @param itemInstance
-   */
   hoverOnItem(itemInstance) {
     this._currentHoverItem = itemInstance;
   }
-
-  /**
-   * removes currently hovered Item or Spot
-   */
   hoverOff() {
     this._currentHoverSpot = null;
     this._currentHoverItem = null;
   }
 
   //
-  /**
-   * Runs scripts for Spot modified by Item
-   * @param from
-   * @param {Spot} spot
-   * @param item
-   * @param runScripts
-   */
+
   spotModified(from, spot, item, runScripts) {
     this._runScriptsInSpot(from, spot, item, runScripts);
   }
-
-  /**
-   * Runs scripts for Spot
-   * @param {Spot} spot
-   * @param runScripts
-   */
   scriptRun(spot, runScripts) {
     this._runScriptsInSpot(null, spot, null, runScripts);
   }

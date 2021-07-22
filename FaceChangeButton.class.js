@@ -6,21 +6,21 @@ export class FaceChangeButton {
   /*%%%%%%%%%%%%%%
 class FaceChangeButton {
 	constructor(layout, game, callback) {
-		let that = this;
+		var that = this;
 
-		let body = $("body");
+		var body = $("body");
 
-		let faceButton = $("<div>");
+		var faceButton = $("<div>");
 		layout.$.addClass("faceButton");
 		layout.packed().set(faceButton);
 
 		this._layout = layout;
 
-		let input = null;
+		var input = null;
 
-		let delayedTimeoutId = null;
-		let autoCloseTimeoutId = null;
-		let getUserMediaCanceled = null;
+		var delayedTimeoutId = null;
+		var autoCloseTimeoutId = null;
+		var getUserMediaCanceled = null;
 		this._clear = function() {
 			faceButton.empty().off();
 			if (delayedTimeoutId !== null) {
@@ -41,7 +41,7 @@ class FaceChangeButton {
 			}
 		};
 
-		let onClick = function(div, click) {
+		var onClick = function(div, click) {
 			div.mousedown(function(e) { // mousedown and not click, because of interaction with DragAndDrop mouse events on the container (item) //TO DO Touch screen
 				if (e.which !== 1) {
 					return;
@@ -52,17 +52,17 @@ class FaceChangeButton {
 			});
 		};
 
-		let createButton = function(text, click) {
-			let div = $("<div>").text(text).addClass("innerButton");
+		var createButton = function(text, click) {
+			var div = $("<div>").text(text).addClass("innerButton");
 			faceButton.append(div);
 			onClick(div, click);
 		};
 
-		let resize = function(face, resizeCallback) {
-			let img = new Image();
+		var resize = function(face, resizeCallback) {
+			var img = new Image();
 			img.onload = function () {
-				let canvas = $("<canvas>")[0];
-				let ctx = canvas.getContext("2d");
+				var canvas = $("<canvas>")[0];
+				var ctx = canvas.getContext("2d");
 				canvas.width = 150;
 				canvas.height = canvas.width * img.height / img.width;
 				ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, canvas.width, canvas.height);
@@ -71,7 +71,7 @@ class FaceChangeButton {
 			img.src = face;
 		};
 
-		let delayedCallback = function(res) {
+		var delayedCallback = function(res) {
 			that._clear();
 			layout.$.addClass("disabled");
 			delayedTimeoutId = setTimeout(function() {
@@ -95,11 +95,11 @@ class FaceChangeButton {
 				input.css("opacity", "0");
 				body.append(input);
 			
-				let doUpload = function(useWebcam) {
+				var doUpload = function(useWebcam) {
 					if (useWebcam) {
 						return function() {
-							let video = $("<video muted autoplay>");
-							let canceled = {};
+							var video = $("<video muted autoplay>");
+							var canceled = {};
 							getUserMediaCanceled = canceled;
 							navigator.mediaDevices.getUserMedia({ video: true })
 								.then(function (stream) {
@@ -113,24 +113,24 @@ class FaceChangeButton {
 									faceButton.append($("<div>").text("Click to accept").addClass("acceptButton"));
 									layout.$.addClass("hoverLock");
 
-									let track = stream.getTracks()[0];
+									var track = stream.getTracks()[0];
 
-									let close = function() {
+									var close = function() {
 										layout.$.removeClass("hoverLock");
 										track.stop();
 										that._update(null);
 									};
 									autoCloseTimeoutId = setTimeout(close, 5000);
 									onClick(faceButton, function() {
-										let size = track.getSettings();
+										var size = track.getSettings();
 
-										let canvas = $("<canvas>")[0];
-										let ctx = canvas.getContext("2d");
+										var canvas = $("<canvas>")[0];
+										var ctx = canvas.getContext("2d");
 										canvas.width = 150;
 										canvas.height = canvas.width * size.height / size.width;
 										ctx.drawImage(video[0], 0, 0, size.width, size.height, 0, 0, canvas.width, canvas.height);
 
-										let resizedFace = canvas.toDataURL("image/jpeg");
+										var resizedFace = canvas.toDataURL("image/jpeg");
 
 										close();
 										delayedCallback(resizedFace);
@@ -150,8 +150,8 @@ class FaceChangeButton {
 								input.click();
 								return;
 							}
-							let reader = new FileReader();
-							let canceled = {};
+							var reader = new FileReader();
+							var canceled = {};
 							getUserMediaCanceled = canceled;
 							reader.readAsDataURL(input[0].files[0]);
 							reader.onload = function () {
@@ -160,8 +160,8 @@ class FaceChangeButton {
 								}
 
 								input.val("");
-								let uploadedFace = reader.result;
-								let canceled = {};
+								var uploadedFace = reader.result;
+								var canceled = {};
 								getUserMediaCanceled = canceled;
 								resize(uploadedFace, function(resizedFace) {
 									if (canceled.canceled) {
@@ -196,7 +196,7 @@ class FaceChangeButton {
 		if (this._delayedTimeoutId !== null) {
 			clearTimeout(this._delayedTimeoutId);
 		}
-		let that = this;
+		var that = this;
 		this._delayedTimeoutId = setTimeout(function() {
 			that._layout.$.removeClass("disabled");
 			that._update(face);
@@ -216,22 +216,22 @@ FaceChangeButton._delay = 500;
 FaceChangeButton._size = 150;
 
 FaceChangeButton.webcam = function (callback) {
-  let acquire = VideoIcon._acquire("video");
+  var acquire = VideoIcon._acquire("video");
   acquire.acquire(function (acquireId, stream) {
     if (stream === null || stream._dead) {
       callback(null);
       return;
     }
 
-    let video = $("<video muted autoplay playsinline>");
+    var video = $("<video muted autoplay playsinline>");
     video.css({ position: "absolute", top: "0", left: "0", opacity: "0" });
     // $("body").append(video);
     video[0].srcObject = stream;
-    let size = stream._size;
+    var size = stream._size;
 
     setTimeout(function () {
-      let canvas = $("<canvas>")[0];
-      let ctx = canvas.getContext("2d");
+      var canvas = $("<canvas>")[0];
+      var ctx = canvas.getContext("2d");
       canvas.width = FaceChangeButton._size;
       canvas.height = (canvas.width * size.height) / size.width;
       ctx.drawImage(
@@ -246,7 +246,7 @@ FaceChangeButton.webcam = function (callback) {
         canvas.height
       );
 
-      let resizedFace = canvas.toDataURL("image/jpeg");
+      var resizedFace = canvas.toDataURL("image/jpeg");
 
       acquire.stop(acquireId);
 

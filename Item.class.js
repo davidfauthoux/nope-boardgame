@@ -9,7 +9,7 @@ import { Spot } from "./Spot.class.js";
 export class Item {
   /**
    * creates a new Item in a given Game, with a given kind
-   * @param game
+   * @param {Game} game
    * @param {string} kind
    */
   constructor(game, kind) {
@@ -79,7 +79,7 @@ export class Item {
                 for (const key in ii.state) {
                   extraSpot.setItemState(ii.item.kind, key, ii.state[key]);
                 }
-              }
+              });
               prevSpot.destroy();
             }
             game.spotManager.registerSpot(extraSpot); // We do not unregister on item delete, the spot may become a ghost but that's ok

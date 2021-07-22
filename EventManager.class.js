@@ -2,33 +2,29 @@ import { Server } from "../Server.class.js";
 import { FilteringServer } from "../FilteringServer.class.js";
 import { Heap, while_, false_, try_, sequence_, block_} from "../Async.class.js";
 import { Layout } from "../Layout.class.js";
+import { Utils } from "../Utils.class.js";
 
 
 export class EventManager {
-  /**
-   * creates a new (unique) EventManager for a Game
-   * @param layout
-   * @param game
-   */
   constructor(layout, game) {
-    let that = this;
+    var that = this;
 
-    let stackActivated = false;
-    let launchInit;
-    let finishInit;
+    var stackActivated = false;
+    var launchInit;
+    var finishInit;
     let launchReadEvent;
     let stopReadEvent;
-    let gameInit = null;
+    var gameInit = null;
 
-    let savingDiv = $("<div>").text("Saving...").addClass("saving").hide();
-    let errorDiv = $("<div>").text("Connection error").addClass("error").hide();
-    let horizontal = layout.layout().north().layout().west().horizontal();
+    var savingDiv = $("<div>").text("Saving...").addClass("saving").hide();
+    var errorDiv = $("<div>").text("Connection error").addClass("error").hide();
+    var horizontal = layout.layout().north().layout().west().horizontal();
     horizontal.add().set(savingDiv);
     horizontal.add().set(errorDiv);
 
-    let showSavingCount = 0;
-    let showSavingTimeoutId = undefined;
-    let showSaving = function () {
+    var showSavingCount = 0;
+    var showSavingTimeoutId = undefined;
+    var showSaving = function () {
       if (showSavingCount === 0) {
         clearTimeout(showSavingTimeoutId);
         showSavingTimeoutId = setTimeout(function () {
@@ -37,7 +33,7 @@ export class EventManager {
       }
       showSavingCount++;
     };
-    let hideSaving = function (err) {
+    var hideSaving = function (err) {
       showSavingCount--;
       if (showSavingCount === 0) {
         clearTimeout(showSavingTimeoutId);
@@ -53,15 +49,15 @@ export class EventManager {
       }
     };
 
-    let parseEvent = function (event, received, doIt) {
+    var parseEvent = function (event, received, doIt) {
       if (event.action === "multiple") {
-        let ok = true;
-        for (const e of event.events) {
+        var ok = true;
+        Utils.each(event.events, function (e) {
           e.live = event.live;
           if (!parseEvent(e, received, doIt)) {
             ok = false;
           }
-        }
+        });
         return ok;
       }
 
@@ -111,12 +107,12 @@ export class EventManager {
       }
 
       if (event.action === "paint") {
-        let spot = game.spotManager.getSpot(event.location);
+        var spot = game.spotManager.getSpot(event.location);
         if (spot !== null) {
           if (doIt) {
             spot.setItemState(event.kind, event.key, event.value);
           } else {
-            let itemInstance = spot.getItemInstance(event.kind);
+            var itemInstance = spot.getItemInstance(event.kind);
             return game.triggerManager.watchdog(
               "paint",
               spot,
@@ -132,15 +128,15 @@ export class EventManager {
       }
 
       if (event.action === "drop") {
-        let spot = game.spotManager.getSpot(event.location);
+        var spot = game.spotManager.getSpot(event.location);
         if (spot !== null) {
           //%% if ((event.count === undefined) || (event.count > 0)) {
-          //%% let itemInstance = spot.getItemInstance(event.kind);
+          //%% var itemInstance = spot.getItemInstance(event.kind);
           //%% if ((itemInstance === null) || !itemInstance.infinite || (event.kind === "live")) {
           if (doIt) {
             spot.addItem(event.kind, event.count, event.live);
           } else {
-            let itemInstance = spot.getItemInstance(event.kind);
+            var itemInstance = spot.getItemInstance(event.kind);
             return game.triggerManager.watchdog(
               "drop",
               spot,
@@ -158,15 +154,15 @@ export class EventManager {
       }
 
       if (event.action === "destroy") {
-        let spot = game.spotManager.getSpot(event.location);
+        var spot = game.spotManager.getSpot(event.location);
         if (spot !== null) {
-          //%% let itemInstance = spot.getItemInstance(event.kind);
+          //%% var itemInstance = spot.getItemInstance(event.kind);
           //%% if (itemInstance !== null) {
           //%% if (itemInstance.infinite || (event.count === undefined) || (itemInstance.count >= event.count)) {
           if (doIt) {
             spot.destroyItem(event.kind, event.count);
           } else {
-            let itemInstance = spot.getItemInstance(event.kind);
+            var itemInstance = spot.getItemInstance(event.kind);
             return game.triggerManager.watchdog(
               "destroy",
               spot,
@@ -185,12 +181,12 @@ export class EventManager {
 
       if (event.action === "move") {
         if (event.location === event.to) {
-          let spot = game.spotManager.getSpot(event.location);
+          var spot = game.spotManager.getSpot(event.location);
           if (spot !== null) {
             if (doIt) {
               spot.updateItem(event.kind, event.live);
             } else {
-              let itemInstance = spot.getItemInstance(event.kind);
+              var itemInstance = spot.getItemInstance(event.kind);
               return game.triggerManager.watchdog(
                 "move",
                 spot,
@@ -205,23 +201,23 @@ export class EventManager {
           }
         }
 
-        let spot = game.spotManager.getSpot(event.location);
+        var spot = game.spotManager.getSpot(event.location);
         if (spot !== null) {
-          let itemInstance = spot.getItemInstance(event.kind);
+          var itemInstance = spot.getItemInstance(event.kind);
           if (itemInstance !== null) {
-            let to = game.spotManager.getSpot(event.to);
+            var to = game.spotManager.getSpot(event.to);
             if (to !== null) {
               if (doIt) {
-                let state = itemInstance.state;
+                var state = itemInstance.state;
                 spot.destroyItem(event.kind, event.count);
                 if (state.count === undefined) {
                   to.addItem(event.kind, event.count, event.live);
-                  for (const key in state) {
-                    if (key.startsWith("auto_")) {
+                  Utils.each(state, function (v, k) {
+                    if (k.startsWith("auto_")) {
                       return;
                     }
-                    to.setItemState(event.kind, key, state[key]);
-                  }
+                    to.setItemState(event.kind, k, v);
+                  });
                 }
               } else {
                 return game.triggerManager.watchdog(
@@ -265,7 +261,7 @@ export class EventManager {
 
       if (event.action === "play") {
         if (doIt && stackActivated) {
-          let s = game.generalReference.getSound(event.sound);
+          var s = game.generalReference.getSound(event.sound);
           if (s !== null) {
             s.play();
           }
@@ -284,12 +280,12 @@ export class EventManager {
     };
 
     /*%%%
-		let toRun = [];
-		let toRunFinished = false;
-		let requestToRunFinished = false;
+		var toRun = [];
+		var toRunFinished = false;
+		var requestToRunFinished = false;
 		setInterval(function() {
 			if (toRun.length > 0) {
-				let f = toRun.shift();
+				var f = toRun.shift();
 				f();
 			} else {
 				if (requestToRunFinished) {
@@ -297,7 +293,7 @@ export class EventManager {
 				}
 			}
 		}, 50);
-		let appendToRun = function(f) {
+		var appendToRun = function(f) {
 			if (toRunFinished) {
 				f();
 				return;
@@ -309,8 +305,8 @@ export class EventManager {
 		toRunFinished = true; // Deactivate to replay in slow motion when reload
 		*/
 
-    let server = new FilteringServer(new Server("/" + Server.location().id));
-    let hasEvents = false;
+    var server = new FilteringServer(new Server("/" + Server.location().id));
+    var hasEvents = false;
 
     launchInit = function () {
       hasEvents = false;
@@ -318,8 +314,8 @@ export class EventManager {
       game.loading(true);
 
       game.newsManager.clear();
-      for (const key in game.spotManager._spots) {
-        let s = game.spotManager._spots[key];
+      for (const key in game.spotManager) {
+        let s = game.spotManager[key];
         for (const key2 in s._itemInstances) {
           s.destroyItem(s._itemInstances[key2].item.kind);
         }
@@ -347,7 +343,7 @@ export class EventManager {
       stopReadEvent();
       let stopHeap = new Heap(false);
       currentStopHeap = stopHeap;
-      let eventHeap = new Heap();
+      var eventHeap = new Heap();
       while_(false_(stopHeap))
         .do_(
           try_(
@@ -355,7 +351,7 @@ export class EventManager {
               Server.fullHistory(server, eventHeap),
               // sleep_(0.1),
               block_(function () {
-                let event = eventHeap.get();
+                var event = eventHeap.get();
                 if (event.old !== undefined) {
                   if (event.old.length === 0) {
                     that._reset();
@@ -430,7 +426,7 @@ export class EventManager {
 			*/
     };
 
-    let stack = function (event) {
+    var stack = function (event) {
       if (!stackActivated) {
         console.log(
           "Not possible to save any event during the configuration script"
@@ -456,14 +452,14 @@ export class EventManager {
 
     this._stack = function (event, liveId) {
       if (liveId !== null) {
-        event = {...event};
+        event = Utils.clone(event);
         event.live = liveId === undefined ? game.thisLiveId : liveId;
       }
       stack(event);
     };
     this._parse = function (event, liveId) {
       if (liveId !== null) {
-        event = {...event};
+        event = Utils.clone(event);
         event.live = liveId === undefined ? game.thisLiveId : liveId;
       }
       parseEvent(event, false, true);
@@ -473,7 +469,7 @@ export class EventManager {
     };
 
     this._reset = function () {
-      let stackAndParse = function (e) {
+      var stackAndParse = function (e) {
         that._parse(e);
         stackActivated = true;
         that._stack(e);
@@ -490,9 +486,9 @@ export class EventManager {
       }, 100);
     };
     /*%%
-		let that = this;
+		var that = this;
 		this._reset = function() {
-			let event = { action: "snapshot", live: game.thisLiveId };
+			var event = { action: "snapshot", live: game.thisLiveId };
 			game.newsManager.handleAdmin(event);
 			that.stack(event);
 			clear();
@@ -502,34 +498,27 @@ export class EventManager {
 			Layout.fit();
 		};
 		this._mark = function() {
-			let event = { action: "mark", live: game.thisLiveId };
+			var event = { action: "mark", live: game.thisLiveId };
 			game.newsManager.handleAdmin(event);
 			that.stack(event);
 		};
 		this._back = function() {
-			let event = { action: "back", live: game.thisLiveId };
+			var event = { action: "back", live: game.thisLiveId };
 			game.newsManager.handleAdmin(event);
 			that.stack(event);
 		};
 		this._forward = function() {
-			let event = { action: "forward", live: game.thisLiveId };
+			var event = { action: "forward", live: game.thisLiveId };
 			game.newsManager.handleAdmin(event);
 			that.stack(event);
 		};
 		%%*/
   }
 
-  /**
-   * launches the Game's initialization
-   * @param init
-   */
   launch(init) {
     this._launch(init);
   }
 
-  /**
-   * reset's the Game
-   */
   reset() {
     this._reset();
   }
@@ -548,31 +537,16 @@ export class EventManager {
 		this._forward();
 	}
 %%*/
-  /**
-   * adds an event to the stack
-   * @param event
-   * @param liveId
-   */
   stack(event, liveId) {
     console.log("Stacking: " + JSON.stringify(event));
     this._stack(event, liveId);
   }
 
-  /**
-   * parse given event
-   * @param event
-   * @param liveId
-   */
   parse(event, liveId) {
     console.log("Parsing: " + JSON.stringify(event));
     this._parse(event, liveId);
   }
 
-  /**
-   * checks if parsing is possible for this event
-   * @param event
-   * @returns {boolean|boolean|*}
-   */
   canParse(event) {
     return this._canParse(event);
   }

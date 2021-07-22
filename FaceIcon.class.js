@@ -1,9 +1,6 @@
+import { Utils } from "../Utils.class.js";
+
 export class FaceIcon {
-  /**
-   * creates a new FaceIcon on a given Layout from a given Game
-   * @param {Layout} layout
-   * @param {Game} game
-   */
   constructor(layout, game) {
     this._imgContainer = $("<div>").addClass("face");
     layout.set(this._imgContainer);
@@ -18,13 +15,8 @@ export class FaceIcon {
     //%%%%%% this._faceChangeButton = null;
   }
 
-  /**
-   * updates the FaceIcon with an id and a face
-   * @param o
-   * @param liveId
-   */
   update(o, liveId) {
-    let face = o === null ? null : o.image;
+    var face = o === null ? null : o.image;
 
     if (this._face === face && this.liveId === liveId) {
       return;
@@ -35,7 +27,7 @@ export class FaceIcon {
     if (face === null) {
       this._imgContainer.append($(FaceIcon._null).addClass("nullFace"));
     } else {
-      let nobody = FaceIcon.isNobody(face);
+      var nobody = FaceIcon.isNobody(face);
       if (nobody !== undefined) {
         this._imgContainer.append($(nobody).addClass("defaultFace"));
       } else {
@@ -54,7 +46,7 @@ export class FaceIcon {
 			this._faceChangeButton = null;
 		}
 		if (this._withChange && (this._face !== null) && (liveId === this._game.thisLiveId)) {
-			let that = this;
+			var that = this;
 			this._faceChangeButton = new FaceChangeButton(this._layout.overlay(), this._game, function(updatedFace) {
 				that._game.friendFaces.updateThisFace(updatedFace, true);
 			});
@@ -63,9 +55,6 @@ export class FaceIcon {
 		*/
   }
 
-  /**
-   * supposed to destroy the face, but does nothing
-   */
   destroy() {
     /*%%%%%%
 		if (this._faceChangeButton !== null) {
@@ -85,7 +74,7 @@ FaceIcon._nobodies = [
 ];
 
 FaceIcon.makeNobody = function () {
-  let gen = "nobody:" + Math.floor(Math.random()*FaceIcon._nobodies.length);
+  var gen = "nobody:" + Utils.random(FaceIcon._nobodies.length);
   console.log("Generated nobody: " + gen);
   return gen;
 };

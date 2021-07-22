@@ -1,20 +1,17 @@
+import { Utils } from "../Utils.class.js";
 import { FaceIcon } from "./FaceIcon.class.js";
 import { FriendMouse } from "./FriendMouse.class.js";
 import { Chat } from "../Chat.class.js";
 import { FaceChangeButton } from "./FaceChangeButton.class.js";
 
 export class ChatManager {
-  /**
-   * creates a new (unique) ChatManager for a given Game
-   * @param game
-   */
   constructor(game) {
-    let that = this;
+    var that = this;
     this._game = game;
 
     this._chatMap = {};
 
-    // let nextChatNumber = 1;
+    // var nextChatNumber = 1;
 
     this._chat = new Chat();
 
@@ -23,8 +20,8 @@ export class ChatManager {
       that._friendFaces.chatReady();
     };
 
-    let disconnect = function (chatId) {
-      let friend = that._chatMap[chatId];
+    var disconnect = function (chatId) {
+      var friend = that._chatMap[chatId];
       if (friend !== undefined) {
         //friend.destroyWebrtc();
         friend.faceIcon.destroy();
@@ -49,21 +46,20 @@ export class ChatManager {
     };
 
     this._discardFriendMice = function () {
-      for (const chatId in that._chatMap) {
-        that._chatMap[chatId].mouse.discard();
-      }
+      Utils.each(that._chatMap, function (friend, chatId) {
+        friend.mouse.discard();
+      });
     };
 
     this._chat.err(function (e) {
       console.log("Chat error: " + e);
 
-      for (const chatId in that._chatMap) {
-        let friend = that._chatMap[chatId];
+      Utils.each(that._chatMap, function (friend, chatId) {
         disconnect(chatId);
         if (friend.liveId !== null) {
           that._game.friendFaces.updateAllIcons(friend.liveId, null);
         }
-      }
+      });
     });
 
     this._chat.disconnected(function (chatId, meId) {
@@ -81,12 +77,12 @@ export class ChatManager {
 
       disconnect(chatId);
 
-      let faceIcon = new FaceIcon(that._faceLayout.add(), game);
+      var faceIcon = new FaceIcon(that._faceLayout.add(), game);
 
       /*
 			// Find a chatNumber
-			let max = 10;
-			let taken = [];
+			var max = 10;
+			var taken = [];
 			Utils.loop(0, max, 1, function() {
 				taken.push(false);
 			});
@@ -94,7 +90,7 @@ export class ChatManager {
 				taken[m.number] = true;
 			});
 
-			let chatNumber = nextChatNumber;
+			var chatNumber = nextChatNumber;
 			while (true) {
 				if (!taken[chatNumber]) {
 					break;
@@ -105,7 +101,7 @@ export class ChatManager {
 			// Done
 			*/
 
-      let friend = {
+      var friend = {
         liveId: null,
         // number: chatNumber,
         faceIcon: faceIcon,
@@ -120,18 +116,18 @@ export class ChatManager {
       //TODO Kill old pending webrtc on timeout
 
       friend.destroyWebrtc = function () {
-        for (const webrtcIn of friend.webrtcIns) {
+        Utils.each(friend.webrtcIns, function (webrtcIn) {
           webrtcIn.close();
-        }
+        });
         friend.webrtcIns = {};
-        for (const webrtcOut of friend.webrtcOuts) {
+        Utils.each(friend.webrtcOuts, function (webrtcOut) {
           webrtcOut.close();
-        }
+        });
         friend.webrtcOuts = {};
       };
 
       friend.createIn = function (w, what, withId) {
-        let webrtc = new RTCPeerConnection({
+        var webrtc = new RTCPeerConnection({
           iceServers: [
             {
               urls: [
@@ -172,7 +168,7 @@ export class ChatManager {
           if (event.streams.length === 0) {
             return;
           }
-          let stream = event.streams[0];
+          var stream = event.streams[0];
           if (what === "video" && event.track.kind !== "video") {
             return;
           }
@@ -186,8 +182,8 @@ export class ChatManager {
 
           //
 
-          let onErrorCalled = false;
-          let onError = function () {
+          var onErrorCalled = false;
+          var onError = function () {
             if (onErrorCalled) {
               return;
             }
@@ -196,10 +192,10 @@ export class ChatManager {
           };
           stream.addEventListener("error", onError);
           stream.addEventListener("ended", onError);
-          for (const track of stream.getTracks()) {
+          Utils.each(stream.getTracks(), function (track) {
             track.addEventListener("error", onError);
             track.addEventListener("ended", onError);
-          }
+          });
 
           that._game.friendFaces.videoUpdateAllIcons(
             what,
@@ -212,7 +208,7 @@ export class ChatManager {
       };
 
       friend.createOut = function (what, stream) {
-        let oldOne = friend._outs[what];
+        var oldOne = friend._outs[what];
         if (oldOne !== undefined) {
           // Not closed here but when clicking on the item // oldOne.stream.close
           that.sendChat({
@@ -229,10 +225,10 @@ export class ChatManager {
           return;
         }
 
-        let w = friend._nextWebrtcId;
+        var w = friend._nextWebrtcId;
         friend._nextWebrtcId++;
 
-        let webrtc = new RTCPeerConnection({
+        var webrtc = new RTCPeerConnection({
           iceServers: [
             {
               urls: [
@@ -260,9 +256,10 @@ export class ChatManager {
             ice: event.candidate,
           });
         });
-        for (const track of stream.getTracks()) {
+
+        Utils.each(stream.getTracks(), function (track) {
           webrtc.addTrack(track, stream);
-        }
+        });
 
         webrtc
           .createOffer(
@@ -291,7 +288,7 @@ export class ChatManager {
       };
 
       friend.recreateOut = function (what) {
-        let oldOne = friend._outs[what];
+        var oldOne = friend._outs[what];
         if (oldOne !== undefined) {
           that.sendChat({
             w: oldOne.w,
@@ -322,7 +319,7 @@ export class ChatManager {
     });
 
     this._chat.message(function (chatId, m, meId) {
-      let friend = that._chatMap[chatId];
+      var friend = that._chatMap[chatId];
       if (friend === undefined) {
         return;
       }
@@ -334,13 +331,13 @@ export class ChatManager {
           return;
         }
         if (m.ice !== undefined) {
-          let webrtcOut = friend.webrtcOuts[m.w];
+          var webrtcOut = friend.webrtcOuts[m.w];
           if (webrtcOut === undefined) {
             return;
           }
           webrtcOut.addIceCandidate(m.ice);
         } else if (m.answer !== undefined) {
-          let webrtcOut = friend.webrtcOuts[m.w];
+          var webrtcOut = friend.webrtcOuts[m.w];
           if (webrtcOut === undefined) {
             return;
           }
@@ -350,12 +347,12 @@ export class ChatManager {
         } else {
           debugger; // Should not happen
           /*%%
-					let webrtcOut = friend.webrtcOuts[m.w];
+					var webrtcOut = friend.webrtcOuts[m.w];
 					if (webrtcOut !== undefined) {
 						webrtcOut.close();
 					}
 					delete friend.webrtcOuts[m.w];
-					let webrtcIn = friend.webrtcIns[m.w];
+					var webrtcIn = friend.webrtcIns[m.w];
 					if (webrtcIn !== undefined) {
 						webrtcIn.close();
 					}
@@ -369,7 +366,7 @@ export class ChatManager {
           return;
         }
         if (m.ice !== undefined) {
-          let webrtcIn = friend.webrtcIns[m.w];
+          var webrtcIn = friend.webrtcIns[m.w];
           if (webrtcIn === undefined) {
             return;
           }
@@ -377,7 +374,7 @@ export class ChatManager {
         } else if (m.offer !== undefined) {
           console.log("WEBRTC: " + chatId + " OFFER");
           friend.createIn(m.w, m.what, chatId);
-          let webrtcIn = friend.webrtcIns[m.w];
+          var webrtcIn = friend.webrtcIns[m.w];
           if (webrtcIn === undefined) {
             return;
           }
@@ -398,13 +395,13 @@ export class ChatManager {
           });
         } else {
           /*%%
-					let webrtcOut = friend.webrtcOuts[m.w];
+					var webrtcOut = friend.webrtcOuts[m.w];
 					if (webrtcOut !== undefined) {
 						webrtcOut.close();
 					}
 					delete friend.webrtcOuts[m.w];
 					*/
-          let webrtcIn = friend.webrtcIns[m.w];
+          var webrtcIn = friend.webrtcIns[m.w];
           if (webrtcIn !== undefined) {
             webrtcIn.close();
           }
@@ -424,7 +421,7 @@ export class ChatManager {
       }
 
       if (m.type === "face") {
-        let face = m.face ? m.face : null;
+        var face = m.face ? m.face : null;
 
         if (friend.liveId === null) {
           friend.liveId = m.id;
@@ -438,12 +435,12 @@ export class ChatManager {
 
       /*
 			if (m.type === "video") {
-				let video = m.video ? m.video : null;
+				var video = m.video ? m.video : null;
 				that._game.friendFaces.videoUpdateAllIcons(m.type, friend.liveId, video);
 				return;
 			}
 			if (m.type === "audio") {
-				let audio = m.audio ? m.audio : null;
+				var audio = m.audio ? m.audio : null;
 				that._game.friendFaces.videoUpdateAllIcons(m.type, friend.liveId, audio);
 				return;
 			}
@@ -464,9 +461,6 @@ export class ChatManager {
     });
   }
 
-  /**
-   * launches video/audio
-   */
   launch() {
     this._faceLayout = this._game.gameManager.layouts["who"];
     if (this._faceLayout === undefined) {
@@ -477,7 +471,7 @@ export class ChatManager {
     this._thisFaceIcon.update(null, this._game.thisLiveId);
     this._game.friendFaces.add(this._thisFaceIcon);
 
-    let that = this;
+    var that = this;
     this._game.administration.button("fromCamera", function () {
       FaceChangeButton.webcam(function (updatedFace) {
         that._game.friendFaces.updateThisFace(updatedFace);
@@ -492,12 +486,8 @@ export class ChatManager {
     this._chat.run();
   }
 
-  /**
-   * sends a message m in the chat
-   * @param m
-   */
   sendChat(m) {
-    m = {...m};
+    m = Utils.clone(m);
     m.id = this._game.thisLiveId;
     this._chat.send(m);
   }
@@ -506,10 +496,6 @@ export class ChatManager {
     this._discardFriendMice();
   }
 
-  /**
-   * sends the face to appear next to our messages in the chat
-   * @param face
-   */
   sendFaceToChat(face) {
     if (face === null) {
       this.sendChat({
@@ -536,9 +522,9 @@ export class ChatManager {
 			});
 		}
 		*/
-    for (const key in this._chatMap) {
-      this._chatMap[key].createOut(type, stream);
-    }
+    Utils.each(this._chatMap, function (friend) {
+      friend.createOut(type, stream);
+    });
   }
 
   /*

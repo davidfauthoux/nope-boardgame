@@ -1,21 +1,18 @@
 import { UserInteraction } from "../UserInteraction.class.js";
+import { Utils } from "../Utils.class.js";
 import { Throttle } from "./Throttle.class.js";
 import { ExecutionContext } from "./ExecutionContext.class.js";
 
 
 export class DragAndDropManager {
-  /**
-   * Creates a new (unique) DragAndDropManager with a given Game
-   * @param game
-   */
   constructor(game) {
     this._game = game;
 
-    let selectedItemInstance = null;
-    let draggingItemInstance = null;
-    let draggingDiv = null;
+    var selectedItemInstance = null;
+    var draggingItemInstance = null;
+    var draggingDiv = null;
 
-    let setAllSpotsHoverable = function () {
+    var setAllSpotsHoverable = function () {
       for (const key in game.spotManager._spots) {
         let spot = game.spotManager._spots[key]
         spot.$.addClass("hoverable");
@@ -24,7 +21,7 @@ export class DragAndDropManager {
         }
       }
     };
-    let setAllItemsHoverable = function () {
+    var setAllItemsHoverable = function () {
       for (const key in game.spotManager._spots) {
         let spot = game.spotManager._spots[key]
         spot.$.removeClass("hoverable");
@@ -37,7 +34,7 @@ export class DragAndDropManager {
       }
     };
 
-    let unselect = function () {
+    var unselect = function () {
       if (selectedItemInstance !== null) {
         selectedItemInstance.$.removeClass("selected");
         selectedItemInstance = null;
@@ -48,7 +45,7 @@ export class DragAndDropManager {
       setAllItemsHoverable();
     };
 
-    let selectItem = function (itemInstance) {
+    var selectItem = function (itemInstance) {
       console.log(
         "Item selected: " +
           itemInstance.item.kind +
@@ -71,19 +68,19 @@ export class DragAndDropManager {
       }
     };
 
-    let selectSpot = function (spot) {
+    var selectSpot = function (spot) {
       console.log("Spot selected: " + spot.location);
       if (selectedItemInstance === null && draggingItemInstance !== null) {
         selectItem(draggingItemInstance);
       }
       if (selectedItemInstance !== null) {
-        let itemInstance = selectedItemInstance.spot.getItemInstance(
+        var itemInstance = selectedItemInstance.spot.getItemInstance(
           selectedItemInstance.item.kind
         );
 
-        let checkIfContains = function (instanceToCheck, ifContainsSpot) {
-          let contains = false;
-          for (const iiExtraSpot of instanceToCheck._extraSpots) {
+        var checkIfContains = function (instanceToCheck, ifContainsSpot) {
+          var contains = false;
+          Utils.each(instanceToCheck._extraSpots, function (iiExtraSpot) {
             if (contains) {
               return true;
             }
@@ -101,7 +98,7 @@ export class DragAndDropManager {
                 contains = true;
               }
             }
-          }
+          });
           return contains;
         };
         if (checkIfContains(itemInstance, spot)) {
@@ -158,11 +155,11 @@ export class DragAndDropManager {
       unselect();
     };
 
-    let createDragging = function (position, itemInstance) {
+    var createDragging = function (position, itemInstance) {
       unselect();
 
       if (itemInstance.item.properties.random !== undefined) {
-        let items = [];
+        var items = [];
         for (const key in itemInstance._itemInstances){
           let itemInSpot = itemInstance._itemInstances[key]
           if (
@@ -173,18 +170,18 @@ export class DragAndDropManager {
           ) {
             return;
           }
-          for (let i = 0; i < itemInSpot.count; i++) {
+          Utils.loop(0, itemInSpot.count, 1, function () {
             items.push(itemInSpot);
-          }
+          });
         }
         if (items.length === 0) {
           // If spot empty, we can drag the "random" item
         } else {
-          itemInstance = items[Math.floor(Math.random() *items.length)];
+          itemInstance = items[Utils.random(items.length)];
         }
       }
 
-      let overlayLayout = game.overlay.overlay();
+      var overlayLayout = game.overlay.overlay();
       draggingItemInstance = itemInstance.item.createInstance(
         overlayLayout.packed(),
         false,
@@ -201,9 +198,9 @@ export class DragAndDropManager {
       });
     };
 
-    let updateDragging = function (position, itemInstance) {
+    var updateDragging = function (position, itemInstance) {
       if (draggingDiv !== null) {
-        let mousePoint = game.overlay.mouse(position);
+        var mousePoint = game.overlay.mouse(position);
         // console.log("Dragging " + mousePoint.x + ", " + mousePoint.y);
         draggingDiv.css({
           top: mousePoint.y,
@@ -212,7 +209,7 @@ export class DragAndDropManager {
       }
     };
 
-    let destroyDragging = function () {
+    var destroyDragging = function () {
       if (draggingItemInstance !== null) {
         draggingDiv.remove();
         game.chatManager.sendChat({
@@ -224,29 +221,29 @@ export class DragAndDropManager {
     };
 
     /*%%%%%%%%
-		let body = $("body");
+		var body = $("body");
 
-		let sendChatThrottle = new Throttle();
-		let sendChat = function(m) {
+		var sendChatThrottle = new Throttle();
+		var sendChat = function(m) {
 			sendChatThrottle.execute(function() {
 				game.chatManager.sendChat(m);
 			});
 		};
 
 		this._currentlyHover = null;
-		let currentlyHoverId = null;
+		var currentlyHoverId = null;
 		this._currentlyHoverLocation = undefined;
 
-		let detectMoveDiv = null;
-		let detectMovePosition = null;
+		var detectMoveDiv = null;
+		var detectMovePosition = null;
 
 		this._catchingTouch = false;
 		this._touchstartTimeoutId = null;
 
-		let detectMoveThrottle = new Throttle();
+		var detectMoveThrottle = new Throttle();
 
 		this._mousemoveHandler = function(position, target) {
-			let mousePoint = game.overlay.mouse(position);
+			var mousePoint = game.overlay.mouse(position);
 			if (draggingItemInstance !== null) {
 				if ((draggingMousePoint === null) || ((Math.abs(draggingMousePoint.x - mousePoint.x) + Math.abs(draggingMousePoint.y - mousePoint.y)) > 10)) {
 					if (draggingMousePoint !== null) {
@@ -266,10 +263,10 @@ export class DragAndDropManager {
 			detectMoveThrottle.execute(function() {
 				//%% game.chatManager.checkHover(detectMovePosition);
 
-				let hoveringDiv = detectMoveDiv;
+				var hoveringDiv = detectMoveDiv;
 
 				if (that._catchingTouch) {
-					let hoveringLocation = hoveringDiv.attr("data-location");
+					var hoveringLocation = hoveringDiv.attr("data-location");
 					if (hoveringLocation === undefined) {
 						hoveringLocation = hoveringDiv.closest("[data-location]").attr("data-location");
 					}
@@ -278,7 +275,7 @@ export class DragAndDropManager {
 					that._currentlyHoverLocation = undefined;
 				}
 
-				let hoveringDivId = hoveringDiv.attr("data-id");
+				var hoveringDivId = hoveringDiv.attr("data-id");
 				if (hoveringDivId === undefined) {
 					hoveringDiv = hoveringDiv.closest(".hoverable");
 					hoveringDivId = hoveringDiv.attr("data-id");
@@ -298,7 +295,7 @@ export class DragAndDropManager {
 				}
 
 				if (that._currentlyHover !== null) {
-					let p = game.overlay.offset(that._currentlyHover);
+					var p = game.overlay.offset(that._currentlyHover);
 					if (p) {
 						sendChat({
 							type: "move",
@@ -317,15 +314,15 @@ export class DragAndDropManager {
 			that._mousemoveHandler({ pageX: e.pageX, pageY: e.pageY }, $(e.target));
 		});
 
-		let cancelDragging;
-		let cancelDraggingTimeoutId = null;
-		let clearDelayCancelDragging = function() {
+		var cancelDragging;
+		var cancelDraggingTimeoutId = null;
+		var clearDelayCancelDragging = function() {
 			if (cancelDraggingTimeoutId !== null) {
 				clearTimeout(cancelDraggingTimeoutId);
 				cancelDraggingTimeoutId = null;
 			}
 		};
-		let delayCancelDragging = function() {
+		var delayCancelDragging = function() {
 			clearDelayCancelDragging();
 			cancelDraggingTimeoutId = setTimeout(cancelDragging, 250);
 		};
@@ -362,7 +359,7 @@ export class DragAndDropManager {
 			cancelDragging();
 			that._createDragging(position, itemInstance);
 			if (instantDrag) {
-				let mousePoint = game.overlay.mouse(position);
+				var mousePoint = game.overlay.mouse(position);
 				startDragging();
 				draggingDiv.css({
 					top: mousePoint.y,
@@ -371,8 +368,8 @@ export class DragAndDropManager {
 			}
 		};
 
-		let findClosestHoverable = function(event, excludeCurrent) {
-			let d = $(event.target);
+		var findClosestHoverable = function(event, excludeCurrent) {
+			var d = $(event.target);
 			if (excludeCurrent) {
 				d = d.parent();
 			}
@@ -380,7 +377,7 @@ export class DragAndDropManager {
 				if (d.length === 0) {
 					return null;
 				}
-				let id = d.attr("data-id");
+				var id = d.attr("data-id");
 				if (id && d.hasClass("hoverable") && !d.hasClass("destroyed")) {
 					return id;
 				}
@@ -388,10 +385,10 @@ export class DragAndDropManager {
 			}
 		}
 
-		let toSendHover = null;
-		let lastSendHover = null;
-		let sendHoverThrottle = new Throttle();
-		let sendHoverToChatAndTrigger = function() {
+		var toSendHover = null;
+		var lastSendHover = null;
+		var sendHoverThrottle = new Throttle();
+		var sendHoverToChatAndTrigger = function() {
 			game.triggerManager.hover(toSendHover);
 			sendHoverThrottle.execute(function() {
 				if (toSendHover !== lastSendHover) {
@@ -418,7 +415,7 @@ export class DragAndDropManager {
 					return;
 				}
 
-				let hoveringDivId = findClosestHoverable(event, false);
+				var hoveringDivId = findClosestHoverable(event, false);
 				if (hoveringDivId !== null) {
 					toSendHover = hoveringDivId;
 					sendHoverToChatAndTrigger();
@@ -438,12 +435,12 @@ export class DragAndDropManager {
 %%%%%%%%%%%%%*/
     //
 
-    let sendChatThrottle = new Throttle();
-    let sendMousePositionToChat = function (position, d) {
+    var sendChatThrottle = new Throttle();
+    var sendMousePositionToChat = function (position, d) {
       sendChatThrottle.execute(function () {
-        let mousePoint = game.overlay.mouse(position);
-        let offset = game.overlay.offset(d);
-        let id = d.attr("data-id");
+        var mousePoint = game.overlay.mouse(position);
+        var offset = game.overlay.offset(d);
+        var id = d.attr("data-id");
         game.chatManager.sendChat({
           type: "move",
           x: Math.round(mousePoint.x - offset.x),
@@ -453,7 +450,7 @@ export class DragAndDropManager {
       });
     };
 
-    let sendHoverToChat = function (d) {
+    var sendHoverToChat = function (d) {
       if (d === undefined || !d.hasClass("hoverable")) {
         game.chatManager.sendChat({
           type: "over",
@@ -461,14 +458,14 @@ export class DragAndDropManager {
         return;
       }
 
-      let id = d.attr("data-id");
+      var id = d.attr("data-id");
       game.chatManager.sendChat({
         type: "over",
         ref: id,
       });
     };
 
-    let cancelDragging = function () {
+    var cancelDragging = function () {
       destroyDragging();
       unselect();
     };
@@ -516,14 +513,10 @@ export class DragAndDropManager {
     };
   }
 
-  /**
-   * configure the specified Spot
-   * @param {Spot} spot
-   */
   configureSpot(spot) {
-    let that = this;
+    var that = this;
     /*%%%%%%%%%%%%%%%%%%%%%%%%%
-		let div = spot.$;
+		var div = spot.$;
 		// div.off();
 
 		this._unconfigureBodyMouseup(); // To reorder the handlers
@@ -561,25 +554,16 @@ export class DragAndDropManager {
       }
     );
   }
-
-  /**
-   * unconfigure the specified Spot
-   * @param {Spot} spot
-   */
   unconfigureSpot(spot) {
     UserInteraction.get().off(spot.$);
   }
 
-  /**
-   * configure the specified itemInstance
-   * @param itemInstance
-   */
   configureItemInstance(itemInstance) {
-    let that = this;
+    var that = this;
     itemInstance.$.addClass("hoverable");
 
     /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-		let div = itemInstance.$;
+		var div = itemInstance.$;
 		//%% if (itemInstance.item.properties.steady === undefined) {
 
 		div.mousedown(function(e) {
@@ -604,8 +588,8 @@ export class DragAndDropManager {
 			if (that._touchstartTimeoutId !== null) {
 				return;
 			}
-			let t = e.touches[0];
-			let position = { pageX: t.pageX, pageY: t.pageY };
+			var t = e.touches[0];
+			var position = { pageX: t.pageX, pageY: t.pageY };
 			that._touchstartTimeoutId = setTimeout(function() {
 				that._catchingTouch = true;
 				that._currentlyHoverLocation = undefined;
@@ -613,7 +597,7 @@ export class DragAndDropManager {
 			}, 200);
 		}, { passive: false });
 
-		let touchEnd = function() {
+		var touchEnd = function() {
 			if (that._touchstartTimeoutId !== null) {
 				clearTimeout(that._touchstartTimeoutId);
 				that._touchstartTimeoutId = null;
@@ -621,7 +605,7 @@ export class DragAndDropManager {
 
 			if (that._catchingTouch) {
 				if (that._currentlyHoverLocation !== undefined) {
-					let spot = that._game.spotManager.getSpot(that._currentlyHoverLocation);
+					var spot = that._game.spotManager.getSpot(that._currentlyHoverLocation);
 					if (spot !== null) {
 						that._mouseupHandler(spot);
 					}
@@ -648,7 +632,7 @@ export class DragAndDropManager {
 			if (e.touches.length === 0) {
 				return;
 			}
-			let t = e.touches[0];
+			var t = e.touches[0];
 			that._mousemoveHandler({ pageX: t.pageX, pageY: t.pageY }, $(document.elementFromPoint(t.clientX, t.clientY)));
 			e.preventDefault();
 			e.stopPropagation();
@@ -692,11 +676,6 @@ export class DragAndDropManager {
       }
     );
   }
-
-  /**
-   * unconfigure the specified itemInstance
-   * @param itemInstance
-   */
   unconfigureItemInstance(itemInstance) {
     UserInteraction.get().off(itemInstance.$);
   }
