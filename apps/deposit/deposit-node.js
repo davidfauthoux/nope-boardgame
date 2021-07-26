@@ -1,4 +1,4 @@
-//node -r esm register-node.js --base=http://localhost:8086
+//node -r esm deposit-node.js --base=http://localhost:8086
 
 //npm install esm
 //node -r esm <file>.js
@@ -31,19 +31,15 @@ async.run([
     history(server),
     (event) => {
       console.log("EVENT RECEIVED", Object.keys(event)[0]);
-      switch (Object.keys(event)[0]) {
-        case "old" :
-          for (let oldEvent of event.old) {
-            // à l'intérieur de ceci, on sélectionne les events qui ont besoin d'être refait à chaque redémarrage du serveur
-          }
-          break;
-        case "urlGit" :
-          // go to the path and clone the project
+      if (event.old !== undefined) {
+        for (let oldEvent of event.old) {
+        }
+      } else {
+        // game has to be cloned, values verified when event was created
+        if (event.action === "deposit") {
           shell.cd(pathToClone);
-          shell.exec("git clone " + event.urlGit);
-          // TODO Parse the urlgit to avoid ";rm -r .."
-          break;
-
+          shell.exec("git clone " + event.url + " " + event.game);
+        }
       }
     }
   ])
