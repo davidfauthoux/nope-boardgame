@@ -92,11 +92,14 @@ async.run([
             // delete corresponding card with his id
             document.getElementById(oldEvent.id).remove();
           } else if (oldEvent.action === "verify") {
-            let verifiedLabel = document.getElementById(oldEvent.id).getElementsByTagName("h2")[0];
+            let gameVerified = document.getElementById(oldEvent.id);
+            let verifiedLabel = gameVerified.getElementsByTagName("h2")[0];
             if (oldEvent.state === "true") {
               verifiedLabel.innerHTML = "Verified";
+              document.getElementById("verifiedGames").appendChild(gameVerified);
             } else if (oldEvent.state === "false") {
               verifiedLabel.innerHTML = "";
+              document.getElementById("games").appendChild(gameVerified);
             }
           }
         }
@@ -107,11 +110,14 @@ async.run([
           // delete corresponding card with his id
           document.getElementById(event.id).remove();
         }else if (event.action === "verify") {
-          let verifiedLabel = document.getElementById(event.id).getElementsByTagName("h2")[0];
+          let gameVerified = document.getElementById(event.id);
+          let verifiedLabel = gameVerified.getElementsByTagName("h2")[0];
           if (event.state === "true") {
             verifiedLabel.innerHTML = "Verified";
+            document.getElementById("verifiedGames").appendChild(gameVerified);
           } else if (event.state === "false") {
             verifiedLabel.innerHTML = "";
+            document.getElementById("games").appendChild(gameVerified);
           }
         }
       }

@@ -15,7 +15,12 @@ body {
     background: rgba(218, 218, 217,0.5);
 
 }
+#games, #verifiedGames{
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
+}
 .card {
     position: relative;
     width: 140px;
