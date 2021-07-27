@@ -1,7 +1,7 @@
 // http://localhost:8086/boardgame/register-web.html
 
 import * as async from "../../../modules/async.js";
-import { Server, history } from "../../../modules/server.js";
+import { Server, history, uuid } from "../../../modules/server.js";
 // jquery
 
 const superuserUserId = "boardgame/apps/data/users/register";
@@ -86,6 +86,7 @@ document.getElementById("submitUrlGit").addEventListener("click", () => {
     }
     stack({
       action: "deposit",
+      id: uuid(),
       url: inputUrlGit.value,
       game: inputNameGame.value
     });

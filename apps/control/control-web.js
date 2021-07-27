@@ -1,8 +1,5 @@
-// http://localhost:8086/boardgame/apps/portal/portal-web.html
-
 import * as async from "../../../modules/async.js";
 import { Server, history, uuid } from "../../../modules/server.js";
-// jquery
 
 let superuserUserId = "boardgame/apps/data/users/register";
 
@@ -48,33 +45,30 @@ let stack = function(toStack) {
   ]);
 };
 
-let goToRandomTable = function(game) {
-  const nameTable = uuid();
-  window.location = window.location.protocol + "//" + window.location.host + "/boardgame/games/" + game + "/" + nameTable + "/";
-};
-
-function createGameCard(oldEvent) {
-  let card = document.createElement("div");
-  card.classList.add("card");
-  card.id = oldEvent.id;
-  let content = document.createElement("div");
-  content.classList.add("content");
-  let verified = document.createElement("h2");
-  let name = document.createElement("h3");
+function createLineGame(oldEvent) {
+  let line = document.createElement("tr");
+  line.id=oldEvent.id;
+  let action = document.createElement("td");
+  action.innerHTML = oldEvent.action;
+  let name = document.createElement("td");
   name.innerHTML = oldEvent.game;
-  let description = document.createElement("p");
-  let game = document.createElement("a");
-  game.innerHTML = "Let's go";
-  content.appendChild(verified);
-  content.appendChild(name);
-  content.appendChild(description);
-  content.appendChild(game);
-  card.appendChild(content);
-
-  game.onclick = function() {
-    goToRandomTable(name.innerHTML);
+  let url = document.createElement("td");
+  url.innerHTML = oldEvent.url;
+  let del = document.createElement("td");
+  let cross = document.createElement("button");
+  cross.innerHTML = "Delete";
+  cross.onclick = function() {
+    stack({
+      action: "delete",
+      id: oldEvent.id
+    });
   };
-  document.body.appendChild(card);
+  del.appendChild(cross);
+  line.appendChild(action);
+  line.appendChild(name);
+  line.appendChild(url);
+  line.appendChild(del);
+  document.getElementById("adminTable").appendChild(line);
 }
 
 async.run([
@@ -82,22 +76,21 @@ async.run([
     history(server),
     (event) => {
       console.debug("Event : ", event);
-
       if (event.old !== undefined) {
         for (let oldEvent of event.old) { // when page is invoked
           // inside this, older events are reinvoked
           if (oldEvent.action === "deposit") {
-            createGameCard(oldEvent);
-          }  else if (oldEvent.action === "delete") { // each game cloned deleted
-            // delete corresponding card with his id
+            createLineGame(oldEvent);
+          } else if (oldEvent.action ==="delete"){
+            //delete line with id
             document.getElementById(oldEvent.id).remove();
           }
         }
-      } else { // live
-        if (event.action === "deposit") { // each game cloned
-          createGameCard(event);
-        } else if (event.action === "delete") { // each game cloned deleted
-          // delete corresponding card with his id
+      } else { // live event
+        if (event.action === "deposit") {
+          createLineGame(event);
+        } else if (event.action ==="delete"){
+          //delete line with id
           document.getElementById(event.id).remove();
         }
       }

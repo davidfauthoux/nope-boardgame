@@ -2,11 +2,28 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Portal</title>
+    <link rel="stylesheet" href="./css/main.css">
 </head>
 <body>
 
 </body>
-<script src="./portal-web.js" type="module"></script>
 
+<div class="card">
+    <div class="content">
+        <h2>Vérifié</h2>
+        <h3> Carcassonne </h3>
+        <p>  Jeu de stratégie et de réflexion</p>
+        <a href="#"> Let's go </a>
+    </div>
+</div>
+<script src="./portal-web.js" type="module"></script>
+<script type="text/javascript" src="vanilla-tilt.js"></script>
+
+<script type="text/javascript">
+    VanillaTilt.init(document.querySelectorAll(".card"), {
+        max: 25,
+        speed: 400
+    });
+</script>
 </html>
