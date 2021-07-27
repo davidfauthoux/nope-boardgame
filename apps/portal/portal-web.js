@@ -88,9 +88,16 @@ async.run([
           // inside this, older events are reinvoked
           if (oldEvent.action === "deposit") {
             createGameCard(oldEvent);
-          }  else if (oldEvent.action === "delete") { // each game cloned deleted
+          } else if (oldEvent.action === "delete") { // each game cloned deleted
             // delete corresponding card with his id
             document.getElementById(oldEvent.id).remove();
+          } else if (oldEvent.action === "verify") {
+            let verifiedLabel = document.getElementById(oldEvent.id).getElementsByTagName("h2")[0];
+            if (oldEvent.state === "true") {
+              verifiedLabel.innerHTML = "Verified";
+            } else if (oldEvent.state === "false") {
+              verifiedLabel.innerHTML = "";
+            }
           }
         }
       } else { // live
@@ -99,6 +106,13 @@ async.run([
         } else if (event.action === "delete") { // each game cloned deleted
           // delete corresponding card with his id
           document.getElementById(event.id).remove();
+        }else if (event.action === "verify") {
+          let verifiedLabel = document.getElementById(event.id).getElementsByTagName("h2")[0];
+          if (event.state === "true") {
+            verifiedLabel.innerHTML = "Verified";
+          } else if (event.state === "false") {
+            verifiedLabel.innerHTML = "";
+          }
         }
       }
     }

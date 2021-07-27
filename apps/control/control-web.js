@@ -47,7 +47,7 @@ let stack = function(toStack) {
 
 function createLineGame(oldEvent) {
   let line = document.createElement("tr");
-  line.id=oldEvent.id;
+  line.id = oldEvent.id;
   let action = document.createElement("td");
   action.innerHTML = oldEvent.action;
   let name = document.createElement("td");
@@ -64,10 +64,35 @@ function createLineGame(oldEvent) {
     });
   };
   del.appendChild(cross);
+
+  let verified = document.createElement("td");
+  let check = document.createElement("input");
+  check.setAttribute("type", "checkbox");
+  check.onclick = function() {
+    if (check.checked) {
+      stack({
+        action: "verify",
+        state: "true",
+        id: oldEvent.id
+      });
+    } else {
+      stack({
+        action: "verify",
+        state: "false",
+        id: oldEvent.id
+      });
+    }
+  };
+  let labelCheck = document.createElement("label");
+  labelCheck.innerHTML = "Verified";
+  verified.appendChild(labelCheck);
+  verified.appendChild(check);
+
   line.appendChild(action);
   line.appendChild(name);
   line.appendChild(url);
   line.appendChild(del);
+  line.appendChild(verified);
   document.getElementById("adminTable").appendChild(line);
 }
 
@@ -81,7 +106,7 @@ async.run([
           // inside this, older events are reinvoked
           if (oldEvent.action === "deposit") {
             createLineGame(oldEvent);
-          } else if (oldEvent.action ==="delete"){
+          } else if (oldEvent.action === "delete") {
             //delete line with id
             document.getElementById(oldEvent.id).remove();
           }
@@ -89,7 +114,7 @@ async.run([
       } else { // live event
         if (event.action === "deposit") {
           createLineGame(event);
-        } else if (event.action ==="delete"){
+        } else if (event.action === "delete") {
           //delete line with id
           document.getElementById(event.id).remove();
         }
