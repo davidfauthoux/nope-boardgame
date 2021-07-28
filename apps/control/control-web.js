@@ -3,83 +3,92 @@ import { Server, history, uuid } from "../../../modules/server.js";
 
 let superuserUserId = "boardgame/apps/data/users/register";
 
-// get queries in url in a map
-let windowParams = (function() {
-  let u = window.location.search;
-  // Get part of the URL after « ? », including this symbol
-  let i = u.indexOf("?");
-  if (i < 0) {
-    return {};
-  }
-  u = u.substring(i + 1);
-  let p = {};
-  for (let kv of u.split(/&/g)) {
-    let s = kv.trim().split(/=/g);
-    let key;
-    let value;
-    if (s.length === 1) {
-      key = s;
-      value = "";
-    } else {
-      key = decodeURIComponent(s[0]);
-      value = decodeURIComponent(s[1]);
-    }
-    p[key] = value;
-    // let values = p[key];
-    // if (values === undefined) {
-    // 	values = [];
-    // 	p[key] = values;
-    // }
-    // values.push(value);
-  }
-  return p;
-})();
-
-// create server with /users/boardgame/register as base
+// create server
 let server = new Server("/" + superuserUserId);
 
-let stack = function(toStack) {
+/**
+ * Stack event on the server
+ * @param toStack
+ */
+function stack(toStack) {
   console.log("STACKING", toStack);
   async.run([
     server.stack(toStack)
   ]);
-};
+}
 
-function createLineGame(oldEvent) {
+/**
+ * Stack modify event on the server
+ * @param idGame
+ * @param newName
+ */
+function stackModifyEvent(idGame, newName) {
+  stack({
+    action: "rename",
+    id: idGame,
+    name: newName
+  });
+}
+
+/**
+ * Stack delete event on the server
+ * @param idGame
+ */
+function stackDeleteEvent(idGame) {
+  stack({
+    action: "delete",
+    id: idGame
+  });
+}
+
+/**
+ * Stack verify event on the server
+ * @param idGame
+ * @param isVerified
+ */
+function stackVerifyEvent(idGame,isVerified) {
+  stack({
+    action: "verify",
+    state: isVerified,
+    id: idGame
+  });
+}
+
+/**
+ * Create and add line for a game in the table
+ * @param idGame
+ * @param dateDepositGame
+ * @param nameGame
+ * @param urlGame
+ */
+function createLineGame(idGame,dateDepositGame,nameGame,urlGame) {
   let line = document.createElement("tr");
-  line.id = oldEvent.id;
+  line.id = idGame;
   let date = document.createElement("td");
-  date.innerHTML = oldEvent.date;
+  date.innerHTML = dateDepositGame;
   let game = document.createElement("td");
   let name = document.createElement("span");
   name.classList.add("name");
-  name.innerHTML = oldEvent.game;
+  name.innerHTML = nameGame;
   let modify = document.createElement("button");
   modify.classList.add("buttonModify");
   modify.innerHTML = "Modify";
   modify.onclick = function() {
     let newName = prompt("Modify the name of the game ?", name.innerHTML);
     if (newName != null) {
-      stack({
-        action: "rename",
-        id: oldEvent.id,
-        name: newName
-      });
+      stackModifyEvent(idGame, newName);
     }
   };
   game.appendChild(name);
   game.appendChild(modify);
   let url = document.createElement("td");
-  url.innerHTML = oldEvent.url;
+  url.innerHTML = urlGame;
   let del = document.createElement("td");
   let cross = document.createElement("button");
   cross.innerHTML = "X";
   cross.onclick = function() {
     if (confirm("Are you sure to delete this game ?")) {
-      stack({
-        action: "delete",
-        id: oldEvent.id
-      });
+      stackDeleteEvent(idGame);
     }
   };
   del.appendChild(cross);
@@ -88,19 +97,7 @@ function createLineGame(oldEvent) {
   let check = document.createElement("input");
   check.setAttribute("type", "checkbox");
   check.onclick = function() {
-    if (check.checked) {
-      stack({
-        action: "verify",
-        state: "true",
-        id: oldEvent.id
-      });
-    } else {
-      stack({
-        action: "verify",
-        state: "false",
-        id: oldEvent.id
-      });
-    }
+      stackVerifyEvent(idGame,check.checked);
   };
 
   verified.appendChild(check);
@@ -113,34 +110,49 @@ function createLineGame(oldEvent) {
   document.getElementById("adminTable").getElementsByTagName("tbody")[0].appendChild(line);
 }
 
+/**
+ * Delete line in the table corresponding to the id of the game
+ * @param idGame
+ */
+function deleteLineGame(idGame) {
+  document.getElementById(idGame).remove();
+}
+
+/**
+ * Execute the event according to his action (design pattern builder simplified)
+ * @param event
+ */
+function executeEvent(event) {
+  switch (event.action) {
+    case "deposit" :
+      createLineGame(event.id,event.date,event.game,event.url);
+      break;
+    case "delete" :
+      deleteLineGame(event.id);
+      break;
+    case "rename":
+      //rename game on the table
+      document.getElementById(event.id).getElementsByClassName("name")[0].innerHTML = event.name;
+      break;
+    default:
+      break;
+  }
+}
+
+/**
+ * When page is loaded, it listens each event on the server
+ */
 async.run([
   () => async.while_(() => true).do_([
     history(server),
     (event) => {
       console.debug("Event : ", event);
       if (event.old !== undefined) {
-        for (let oldEvent of event.old) { // when page is invoked
-          // inside this, older events are reinvoked
-          if (oldEvent.action === "deposit") {
-            createLineGame(oldEvent);
-          } else if (oldEvent.action === "delete") {
-            //delete line with id
-            document.getElementById(oldEvent.id).remove();
-          }else if (oldEvent.action === "rename") {
-            //rename game on the table
-            document.getElementById(oldEvent.id).getElementsByClassName("name")[0].innerHTML = oldEvent.name;
-          }
+        for (let oldEvent of event.old) { // older events (before the page was loaded)
+          executeEvent(oldEvent);
         }
-      } else { // live event
-        if (event.action === "deposit") {
-          createLineGame(event);
-        } else if (event.action === "delete") {
-          //delete line with id
-          document.getElementById(event.id).remove();
-        } else if (event.action === "rename") {
-          //rename game on the table
-          document.getElementById(event.id).getElementsByClassName("name")[0].innerHTML = event.name;
-        }
+      } else { // live event (after the page is loaded)
+        executeEvent(event);
       }
     }
   ])

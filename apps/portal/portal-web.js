@@ -38,31 +38,33 @@ let windowParams = (function() {
   return p;
 })();
 
-// create server with /users/boardgame/register as base
+// create server
 let server = new Server("/" + superuserUserId);
 
-let stack = function(toStack) {
-  console.log("STACKING", toStack);
-  async.run([
-    server.stack(toStack)
-  ]);
-};
-
-let goToRandomTable = function(game) {
+/**
+ * Create url for a new table and switch to it
+ * @param nameGame
+ */
+let goToRandomTable = function(nameGame) {
   const nameTable = uuid();
-  window.location = window.location.protocol + "//" + window.location.host + "/boardgame/games/" + game + "/" + nameTable + "/";
+  window.location = window.location.protocol + "//" + window.location.host + "/boardgame/games/" + nameGame + "/" + nameTable + "/";
 };
 
-function createGameCard(oldEvent) {
+/**
+ * Create and add game card for a game
+ * @param idGame
+ * @param nameGame
+ */
+function createGameCard(idGame,nameGame) {
   let card = document.createElement("div");
   card.classList.add("card");
-  card.id = oldEvent.id;
+  card.id = idGame;
   let content = document.createElement("div");
   content.classList.add("content");
   let verified = document.createElement("h2");
   let name = document.createElement("h3");
   name.classList.add("name");
-  name.innerHTML = oldEvent.game;
+  name.innerHTML = nameGame;
   let description = document.createElement("p");
   let game = document.createElement("a");
   game.innerHTML = "Let's go";
@@ -78,55 +80,77 @@ function createGameCard(oldEvent) {
   document.getElementById("games").appendChild(card);
 }
 
+/**
+ * Delete game card corresponding to the id of the game
+ * @param idGame
+ */
+function deleteGameCard(idGame) {
+  document.getElementById(idGame).remove();
+}
+
+/**
+ * Make a card verified or not according to the param isVerified
+ * @param idGame
+ * @param isVerified boolean
+ */
+function verifyGameCard(idGame,isVerified){
+  let gameVerified = document.getElementById(idGame);
+  let verifiedLabel = gameVerified.getElementsByTagName("h2")[0];
+  if (isVerified) {
+    verifiedLabel.innerHTML = "Verified";
+    document.getElementById("verifiedGames").appendChild(gameVerified);
+  } else {
+    verifiedLabel.innerHTML = "";
+    document.getElementById("games").appendChild(gameVerified);
+  }
+}
+
+/**
+ * Change the name of the game on his card
+ * @param idGame
+ * @param nameGame
+ */
+function renameGameCard(idGame,nameGame) {
+  document.getElementById(idGame).getElementsByClassName("name")[0].innerHTML = nameGame;
+}
+
+/**
+ * Execute the event according to his action (design pattern builder simplified)
+ * @param event
+ */
+function executeEvent(event) {
+  switch (event.action) {
+    case "deposit":
+      createGameCard(event.id,event.game);
+      break;
+    case "delete":
+      deleteGameCard(event.id);
+      break;
+    case "verify":
+      verifyGameCard(event.id,event.state);
+      break;
+    case "rename":
+      renameGameCard(event.id,event.name);
+      break;
+    default:
+      break;
+  }
+}
+
+/**
+ * When page is loaded, it listens each event on the server
+ */
 async.run([
   () => async.while_(() => true).do_([
     history(server),
     (event) => {
       console.debug("Event : ", event);
-
       if (event.old !== undefined) {
-        for (let oldEvent of event.old) { // when page is invoked
-          // inside this, older events are reinvoked
-          if (oldEvent.action === "deposit") {
-            createGameCard(oldEvent);
-          } else if (oldEvent.action === "delete") { // each game cloned deleted
-            // delete corresponding card with his id
-            document.getElementById(oldEvent.id).remove();
-          } else if (oldEvent.action === "verify") {
-            let gameVerified = document.getElementById(oldEvent.id);
-            let verifiedLabel = gameVerified.getElementsByTagName("h2")[0];
-            if (oldEvent.state === "true") {
-              verifiedLabel.innerHTML = "Verified";
-              document.getElementById("verifiedGames").appendChild(gameVerified);
-            } else if (oldEvent.state === "false") {
-              verifiedLabel.innerHTML = "";
-              document.getElementById("games").appendChild(gameVerified);
-            }
-          } else if (oldEvent.action === "rename") {
-            //rename game on the table
-            document.getElementById(oldEvent.id).getElementsByClassName("name")[0].innerHTML = oldEvent.name;
-          }
+        for (let oldEvent of event.old) { // older events (before the page was loaded)
+          executeEvent(oldEvent);
         }
-      } else { // live
-        if (event.action === "deposit") { // each game cloned
-          createGameCard(event);
-        } else if (event.action === "delete") { // each game cloned deleted
-          // delete corresponding card with his id
-          document.getElementById(event.id).remove();
-        }else if (event.action === "verify") {
-          let gameVerified = document.getElementById(event.id);
-          let verifiedLabel = gameVerified.getElementsByTagName("h2")[0];
-          if (event.state === "true") {
-            verifiedLabel.innerHTML = "Verified";
-            document.getElementById("verifiedGames").appendChild(gameVerified);
-          } else if (event.state === "false") {
-            verifiedLabel.innerHTML = "";
-            document.getElementById("games").appendChild(gameVerified);
-          } else if (event.action === "rename") {
-            //rename game on the table
-            document.getElementById(event.id).getElementsByClassName("name")[0].innerHTML = event.name;
-          }
-        }
+      } else { // live event (after the page is loaded)
+        executeEvent(event);
       }
     }
   ])
