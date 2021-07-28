@@ -50,21 +50,37 @@ function createLineGame(oldEvent) {
   line.id = oldEvent.id;
   let date = document.createElement("td");
   date.innerHTML = oldEvent.date;
-  let name = document.createElement("td");
+  let game = document.createElement("td");
+  let name = document.createElement("span");
+  name.classList.add("name");
   name.innerHTML = oldEvent.game;
+  let modify = document.createElement("button");
+  modify.classList.add("buttonModify");
+  modify.innerHTML = "Modify";
+  modify.onclick = function() {
+    let newName = prompt("Modify the name of the game ?", name.innerHTML);
+    if (newName != null) {
+      stack({
+        action: "rename",
+        id: oldEvent.id,
+        name: newName
+      });
+    }
+  };
+  game.appendChild(name);
+  game.appendChild(modify);
   let url = document.createElement("td");
   url.innerHTML = oldEvent.url;
   let del = document.createElement("td");
   let cross = document.createElement("button");
   cross.innerHTML = "X";
   cross.onclick = function() {
-    if(confirm("Are you sure to delete this game ?")){
+    if (confirm("Are you sure to delete this game ?")) {
       stack({
         action: "delete",
         id: oldEvent.id
       });
     }
-
   };
   del.appendChild(cross);
 
@@ -90,7 +106,7 @@ function createLineGame(oldEvent) {
   verified.appendChild(check);
 
   line.appendChild(date);
-  line.appendChild(name);
+  line.appendChild(game);
   line.appendChild(url);
   line.appendChild(del);
   line.appendChild(verified);
@@ -110,6 +126,9 @@ async.run([
           } else if (oldEvent.action === "delete") {
             //delete line with id
             document.getElementById(oldEvent.id).remove();
+          }else if (oldEvent.action === "rename") {
+            //rename game on the table
+            document.getElementById(oldEvent.id).getElementsByClassName("name")[0].innerHTML = oldEvent.name;
           }
         }
       } else { // live event
@@ -118,6 +137,9 @@ async.run([
         } else if (event.action === "delete") {
           //delete line with id
           document.getElementById(event.id).remove();
+        } else if (event.action === "rename") {
+          //rename game on the table
+          document.getElementById(event.id).getElementsByClassName("name")[0].innerHTML = event.name;
         }
       }
     }

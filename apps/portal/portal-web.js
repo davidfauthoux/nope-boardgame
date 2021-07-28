@@ -61,6 +61,7 @@ function createGameCard(oldEvent) {
   content.classList.add("content");
   let verified = document.createElement("h2");
   let name = document.createElement("h3");
+  name.classList.add("name");
   name.innerHTML = oldEvent.game;
   let description = document.createElement("p");
   let game = document.createElement("a");
@@ -101,6 +102,9 @@ async.run([
               verifiedLabel.innerHTML = "";
               document.getElementById("games").appendChild(gameVerified);
             }
+          } else if (oldEvent.action === "rename") {
+            //rename game on the table
+            document.getElementById(oldEvent.id).getElementsByClassName("name")[0].innerHTML = oldEvent.name;
           }
         }
       } else { // live
@@ -118,6 +122,9 @@ async.run([
           } else if (event.state === "false") {
             verifiedLabel.innerHTML = "";
             document.getElementById("games").appendChild(gameVerified);
+          } else if (event.action === "rename") {
+            //rename game on the table
+            document.getElementById(event.id).getElementsByClassName("name")[0].innerHTML = event.name;
           }
         }
       }
