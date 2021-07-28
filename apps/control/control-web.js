@@ -48,20 +48,23 @@ let stack = function(toStack) {
 function createLineGame(oldEvent) {
   let line = document.createElement("tr");
   line.id = oldEvent.id;
-  let action = document.createElement("td");
-  action.innerHTML = oldEvent.action;
+  let date = document.createElement("td");
+  date.innerHTML = oldEvent.date;
   let name = document.createElement("td");
   name.innerHTML = oldEvent.game;
   let url = document.createElement("td");
   url.innerHTML = oldEvent.url;
   let del = document.createElement("td");
   let cross = document.createElement("button");
-  cross.innerHTML = "Delete";
+  cross.innerHTML = "X";
   cross.onclick = function() {
-    stack({
-      action: "delete",
-      id: oldEvent.id
-    });
+    if(confirm("Are you sure to delete this game ?")){
+      stack({
+        action: "delete",
+        id: oldEvent.id
+      });
+    }
+
   };
   del.appendChild(cross);
 
@@ -83,17 +86,15 @@ function createLineGame(oldEvent) {
       });
     }
   };
-  let labelCheck = document.createElement("label");
-  labelCheck.innerHTML = "Verified";
-  verified.appendChild(labelCheck);
+
   verified.appendChild(check);
 
-  line.appendChild(action);
+  line.appendChild(date);
   line.appendChild(name);
   line.appendChild(url);
   line.appendChild(del);
   line.appendChild(verified);
-  document.getElementById("adminTable").appendChild(line);
+  document.getElementById("adminTable").getElementsByTagName("tbody")[0].appendChild(line);
 }
 
 async.run([

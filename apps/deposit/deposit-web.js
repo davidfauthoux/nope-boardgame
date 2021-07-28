@@ -84,11 +84,18 @@ document.getElementById("submitUrlGit").addEventListener("click", () => {
       alert("Name of the game doesn't contain special character");
       return;
     }
+    let today = new Date();
+    const dd = String(today.getDate()).padStart(2, "0");
+    const mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
+    const yyyy = today.getFullYear();
+
+    today = mm + "/" + dd + "/" + yyyy;
     stack({
       action: "deposit",
       id: uuid(),
       url: inputUrlGit.value,
-      game: inputNameGame.value
+      game: inputNameGame.value,
+      date: today
     });
     //window.location = window.location.protocol + "//" + window.location.host + "/" + pathToPortalIndex;
   }

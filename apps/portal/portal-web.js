@@ -74,7 +74,7 @@ function createGameCard(oldEvent) {
   game.onclick = function() {
     goToRandomTable(name.innerHTML);
   };
-  document.body.appendChild(card);
+  document.getElementById("games").appendChild(card);
 }
 
 async.run([
