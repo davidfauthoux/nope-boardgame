@@ -25,22 +25,21 @@ console.log("Server.BASE", Server.BASE);
 
 let superuserUserId = "boardgame/apps/data/users/register";
 let server = new Server("/" + superuserUserId);
+const regexSpecialCharacter = /[*|":<>\[\]{}`\\()';@&$]/gi;
+const regexGitLink = /https:\/\/github.com\/[^;]+.git/gi;
 
 async.run([
   () => async.while_(() => true).do_([
     history(server),
     (event) => {
       console.log("EVENT RECEIVED", Object.keys(event)[0]);
-      if (event.old !== undefined) {
-        for (let oldEvent of event.old) {
-        }
-      } else {
         // game has to be cloned, values verified when event was created
         if (event.action === "deposit") {
-          shell.cd(pathToClone);
-          shell.exec("git clone " + event.url + " " + event.game);
+          if (regexGitLink.test(event.url) && event.url !== "" && !regexSpecialCharacter.test(event.game) && event.game !== "") {
+            shell.cd(pathToClone);
+            shell.exec("git clone " + event.url + " " + event.game);
+          }
         }
-      }
     }
   ])
 ]);

@@ -54,6 +54,7 @@ function getTodayDate() {
 
 /**
  * Verify url and name value to avoid code injection
+ * from a client in input
  * Stack a deposit event to clone the game
  */
 function cloneGame() {
