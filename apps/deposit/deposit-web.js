@@ -35,7 +35,7 @@ function stackDepositEvent(today) {
     id: uuid(),
     url: inputUrlGit.value,
     game: inputNameGame.value,
-    date: today
+    date: today // timestamp :
   });
 }
 
@@ -43,6 +43,8 @@ function stackDepositEvent(today) {
  * Return today's date in "dd/mm/yyyy" format
  * @returns {string}
  */
+
+//TODO format américain , timestamp
 function getTodayDate() {
   let today = new Date();
   const dd = String(today.getDate()).padStart(2, "0");

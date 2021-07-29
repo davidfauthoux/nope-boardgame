@@ -42,12 +42,13 @@ let windowParams = (function() {
 let server = new Server("/" + superuserUserId);
 
 /**
- * Create url for a new table and switch to it
+ * Create url for a new table and switch to the waiting page
  * @param nameGame
  */
 let goToRandomTable = function(nameGame) {
   const nameTable = uuid();
-  window.location = window.location.protocol + "//" + window.location.host + "/boardgame/games/" + nameGame + "/" + nameTable + "/";
+  sessionStorage.setItem("linkTable",window.location.protocol + "//" + window.location.host + "/boardgame/games/" + nameGame + "/" + nameTable + "/");
+  window.location = window.location.protocol + "//" + window.location.host + "/boardgame/apps/portal/waiting-page.html";
 };
 
 /**

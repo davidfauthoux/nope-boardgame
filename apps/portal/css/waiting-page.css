@@ -1,0 +1,29 @@
+
+body {
+    display: grid;
+    min-height: 100vh;
+    background: var(--main-bg-color);
+}
+
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+}
+
+
+#copyButton {
+    background-color: var(--secondary-color);
+    color : var(--main-white-color);
+    padding:5px;
+    border-radius: 10px;
+}
