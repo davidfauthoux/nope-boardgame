@@ -6,6 +6,23 @@ let superuserUserId = "boardgame/apps/data/users/register";
 // create server
 let server = new Server("/" + superuserUserId);
 
+
+
+/**
+ /**
+ * Return date from a timestamp in "mm/dd/yyyy" format
+ * @param timestamp
+ * @returns {string}
+ */
+function getDateFromTimestamp(timestamp) {
+  const date = new Date(timestamp);
+  const dd = String(date.getDate()).padStart(2, "0");
+  const mm = String(date.getMonth() + 1).padStart(2, "0"); //January is 0!
+  const yyyy = date.getFullYear();
+
+  return mm + "/" + dd + "/" + yyyy;
+}
+
 /**
  * Stack event on the server
  * @param toStack
@@ -57,15 +74,15 @@ function stackVerifyEvent(idGame,isVerified) {
 /**
  * Create and add line for a game in the table
  * @param idGame
- * @param dateDepositGame
+ * @param timestampDepositGame
  * @param nameGame
  * @param urlGame
  */
-function createLineGame(idGame,dateDepositGame,nameGame,urlGame) {
+function createLineGame(idGame,timestampDepositGame,nameGame,urlGame) {
   let line = document.createElement("tr");
   line.id = idGame;
   let date = document.createElement("td");
-  date.innerHTML = dateDepositGame;
+  date.innerHTML = getDateFromTimestamp(timestampDepositGame);
   let game = document.createElement("td");
   let name = document.createElement("span");
   name.classList.add("name");
@@ -125,7 +142,7 @@ function deleteLineGame(idGame) {
 function executeEvent(event) {
   switch (event.action) {
     case "deposit" :
-      createLineGame(event.id,event.date,event.game,event.url);
+      createLineGame(event.id,event.timestamp,event.game,event.url);
       break;
     case "delete" :
       deleteLineGame(event.id);

@@ -29,30 +29,43 @@ let stack = function(toStack) {
  * Stack deposit event on the server
  * @param today
  */
-function stackDepositEvent(today) {
+function stackDepositEvent() {
   stack({
     action: "deposit",
     id: uuid(),
     url: inputUrlGit.value,
     game: inputNameGame.value,
-    date: today // timestamp :
+    timestamp: Date.now() // milliseconds since January 1st 1970
   });
 }
 
 /**
- * Return today's date in "dd/mm/yyyy" format
- * @returns {string}
+ * Does the string is empty
+ * @param string
+ * @returns {boolean}
  */
-
-//TODO format américain , timestamp
-function getTodayDate() {
-  let today = new Date();
-  const dd = String(today.getDate()).padStart(2, "0");
-  const mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
-  const yyyy = today.getFullYear();
-
-  return mm + "/" + dd + "/" + yyyy;
+function isNotEmptyString(string) {
+  return string !== "";
 }
+
+/**
+ * Does the string contain special character
+ * @param string
+ * @returns {boolean}
+ */
+function containsSpecialCharacter(string) {
+  return regexSpecialCharacter.test(string);
+}
+
+/**
+ * Does the url is a git clone url (http)
+ * @param url
+ * @returns {boolean}
+ */
+function isGitLink(url) {
+  return regexGitLink.test(url);
+}
+
 
 /**
  * Verify url and name value to avoid code injection
@@ -60,24 +73,24 @@ function getTodayDate() {
  * Stack a deposit event to clone the game
  */
 function cloneGame() {
-  if (inputUrlGit.value === "") {
+  if (isNotEmptyString(inputUrlGit.value)) {
     alert("Git adress undefined");
     return;
   }
-  if (!regexGitLink.test(inputUrlGit.value)) {
+  if (!(isGitLink(inputUrlGit.value))) {
     alert("Git adress wrong format");
     return;
   }
-  if (inputNameGame.value === "") {
+  if (isNotEmptyString(inputNameGame.value)) {
     alert("Name of the game undefined");
     return;
   }
-  if (regexSpecialCharacter.test(inputNameGame.value)) {
+  if (containsSpecialCharacter(inputNameGame.value)) {
     alert("Name of the game doesn't contain special character");
     return;
   }
-  let today = getTodayDate();
-  stackDepositEvent(today);
+
+  stackDepositEvent();
 }
 
 document.getElementById("submitUrlGit").addEventListener("click", () => {
