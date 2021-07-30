@@ -47,8 +47,7 @@ let server = new Server("/" + superuserUserId);
  */
 let goToRandomTable = function(nameGame) {
   const nameTable = uuid();
-  sessionStorage.setItem("linkTable",window.location.protocol + "//" + window.location.host + "/boardgame/games/" + nameGame + "/" + nameTable + "/");
-  window.location = window.location.protocol + "//" + window.location.host + "/boardgame/apps/portal/waiting-page.html";
+  window.location = window.location.protocol + "//" + window.location.host + "/boardgame/apps/portal/waiting-page.html?game="+nameGame+"&table="+nameTable;
 };
 
 /**
