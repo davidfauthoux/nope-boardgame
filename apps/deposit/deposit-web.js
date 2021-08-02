@@ -2,7 +2,7 @@
 
 import * as async from "../../../modules/async.js";
 import { history, Server, uuid } from "../../../modules/server.js";
-import { EncryptionServer } from "../../../modules/encryption";
+import { EncryptionServer } from "../../../modules/encryption.js";
 
 
 const superuserUserId = "boardgame/apps/data/users/register";
