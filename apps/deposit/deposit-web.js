@@ -73,7 +73,7 @@ function isNotEmptyString(string) {
  * @returns {boolean}
  */
 function containsSpecialCharacter(string) {
-  return regexSpecialCharacter.test(string);
+  return string.match(regexSpecialCharacter);
 }
 
 /**
@@ -82,7 +82,7 @@ function containsSpecialCharacter(string) {
  * @returns {boolean}
  */
 function isGitLink(url) {
-  return regexGitLink.test(url);
+  return url.match(regexGitLink);
 }
 
 
