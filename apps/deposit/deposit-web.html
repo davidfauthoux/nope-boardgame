@@ -1,17 +1,29 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="UTF-8" \>
   <title>Deposit</title>
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=10.0,  minimum-scale=1.0, user-scalable=1"
         name="viewport" />
-  <link rel="icon" type="image/png" href="icon.png">
   <link rel="stylesheet" href="../global.css">
+  <link rel="stylesheet" href="../navbar.css">
 
   <script src="deposit-web.js" type="module"></script>
 
 </head>
 <body>
+<header>
+  <img class="logo" src="images/logo.svg" alt="logo">
+
+  <nav>
+    <ul class="nav_links">
+      <li><a href="../portal/portal-web.html">Portal</a></li>
+      <li><a href="#">Deposit</a></li>
+      <li><a href="../control/control-web.html">Control</a></li>
+    </ul>
+  </nav>
+  <a class="cta" href="#"><button>Contact</button></a>
+</header>
 <div>
   <input id="inputUrlGit" name="inputUrlGit" type="text" placeholder="Copy git link here" />
   <input id="inputNameGame" name="inputNameGame" type="text" placeholder="Enter game's name here" />
