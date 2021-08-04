@@ -5,6 +5,7 @@
 
 import * as async from "../../../modules/async.js";
 import { Server, history } from "../../../modules/server.js";
+import { EncryptionServer } from "../../../modules/encryption";
 
 const shell = require("shelljs");
 const pathToClone = "../../games/";
@@ -23,8 +24,8 @@ Server.BASE = args.base; // "http://localhost:8086";
 
 console.log("Server.BASE", Server.BASE);
 
-let superuserUserId = "boardgame/apps/data/users/register";
-let server = new Server("/" + superuserUserId);
+let encryptionServer = new EncryptionServer();
+
 const regexSpecialCharacter = /[*|":<>\[\]{}`\\()';@&$]/gi;
 const regexGitLink = /https:\/\/github.com\/[^;]+.git/gi;
 
@@ -52,10 +53,52 @@ function isNotEmptyString(string) {
  * @param string
  * @returns {boolean}
  */
-function containsSpecialCharacter(event) {
-  return regexSpecialCharacter.test(event.game);
+function containsSpecialCharacter(string) {
+  return regexSpecialCharacter.test(string);
 }
 
+
+let userId;
+let unsecuredId = "superuser";
+let userRoot = "users/boardgame/apps/";
+
+let passwordHash;
+userId = userRoot + unsecuredId;
+encryptionServer.useVault = false;
+
+async.run([
+  EncryptionServer.hash(unsecuredId),
+  (hash) => passwordHash = hash,
+  async.try_([
+    () => encryptionServer.getPublicKey(userId),
+    (publicKey) => {
+      console.log("USER PUBLIC KEY", publicKey);
+    }
+  ]).catch_((_e) => [
+    console.log("USER PUBLIC KEY UNDEFINED?", passwordHash),
+    encryptionServer.createNewUser(userId, passwordHash, "")
+  ]),
+  () => encryptionServer.loadUser(userId, passwordHash, undefined, undefined),
+  () => async.while_(() => true).do_([
+    history(encryptionServer),
+    (event) => {
+      console.debug("Event : ", event);
+      if (event.old !== undefined) {
+      } else {
+        if (event.data.action === "deposit") { //data.action
+          if (isGitLink(event.data.url) && isNotEmptyString(event.data.url) && !(containsSpecialCharacter(event.data.game)) && isNotEmptyString(event.data.game)) {
+            shell.cd(pathToClone);
+            shell.exec("git clone " + event.data.url + " " + event.data.id);
+          }
+        }
+      }
+    }
+  ])
+]);
+/*
+
+let superuserUserId = "users/boardgame/apps/superuser";
+//let server = new Server("/" + superuserUserId);
 async.run([
   () => async.while_(() => true).do_([
     history(server),
@@ -63,12 +106,12 @@ async.run([
       console.log("EVENT RECEIVED", Object.keys(event)[0]);
       // game has to be cloned, values verified when event was created
       if (event.action === "deposit") {
-        console.log("YEAHHHH");
         if (isGitLink(event.url) && isNotEmptyString(event.url) && !(containsSpecialCharacter(event)) && isNotEmptyString(event.game)) {
           shell.cd(pathToClone);
-          shell.exec("git clone " + event.url + " " + event.game);
+          shell.exec("git clone " + event.url + " " + event.id);
         }
       }
     }
   ])
 ]);
+ */

@@ -1,48 +1,34 @@
 // http://localhost:8086/boardgame/apps/deposit/deposit-web.html
 
 import * as async from "../../../modules/async.js";
-import { history, Server, uuid } from "../../../modules/server.js";
-import { EncryptionServer } from "../../../modules/encryption.js";
+import { Server, uuid } from "../../../modules/server.js";
 
-
-const superuserUserId = "boardgame/apps/data/users/register";
-
-// create server
-let server = new Server("/" + superuserUserId);
-//let encryptionServer = new EncryptionServer();
 
 const inputUrlGit = document.getElementById("inputUrlGit");
 const inputNameGame = document.getElementById("inputNameGame");
 const regexSpecialCharacter = /[*|":<>\[\]{}`\\()';@&$]/gi;
-const regexGitLink = /https:\/\/github.com\/[^;]+.git/gi;
+const regexGitLink = /https:\/\/github.com\/[^;]+.git$/gi;
+const superuserUserId = "users/boardgame/apps/superuser";
+
+// create server
+let server = new Server("/" + superuserUserId);
 
 
 /**
  * Stack event on the server
  * @param toStack
  */
+
 function stack(toStack) {
   console.log("STACKING", toStack);
   async.run([
-    server.stack(toStack)
-  ]);
-};
-
-
-/**
- * Stack event on the server
- * @param toStack
- */
-function stackEncrypted(toStack) {
-  console.log("STACKING", toStack);
-  let userId = encryptionServer.user.id;
-  async.run([
-    encryptionServer.stack({
-      from: userId,
+    server.stack({
+      //from: userId,
       data: toStack
     })
   ]);
 };
+
 
 /**
  * Stack deposit event on the server
@@ -57,6 +43,7 @@ function stackDepositEvent() {
     timestamp: Date.now() // milliseconds since January 1st 1970
   });
 }
+
 
 /**
  * Does the string is empty
@@ -109,6 +96,7 @@ function cloneGame() {
     return;
   }
 
+
   stackDepositEvent();
 }
 
@@ -116,41 +104,3 @@ document.getElementById("submitUrlGit").addEventListener("click", () => {
     cloneGame();
   }
 );
-
-/**
-let params = new URLSearchParams(document.location.search.substring(1));
-let unsecuredId = params.get("u");
-let passwordHash;
-let userId;
-
-if (unsecuredId !== undefined) {
-  let passwordHash;
-  userId = userRoot + unsecuredId;
-  encryptionServer.useVault = false;
-  userData.userId = userId;
-  async._([
-
-    EncryptionServer.hash(unsecuredId),
-    (hash) => passwordHash = hash,
-    async.try_([
-      () => encryptionServer.getPublicKey(userId),
-      (publicKey) => {
-        console.log("USER PUBLIC KEY", publicKey);
-      }
-    ]).catch_((_e) => [
-      encryptionServer.createNewUser(userId, passwordHash, "")
-    ]),
-    () => encryptionServer.loadUser(userId, passwordHash, undefined, undefined)
-  ]);
-}
-async.run([
-  () => async.while_(() => true).do_([
-    history(encryptionServer),
-    (event) => {
-      console.debug("Event : ", event);
-      if (event.old !== undefined) {
-      } else { // live event (after the page is loaded)
-      }
-    }
-  ])
-]);**/

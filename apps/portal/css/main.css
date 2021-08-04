@@ -55,11 +55,13 @@
     padding: 4px 10px;
     font-size: 0.8em;
     margin-top: 7.5px;
-    background: var(--secondary-color);
-    color: #EDE6E3;
+    background: var(--main-black);
+    color: var(--main-white-color);
     border-radius: 20px;
     text-decoration: none;
     font-weight: 500;
+    border: 1px solid var(--secondary-color);
+
 
 }
 

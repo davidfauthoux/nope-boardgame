@@ -12,22 +12,38 @@
 
 </head>
 <body>
-<header>
-  <img class="logo" src="images/logo.svg" alt="logo">
-
+<!-- <header>
   <nav>
     <ul class="nav_links">
-      <li><a href="../portal/portal-web.html">Portal</a></li>
-      <li><a href="#">Deposit</a></li>
-      <li><a href="../control/control-web.html">Control</a></li>
+      <li>
+        <a href="../portal/portal-web.html">
+          <span class="icon_nav"><ion-icon name="home-outline"></ion-icon></span>
+          <span class="title_nav">Portal</span>
+        </a>
+      </li>
+      <li class="active_item">
+        <a href="#">
+          <span class="icon_nav"><ion-icon name="download-outline"></ion-icon></span>
+          <span class="title_nav">Deposit</span>
+        </a>
+      </li>
+      <li>
+        <a href="../control/control-web.html">
+          <span class="icon_nav"><ion-icon name="settings-outline"></ion-icon></span>
+          <span class="title_nav">Control</span>
+        </a>
+      </li>
     </ul>
   </nav>
-  <a class="cta" href="#"><button>Contact</button></a>
-</header>
+
+</header>-->
 <div>
   <input id="inputUrlGit" name="inputUrlGit" type="text" placeholder="Copy git link here" />
   <input id="inputNameGame" name="inputNameGame" type="text" placeholder="Enter game's name here" />
   <input id="submitUrlGit" name="submitUrlGit" value="Share your project" type="submit">
 </div>
+<script src="../modules/ext/forge.min.js"></script>
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 </body>
 </html>

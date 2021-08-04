@@ -1,48 +1,62 @@
-header li,header a, header button{
-    font-weight:500;
-    font-size:16px;
-    text-decoration: none;
-}
-
 header{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 30px 10%;
+    display: block;
+}
+nav{
+    position:relative;
+    height:500px;
+    width:300px;
+    border-shadow: 10px 0 0 var(--main-color);
+    background:var(--main-color);
 }
 
-.logo {
-    cursor: pointer;
+nav ul{
+    position: absolute;
+    top:0;
+    left:0;
+    width: 100%;
+    padding-left: 5px;
+    padding-top: 40px;
+
 }
 
-.nav_links {
+nav ul li {
+    position: relative;
     list-style: none;
+    width: 100%;
 }
 
-.nav_links li {
-    display: inline-block;
-    padding: 0px 20px;
+nav ul li a {
+    position: relative;
+    display: flex;
+    width: 100%;
+    text-decoration: none;
+    color: var(--main-white-color);
 }
 
-.nav_links li a {
-    transition: all 0.3s ease 0s;
-    color:var(--main-black);
+nav ul li a .icon_nav{
+    position: relative;
+    display: block;
+    min-width: 60px;
+    height: 60px;
+    line-height: 70px;
+    text-align: center;
 }
 
-.nav_links li a:hover {
-    color: #888888;
+nav ul li a .icon_nav ion-icon{
+    position: relative;
+    z-index: 1;
+    font-size:1.5em;
 }
 
-.cta button{
-padding: 9px 25px;
-    background-color: var(--secondary-color);
-    border: none;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: all 0.3s ease 0s;
-    color:var(--main-white-color)
+nav ul li a .title_nav{
+    position: relative;
+    display: block;
+    padding-left: 10px;
+    height: 60px;
+    line-height: 60px;
+    white-space: normal;
 }
-
-button:hover{
-    background-color: #888888;
-}
+ nav ul li.active_item {
+     background-color: var(--main-white-color);
+     color:var(--main-color);
+ }

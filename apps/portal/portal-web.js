@@ -4,7 +4,7 @@ import * as async from "../../../modules/async.js";
 import { Server, history, uuid } from "../../../modules/server.js";
 // jquery
 
-let superuserUserId = "boardgame/apps/data/users/register";
+let superuserUserId = "users/boardgame/apps/superuser";
 
 // get queries in url in a map
 let windowParams = (function() {
@@ -45,9 +45,9 @@ let server = new Server("/" + superuserUserId);
  * Create url for a new table and switch to the waiting page
  * @param nameGame
  */
-let goToRandomTable = function(nameGame) {
+let goToRandomTable = function(idGame) {
   const nameTable = uuid();
-  window.location = window.location.protocol + "//" + window.location.host + "/boardgame/apps/portal/waiting-page.html?game="+nameGame+"&table="+nameTable;
+  window.location = window.location.protocol + "//" + window.location.host + "/boardgame/apps/portal/waiting-page.html?game="+idGame+"&table="+nameTable;
 };
 
 /**
@@ -75,7 +75,7 @@ function createGameCard(idGame,nameGame) {
   card.appendChild(content);
 
   game.onclick = function() {
-    goToRandomTable(name.innerHTML);
+    goToRandomTable(card.id);
   };
   document.getElementById("games").appendChild(card);
 }
@@ -147,10 +147,10 @@ async.run([
       console.debug("Event : ", event);
       if (event.old !== undefined) {
         for (let oldEvent of event.old) { // older events (before the page was loaded)
-          executeEvent(oldEvent);
+          executeEvent(oldEvent.data);
         }
       } else { // live event (after the page is loaded)
-        executeEvent(event);
+        executeEvent(event.data);
       }
     }
   ])
