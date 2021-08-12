@@ -1,8 +1,8 @@
-import * as async from "../../../modules/async.js";
-import { history } from "../../../modules/server.js";
-import { EncryptionServer } from "../../../modules/encryption.js";
-
-let encryptionServer = new EncryptionServer();
+import { connectPage, encryptionServer, pathToApps, pathToSuperUser, superuserId } from "../../global.js";
+import * as async from "../../../../modules/async.js";
+import { history } from "../../../../modules/server.js";
+import { disconnectUser } from "./modules/disconnect.js";
+import { EncryptionServer } from "../../../../modules/encryption.js";
 
 /**
  /**
@@ -61,6 +61,7 @@ function createLineGame(idGame, timestampDepositGame, nameGame, urlGame) {
   let verified = document.createElement("td");
   let check = document.createElement("input");
   check.setAttribute("type", "checkbox");
+  check.classList.add("checkboxVerify");
   check.onclick = function() {
     stackEncryptedVerifyEvent(idGame, check.checked);
   };
@@ -97,8 +98,15 @@ function executeEvent(event) {
       break;
     case "rename":
       //rename game on the table
-      console.debug("HELOO");
       document.getElementById(event.id).getElementsByClassName("name")[0].innerHTML = event.name;
+      break;
+    case "verify":
+      //rename game on the table
+      if (event.state) {
+        document.getElementById(event.id).getElementsByClassName("checkboxVerify")[0].checked = true;
+      } else {
+        document.getElementById(event.id).getElementsByClassName("checkboxVerify")[0].checked = false;
+      }
       break;
     default:
       break;
@@ -112,6 +120,7 @@ function executeEvent(event) {
 function stackEncrypted(toStack) {
   console.log("STACKING CRYPTED", toStack);
   let userId = encryptionServer.user.id;
+  console.log(userId);
   async.run([
     encryptionServer.stack({
       from: userId,
@@ -158,28 +167,16 @@ function stackEncryptedVerifyEvent(idGame, isVerified) {
   });
 }
 
-let userId;
-let unsecuredId = "superuser";
-let userRoot = "users/boardgame/apps/";
-let passwordHash;
-userId = userRoot + unsecuredId;
-encryptionServer.useVault = false;
+document.getElementById("disconnectButton").addEventListener("click", () => {
+    disconnectUser(encryptionServer, superuserId, window.location.protocol + "//" + window.location.host + pathToApps + connectPage);
+  }
+);
 
-// password input
+
+let passwordHash = localStorage.getItem(superuserId);
 
 async.run([
-  EncryptionServer.hash(unsecuredId),
-  (hash) => passwordHash = hash,
-  async.try_([
-    () => encryptionServer.getPublicKey(userId),
-    (publicKey) => {
-      console.log("USER PUBLIC KEY", publicKey);
-    }
-  ]).catch_((_e) => [
-    console.log("USER PUBLIC KEY UNDEFINED?", passwordHash),
-    encryptionServer.createNewUser(userId, passwordHash, "")
-  ]),
-  () => encryptionServer.loadUser(userId, passwordHash, undefined, undefined),
+  () => encryptionServer.loadUser(superuserId, passwordHash, undefined, undefined),
   () => async.while_(() => true).do_([
     history(encryptionServer),
     (event) => {
@@ -195,80 +192,5 @@ async.run([
   ])
 ]);
 
-/////////////////////////////////// METHODS SERVER UNCRYPTED //////////////////////
-/*
 
-let superuserUserId = "boardgame/apps/data/users/register";
 
-// create server
-let server = new Server("/" + superuserUserId);
-
-/!**
- * Stack event on the server
- * @param toStack
- *!/
-function stack(toStack) {
-  console.log("STACKING", toStack);
-  async.run([
-    server.stack(toStack)
-  ]);
-}
-
-/!**
- * Stack modify event on the server
- * @param idGame
- * @param newName
- *!/
-function stackModifyEvent(idGame, newName) {
-  stack({
-    action: "rename",
-    id: idGame,
-    name: newName
-  });
-}
-
-/!**
- * Stack delete event on the server
- * @param idGame
- *!/
-function stackDeleteEvent(idGame) {
-  stack({
-    action: "delete",
-    id: idGame
-  });
-}
-
-/!**
- * Stack verify event on the server
- * @param idGame
- * @param isVerified
- *!/
-function stackVerifyEvent(idGame,isVerified) {
-  stack({
-    action: "verify",
-    state: isVerified,
-    id: idGame
-  });
-
-}
-
-/!**
- * When page is loaded, it listens each event on the server
- *!/
-async.run([
-  () => async.while_(() => true).do_([
-    history(server),
-    (event) => {
-      console.debug("Event : ", event);
-      if (event.old !== undefined) {
-        for (let oldEvent of event.old) { // older events (before the page was loaded)
-          executeEvent(oldEvent);
-        }
-      } else { // live event (after the page is loaded)
-        executeEvent(event);
-      }
-    }
-  ])
-]);
-
-*/

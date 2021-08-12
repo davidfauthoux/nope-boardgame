@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Control</title>
+  <script src="scripts/connect-web-router.js" type="module"></script>
+
+  <link rel="stylesheet" href="../global.css">
+  <link rel="stylesheet" href="../navbar.css">
+  <link rel="stylesheet" href="./css/connect.css">
+</head>
+<body>
+<div><h1>Sign in</h1>
+</div>
+<section id="formConnectContainer">
+  <div>
+    <label>Your id</label>
+    <ion-icon name="person-outline"></ion-icon>
+    <input id="inputUsername" name="inputUsername" type="text" placeholder="superuser" disabled/>
+  </div>
+  <div>
+    <label>Your password</label>
+    <ion-icon name="lock-closed-outline"></ion-icon>
+    <input id="inputPassword" name="inputPassword" type="password" placeholder="Enter password" />
+  </div>
+
+  <input id="submitPassword" name="submitPassword" value="Sign in" type="submit">
+
+</section>
+
+<script src="scripts/connect-web.js" type="module"></script>
+<script src="../modules/ext/forge.min.js"></script>
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+</body>
+
+</html>

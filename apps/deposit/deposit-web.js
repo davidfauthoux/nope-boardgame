@@ -6,26 +6,23 @@ import { Server, uuid } from "../../../modules/server.js";
 
 const inputUrlGit = document.getElementById("inputUrlGit");
 const inputNameGame = document.getElementById("inputNameGame");
-const regexSpecialCharacter = /[*|":<>\[\]{}`\\()';@&$]/gi;
-const regexGitLink = /https:\/\/github.com\/[^;]+.git$/gi;
-const superuserUserId = "users/boardgame/apps/superuser";
+const regexSpecialCharacter = /[*|":<>\[\]{}`\\()';@&$]/i;
+const regexGitLink = /https:\/\/github.com\/[^;]+.git$/i;
 
+const superuserUserId = "users/boardgame/apps/superuser";
 // create server
-let server = new Server("/" + superuserUserId);
+let server = new Server("/"+superuserUserId);
 
 
 /**
- * Stack event on the server
+ * Stack event on the server ( formed as encrypted event to uniform event structure )
  * @param toStack
  */
 
 function stack(toStack) {
   console.log("STACKING", toStack);
   async.run([
-    server.stack({
-      //from: userId,
-      data: toStack
-    })
+    server.stack({data : toStack})
   ]);
 };
 
@@ -40,7 +37,7 @@ function stackDepositEvent() {
     id: uuid(),
     url: inputUrlGit.value,
     game: inputNameGame.value,
-    timestamp: Date.now() // milliseconds since January 1st 1970
+    timestamp: Date.now() // milliseconds since January 1st 1970  ( can bug because numberjavaexception )
   });
 }
 
@@ -95,7 +92,6 @@ function cloneGame() {
     alert("Name of the game doesn't contain special character");
     return;
   }
-
 
   stackDepositEvent();
 }
