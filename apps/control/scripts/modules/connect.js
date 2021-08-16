@@ -18,6 +18,7 @@ export function verifyPassword(encryptionServer, password, userId) {
       () => isConnected = true
     ]).catch_((_e) => [
       () => console.log("Wrong password ", _e),
+      () => document.getElementById("passwordWrong").innerHTML="Wrong password",
       () => isConnected = false
     ]),
     () => {
