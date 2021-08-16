@@ -1,8 +1,7 @@
 import { history, Server } from "../../../modules/server.js";
 import * as async from "../../../modules/async.js";
 import { EncryptionServer } from "../../../modules/encryption.js";
-import { encryptionServer, pathToSuperUser, superuserId } from "../global.js";
-const shell = require('shelljs');
+import { encryptionServer, superuserId } from "../global.js";
 let args = {};
 for (let a of process.argv) {
   if (a.startsWith("--")) {
@@ -19,7 +18,7 @@ const password = args.password;
 console.log("password ",password);
 console.log("Server.BASE", Server.BASE);
 let passwordHash;
-shell.rm("-r","../../../"+pathToSuperUser+superuserId);
+//% shell.rm("-r","../../../"+superuserId);
 async.run([
   EncryptionServer.hash(password),
   (hash) => passwordHash = hash,

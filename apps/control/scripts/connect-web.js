@@ -1,5 +1,5 @@
 import {verifyPassword} from "./modules/connect.js";
-import {encryptionServer,pathToSuperUser,superuserId} from "../../global.js";
+import {encryptionServer,superuserId} from "../../global.js";
 
 
 let inputPassword = document.getElementById("inputPassword");

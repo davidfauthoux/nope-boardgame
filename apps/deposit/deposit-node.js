@@ -55,7 +55,7 @@ function containsSpecialCharacter(string) {
   return regexSpecialCharacter.test(string);
 }
 
-let superuserUserId = "users/boardgame/apps/superuser";
+let superuserUserId = "users/boardgame/superuser";
 let server = new Server("/" + superuserUserId);
 shell.cd(pathToClone);
 async.run([

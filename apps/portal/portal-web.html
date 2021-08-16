@@ -1,58 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Portal</title>
-    <link rel="stylesheet" href="../global.css">
-    <link rel="stylesheet" href="../navbar.css">
+  <meta charset="UTF-8">
+  <title>Portal</title>
+  <link rel="stylesheet" href="../global.css">
+  <link rel="stylesheet" href="../navbar.css">
 
-    <link rel="stylesheet" href="./css/main.css">
+  <link rel="stylesheet" href="./css/main.css">
 </head>
 <body>
-<!--
-<header>
-    <img class="logo" src="images/logo.svg" alt="logo">
 
-    <nav>
-        <ul class="nav_links">
-            <li><a href="#">Portal</a></li>
-            <li><a href="../deposit/deposit-web.html">Deposit</a></li>
-            <li><a href="../control/control-web.html">Control</a></li>
-        </ul>
-    </nav>
-    <a class="cta" href="#"><button>Contact</button></a>
-</header>-->
-<div>
+<nav>
+  <input id="nav-toggle" type="checkbox">
+  <div class="logo">Board <strong>Game</strong></div>
+  <ul class="nav_links">
+    <li><a href="#">Portal</a></li>
+    <li><a href="../deposit/deposit-web.html">Deposit</a></li>
+    <li><a href="../control/control-web.html">Control</a></li>
+  </ul>
+  <label for="nav-toggle" class="icon-burger">
+    <div class="line"></div>
+    <div class="line"></div>
+    <div class="line"></div>
+  </label>
+</nav>
+<div class="container">
+  <div>
     <h2 class="categoryTitle">Verified Games</h2>
     <div class="line"></div>
-</div>
-<div id="verifiedGames">
+  </div>
+  <div id="verifiedGames">
     <div class="card">
-        <div class="content">
-            <h2>Vérifié</h2>
-            <h3> Carcassonne </h3>
-            <p>  Jeu de stratégie et de réflexion</p>
-            <a href="#"> Let's go </a>
-        </div>
+      <div class="content">
+        <h2>Vérifié</h2>
+        <h3> Carcassonne </h3>
+        <p> Jeu de stratégie et de réflexion</p>
+        <a href="#"> Let's go </a>
+      </div>
     </div>
-</div>
-<div>
+  </div>
+  <div>
     <h2 class="categoryTitle">Other Games</h2>
     <div class="line"></div>
-</div>
-<div id="games">
+  </div>
+  <div id="games">
 
+  </div>
 </div>
 </body>
 
 <script src="./portal-web.js" type="module"></script>
-      <script type="text/javascript" src="vanilla-tilt.js"></script>
+<script type="text/javascript" src="vanilla-tilt.js"></script>
 
 <script type="text/javascript">
-    VanillaTilt.init(document.querySelectorAll(".card"), {
-        max: 25,
-        speed: 400
-    });
+  VanillaTilt.init(document.querySelectorAll(".card"), {
+    max: 25,
+    speed: 400
+  });
 </script>
 <script src="../modules/ext/forge.min.js"></script>
 

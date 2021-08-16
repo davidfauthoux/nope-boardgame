@@ -10,9 +10,23 @@
   <link rel="stylesheet" href="./css/connect.css">
 </head>
 <body>
-<div><h1>Sign in</h1>
-</div>
+
+<nav>
+  <input id="nav-toggle" type="checkbox">
+  <div class="logo">Board <strong>Game</strong></div>
+  <ul class="nav_links">
+    <li><a href="../portal/portal-web.html">Portal</a></li>
+    <li><a href="../deposit/deposit-web.html">Deposit</a></li>
+  </ul>
+  <label for="nav-toggle" class="icon-burger">
+    <div class="line"></div>
+    <div class="line"></div>
+    <div class="line"></div>
+  </label>
+</nav>
+<div class="container">
 <section id="formConnectContainer">
+  <h1>Sign in</h1>
   <div>
     <label>Your id</label>
     <ion-icon name="person-outline"></ion-icon>
@@ -27,7 +41,7 @@
   <input id="submitPassword" name="submitPassword" value="Sign in" type="submit">
 
 </section>
-
+</div>
 <script src="scripts/connect-web.js" type="module"></script>
 <script src="../modules/ext/forge.min.js"></script>
 <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>

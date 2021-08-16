@@ -1,4 +1,4 @@
-import { connectPage, encryptionServer, pathToApps, pathToSuperUser, superuserId } from "../../global.js";
+import { connectPage, encryptionServer, pathToApps, superuserId } from "../../global.js";
 import * as async from "../../../../modules/async.js";
 import { history } from "../../../../modules/server.js";
 import { disconnectUser } from "./modules/disconnect.js";

@@ -9,7 +9,7 @@ const inputNameGame = document.getElementById("inputNameGame");
 const regexSpecialCharacter = /[*|":<>\[\]{}`\\()';@&$]/i;
 const regexGitLink = /https:\/\/github.com\/[^;]+.git$/i;
 
-const superuserUserId = "users/boardgame/apps/superuser";
+const superuserUserId = "users/boardgame/superuser";
 // create server
 let server = new Server("/"+superuserUserId);
 

@@ -1,5 +1,55 @@
-body {
-    display :grid;
-    justify-content: center;
+#formConnectContainer {
+    width: 300px;
+    padding: 40px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-10%);
+    text-align: center;
 }
 
+#formConnectContainer h1{
+    color: var(--main-black);
+    text-transform: uppercase;
+    font-weight: 500;
+    margin-bottom: 8%;
+}
+#formConnectContainer input[type="text"], #formConnectContainer input[type="password"]{
+    background: none;
+    display: block;
+    margin:20px auto;
+    text-align: center;
+    border : 2px solid var(--main-color);
+    padding:14px 10px;
+    width:200px;
+    outline: none;
+    border-radius: 24px;
+    transition:0.25s;
+}
+
+#formConnectContainer input[type="text"]:focus, #formConnectContainer input[type="password"]:focus{
+    width: 280px;
+    border-color: var(--secondary-color);
+
+}
+
+
+#formConnectContainer input[type="submit"]{
+    background: none;
+    display: block;
+    margin:20px auto;
+    text-align: center;
+    border : 2px solid var(--main-color);
+    padding:14px 40px;
+    outline: none;
+    border-radius: 24px;
+    transition:0.25s;
+    cursor: pointer;
+}
+
+
+
+#formConnectContainer input[type="submit"]:hover{
+    background-color: var(--main-color);
+    color:var(--main-white-color);
+}

@@ -11,35 +11,41 @@
   <script src="scripts/control-web-router.js" type="module"></script>
 </head>
 <body>
-<!--<header>
-  <img class="logo" src="images/logo.svg" alt="logo">
 
-  <nav>
-    <ul class="nav_links">
-      <li><a href="../portal/portal-web.html">Portal</a></li>
-      <li><a href="../deposit/deposit-web.html">Deposit</a></li>
-      <li><a href="#">Control</a></li>
-    </ul>
-  </nav>
-  <a class="cta" href="#"><button>Contact</button></a>
-</header>-->
-<button id="disconnectButton"> Disconnect </button>
-<div class="table_wrapper">
-  <table id="adminTable">
-    <thead>
-    <tr>
-      <th>Date</th>
-      <th>Game</th>
-      <th>Git</th>
-      <th>Delete</th>
-      <th>Verified</th>
-    </tr>
-    </thead>
-    <tbody>
+<nav>
+  <input id="nav-toggle" type="checkbox">
+  <div class="logo">Board <strong>Game</strong></div>
+  <ul class="nav_links">
+    <li><a href="../portal/portal-web.html">Portal</a></li>
+    <li><a href="../deposit/deposit-web.html">Deposit</a></li>
+    <li><a href="../control/control-web.html">Control</a></li>
+    <button id="disconnectButton"> Disconnect</button>
+  </ul>
+  <label for="nav-toggle" class="icon-burger">
+    <div class="line"></div>
+    <div class="line"></div>
+    <div class="line"></div>
+  </label>
+</nav>
+<div class="container">
 
-    </tbody>
+  <div class="table_wrapper">
+    <table id="adminTable">
+      <thead>
+      <tr>
+        <th>Date</th>
+        <th>Game</th>
+        <th>Git</th>
+        <th>Delete</th>
+        <th>Verified</th>
+      </tr>
+      </thead>
+      <tbody>
 
-  </table>
+      </tbody>
+
+    </table>
+  </div>
 </div>
 <script src="../../../modules/ext/forge.min.js"></script>
 <script src="scripts/control-web.js" type="module"></script>
